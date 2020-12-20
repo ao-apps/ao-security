@@ -110,6 +110,11 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							</li>
 						</ol>
 					</li>
+					<li>
+						Moved read/write methods for <code>Identifier</code> and <code>SmallIdentifier</code> from
+						<code>StreamableInput</code> and <code>StreamableOutput</code> to static methods on a new
+						<code>SecurityStreamables</code> class.
+					</li>
 				</ul>
 			</changelog:release>
 		</c:if>
