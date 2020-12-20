@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ao-security - Best-practices security made usable.
+Copyright (C) 2020  AO Industries, Inc.
+    support@aoindustries.com
+    7262 Bull Pen Cir
+    Mobile, AL 36695
+
+This file is part of ao-security.
+
+ao-security is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ao-security is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with ao-security.  If not, see <http://www.gnu.org/licenses />.
+-->
+<jsp:root
+	xmlns:ao="https://aoindustries.com/ao-taglib/"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:changelog="https://semanticcms.com/changelog/taglib/"
+	xmlns:core="https://semanticcms.com/core/taglib/"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	version="2.1"
+>
+	<jsp:directive.page language="java" pageEncoding="UTF-8" />
+	<jsp:directive.page session="false" />
+	<core:page
+		title="@{documented.name} Changelog"
+		shortTitle="Changelog"
+		tocLevels="1"
+		datePublished="2020-12-19T21:29:44-06:00"
+	>
+		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
+			<changelog:release
+				projectName="@{documented.name}"
+				version="@{project.version}"
+				groupId="@{project.groupId}"
+				artifactId="@{documented.artifactId}"
+				scmUrl="@{project.scm.url}"
+			>
+				<ul>
+					<li>
+						Pulled existing security utilities out of <core:link book="/ao-lang" page="/index.jspx" /> into
+						this new <core:link page="index.jspx" /> project.
+					</li>
+					<li>Length-constant time equality checks <code>Identifier</code>.</li>
+					<li><code>HashedKey</code> improvements:
+						<ol>
+							<li>New constant <code>NO_KEY</code> that may be used when there is no key.</li>
+							<li>Now supports multiple algorithms, with the recommended algorithm being "SHA-512/256".</li>
+							<li>Length-constant time equality checks</li>
+							<li><code>compareTo(HashedKey)</code> now orders unsigned</li>
+							<li>
+								<p>
+									<code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
+									key in an unambiguous string format.  "*" represents "No key".
+								</p>
+								<p>
+									This may be used to insert the password into a database, and it is compatible with
+									<ao:a href="https://aoindustries.com/ao-dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+									However, database-specific types could be more compact.
+								</p>
+							</li>
+							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
+							<li>New main method that can be used to generate a key and hash pair.</li>
+						</ol>
+					</li>
+					<li><code>HashedPassword</code> improvements:
+						<ol>
+							<li>New constant <code>NO_PASSWORD</code> that may be used when there is no password.</li>
+							<li>Now supports multiple algorithms, with the recommended algorithm being "PBKDF2WithHmacSHA512".</li>
+							<li>
+								Recommended iterations changed from <code>1000</code> to <code>25000</code>, which is selected
+								to complete the hashing in around 100 ms on commodity PC hardware from around the year 2012.
+							</li>
+							<li>
+								New method <code>isRehashRecommended()</code> that provides a hint when the password
+								should be rehashed during login.
+							</li>
+							<li>
+								<p>
+									<code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
+									password in an unambiguous string format.  "*" represents "No key".
+								</p>
+								<p>
+									This may be used to insert the password into a database, and it is compatible with
+									<ao:a href="https://aoindustries.com/ao-dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+									However, database-specific types could be more compact.
+								</p>
+							</li>
+							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
+							<li>
+								New main method that can be used to hash passwords.  Includes a <code>-v</code> option
+								for verbose mode, which gives timing and will recommend increasing <code>RECOMMENDED_ITERATIONS</code>
+								when a hash is performed in under 100 ms.
+							</li>
+							<li>
+								Deprecated direct use of the <code>RECOMMENDED_ITERATIONS</code> constant to avoid
+								compile-time substitution of the constant, which will allow the value to be updated
+								without recompiling dependents.  Please use the static method
+								<code>getRecommendedIterations()</code> instead.
+							</li>
+						</ol>
+					</li>
+				</ul>
+			</changelog:release>
+		</c:if>
+	</core:page>
+</jsp:root>
