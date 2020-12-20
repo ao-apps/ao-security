@@ -37,6 +37,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A hashed random key.
@@ -260,6 +261,19 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	private final Algorithm algorithm;
 	private final byte[] hash;
 
+	private <E extends Throwable> void validate(Function<? super String,E> newThrowable) throws E {
+		if(algorithm == null) {
+			if(hash != null) throw newThrowable.apply("hash must be null when algorithm is null");
+		} else {
+			if(hash == null) throw newThrowable.apply("hash required when have algorithm");
+			if(hash.length != algorithm.getHashBytes()) {
+				throw newThrowable.apply(
+					"hash length mismatch: expected " + algorithm.getHashBytes() + ", got " + hash.length
+				);
+			}
+		}
+	}
+
 	/**
 	 * Special singleton for {@link #NO_KEY}.
 	 */
@@ -276,16 +290,12 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 */
 	public HashedKey(Algorithm algorithm, byte[] hash) throws IllegalArgumentException {
 		try {
-			if(hash.length != algorithm.getHashBytes()) {
-				throw new IllegalArgumentException(
-					"hash length mismatch: expected " + algorithm.getHashBytes() + ", got " + hash.length
-				);
-			}
 			this.algorithm = Objects.requireNonNull(algorithm);
 			this.hash = Arrays.copyOf(hash, hash.length);
 		} finally {
 			Arrays.fill(hash, (byte)0);
 		}
+		validate(IllegalArgumentException::new);
 	}
 
 	/**
@@ -301,16 +311,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
-		if(algorithm == null) {
-			if(hash != null) throw new InvalidObjectException("hash must be null when algorithm is null");
-		} else {
-			if(hash == null) throw new InvalidObjectException("hash required when have algorithm");
-			if(hash.length != algorithm.getHashBytes()) {
-				throw new InvalidObjectException(
-					"hash length mismatch: expected " + algorithm.getHashBytes() + ", got " + hash.length
-				);
-			}
-		}
+		validate(InvalidObjectException::new);
 	}
 
 	private Object readResolve() {
