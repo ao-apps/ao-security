@@ -63,6 +63,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 */
 	public enum Algorithm {
 		@Deprecated
+		MD5("MD5", 128 / 8),
 		SHA_1("SHA-1", 160 / 8),
 		SHA_224("SHA-224", 224 / 8),
 		SHA_256("SHA-256", 256 / 8),
