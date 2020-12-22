@@ -72,12 +72,24 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 */
 		@Deprecated
 		SHA_1("SHA-1", 160 / 8),
+		/**
+		 * @deprecated  Collision resistance of at least 128 bits is required
+		 */
+		@Deprecated
 		SHA_224("SHA-224", 224 / 8),
 		SHA_256("SHA-256", 256 / 8),
 		SHA_384("SHA-384", 384 / 8),
 		SHA_512("SHA-512", 512 / 8),
+		/**
+		 * @deprecated  Collision resistance of at least 128 bits is required
+		 */
+		@Deprecated
 		SHA_512_224("SHA-512/224", 224 / 8),
 		SHA_512_256("SHA-512/256", 256 / 8),
+		/**
+		 * @deprecated  Collision resistance of at least 128 bits is required
+		 */
+		@Deprecated
 		SHA3_224("SHA3-224", 224 / 8),
 		SHA3_256("SHA3-256", 256 / 8),
 		SHA3_384("SHA3-384", 384 / 8),
