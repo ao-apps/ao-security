@@ -333,7 +333,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			assert hash == null;
 			str = NO_KEY_VALUE;
 		} else {
-			str = algorithm.name()
+			str = algorithm.getAlgorithmName()
 				+ SEPARATOR + ENCODER.encodeToString(hash);
 		}
 		assert isUrlSafe(str);

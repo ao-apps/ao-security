@@ -37,6 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
+		dateModified="2020-12-22T00:03:24-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -78,8 +79,9 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							<li>New constant <code>NO_PASSWORD</code> that may be used when there is no password.</li>
 							<li>Now supports multiple algorithms, with the recommended algorithm being "PBKDF2WithHmacSHA512".</li>
 							<li>
-								Recommended iterations changed from <code>1000</code> to <code>25000</code>, which is selected
-								to complete the hashing in around 100 ms on commodity PC hardware from around the year 2012.
+								Per-algorithm recommended iterations, with values increased significantly higher than
+								the previously recommended <code>1000</code>.  Recommended values are selected to complete
+								the hashing in around 100 ms on commodity PC hardware from around the year 2012.
 							</li>
 							<li>
 								New method <code>isRehashRecommended()</code> that provides a hint when the password
@@ -98,15 +100,9 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							</li>
 							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
 							<li>
-								New main method that can be used to hash passwords.  Includes a <code>-v</code> option
-								for verbose mode, which gives timing and will recommend increasing <code>RECOMMENDED_ITERATIONS</code>
-								when a hash is performed in under 100 ms.
-							</li>
-							<li>
-								Deprecated direct use of the <code>RECOMMENDED_ITERATIONS</code> constant to avoid
-								compile-time substitution of the constant, which will allow the value to be updated
-								without recompiling dependents.  Please use the static method
-								<code>getRecommendedIterations()</code> instead.
+								New main method that can be used to hash passwords.  Includes a <code>-b</code> option
+								for benchmark mode, which runs all algorithms, gives timing, and will recommend increasing
+								<code>recommendedIterations</code> when a hash is performed in under 100 ms.
 							</li>
 						</ol>
 					</li>

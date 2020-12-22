@@ -101,7 +101,7 @@ public class HashedPassword implements Serializable {
 	public enum Algorithm {
 		// TODO: Add old UnixCrypt and SHA-1 here for backwards compatibility?  Could then remove other HashedPassword entirely.
 		@Deprecated
-		PBKDF2WITHHMACMD5("PBKDF2WithHmacMD5", 128 / 8),
+		PBKDF2WITHHMACMD5("PBKDF2WithHmacMD5", /* TODO: Can't benchmark: java.security.NoSuchAlgorithmException: */50000, 128 / 8),
 		/**
 		 * From https://crackstation.net/hashing-security.htm
 		 *
@@ -109,11 +109,11 @@ public class HashedPassword implements Serializable {
 		 *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
 		 */
 		@Deprecated
-		PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 256 / 8), // Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
-		PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 224 / 8),
-		PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 256 / 8),
-		PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 384 / 8),
-		PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 512 / 8);
+		PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 40000, 256 / 8), // Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
+		PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 50000, 224 / 8),
+		PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 50000, 256 / 8),
+		PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 37000, 384 / 8),
+		PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 37000, 512 / 8);
 
 		/**
 		 * Avoid repetitive allocation.
@@ -122,18 +122,20 @@ public class HashedPassword implements Serializable {
 
 		private final String algorithmName;
 		private final int saltBytes;
+		private final int recommendedIterations;
 		private final int hashBytes;
 
-		private Algorithm(String algorithmName, int saltBytes, int hashBytes) {
+		private Algorithm(String algorithmName, int saltBytes, int recommendedIterations, int hashBytes) {
 			assert isUrlSafe(algorithmName);
 			assert algorithmName.indexOf(SEPARATOR) == -1;
 			this.algorithmName = algorithmName;
 			this.saltBytes = saltBytes;
+			this.recommendedIterations = recommendedIterations;
 			this.hashBytes = hashBytes;
 		}
 
-		private Algorithm(String algorithmName, int hashBytes) {
-			this(algorithmName, hashBytes, hashBytes);
+		private Algorithm(String algorithmName, int recommendedIterations, int hashBytes) {
+			this(algorithmName, hashBytes, recommendedIterations, hashBytes);
 		}
 
 		@Override
@@ -156,6 +158,61 @@ public class HashedPassword implements Serializable {
 		}
 
 		/**
+		 * Gets the minimum number of iterations allowed or {@code 0} when algorithm is not iterated.
+		 */
+		public int getMinimumIterations() {
+			return 1;
+		}
+
+		/**
+		 * Gets the maximum number of iterations allowed or {@code 0} when algorithm is not iterated.
+		 */
+		public int getMaximumIterations() {
+			return Integer.MAX_VALUE;
+		}
+
+		/**
+		 * Gets the recommended number of iterations for typical usage or {@code 0} when algorithm is not iterated.
+		 * <p>
+		 * We may change this value between releases without notice.
+		 * Only use this value for new password hashes.
+		 * Always store the iterations with the salt and hash, and use the stored
+		 * iterations when checking password matches.
+		 * </p>
+		 * <p>
+		 * It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
+		 * iterations has changed.
+		 * </p>
+		 * <p>
+		 * This value is selected to complete the hashing in around {@value #SUGGEST_INCREASE_ITERATIONS_MILLIS} ms
+		 * on commodity PC hardware from around the year 2012.
+		 * </p>
+		 *
+		 * @see  #hash(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, byte[], int)
+		 */
+		public int getRecommendedIterations() {
+			return recommendedIterations;
+		}
+
+		<E extends Throwable> int validateIterations(Function<? super String,E> newThrowable, int iterations) throws E {
+			int minimumIterations = getMinimumIterations();
+			if(iterations < minimumIterations) {
+				throw newThrowable.apply(
+					getAlgorithmName() + ": iterations < minimumIterations: "
+					+ iterations + " < " + minimumIterations
+				);
+			}
+			int maximumIterations = getMaximumIterations();
+			if(iterations > maximumIterations) {
+				throw newThrowable.apply(
+					getAlgorithmName() + ": iterations > maximumIterations: "
+					+ iterations + " < " + maximumIterations
+				);
+			}
+			return iterations;
+		}
+
+		/**
 		 * Gets the number of bytes required to store the generated hash.
 		 */
 		public int getHashBytes() {
@@ -167,6 +224,17 @@ public class HashedPassword implements Serializable {
 		 */
 		public SecretKeyFactory getSecretKeyFactory() throws NoSuchAlgorithmException {
 			return SecretKeyFactory.getInstance(getAlgorithmName());
+		}
+
+		static {
+			for(Algorithm algorithm : values) {
+				assert algorithm.getMaximumIterations() >= 0;
+				assert algorithm.getMinimumIterations() >= 0;
+				assert algorithm.getMinimumIterations() <= algorithm.getMaximumIterations();
+				assert (algorithm.getMinimumIterations() == 0) == (algorithm.getMaximumIterations() == 0) : "Both min and max 0 when iteration not supported";
+				assert algorithm.getRecommendedIterations() >= algorithm.getMinimumIterations();
+				assert algorithm.getRecommendedIterations() <= algorithm.getMaximumIterations();
+			}
 		}
 	}
 
@@ -208,33 +276,11 @@ public class HashedPassword implements Serializable {
 	public static final int HASH_BYTES = Algorithm.PBKDF2WITHHMACSHA1.getHashBytes();
 
 	/**
-	 * @deprecated  Please use {@link #getRecommendedIterations()} to avoid compile-time substitution of the constant,
-	 *              which will allow the value to be updated without recompiling dependents.
+	 * @deprecated  This is the value matching {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
+	 *              please use {@link Algorithm#getRecommendedIterations()} instead.
 	 */
 	@Deprecated
-	public static final int RECOMMENDED_ITERATIONS = 25000;
-
-	/**
-	 * The recommended number of iterations for typical usage.
-	 * <p>
-	 * We may change this value between releases without notice.
-	 * Only use this value for new password hashes.
-	 * Always store the iterations with the salt and hash, and use the stored
-	 * iterations when checking password matches.
-	 * </p>
-	 * <p>
-	 * It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
-	 * iterations has changed.
-	 * </p>
-	 * <p>
-	 * This value is selected to complete the hashing in around 100 ms on commodity PC hardware from around the year 2012.
-	 * </p>
-	 *
-	 * @see  #hash(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, byte[], int)
-	 */
-	public static int getRecommendedIterations() {
-		return RECOMMENDED_ITERATIONS;
-	}
+	public static final int RECOMMENDED_ITERATIONS = Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations();
 
 	/**
 	 * A constant that may be used in places where no password is set.
@@ -272,7 +318,7 @@ public class HashedPassword implements Serializable {
 	 * Hash the given password
 	 *
 	 * @see  #generateSalt(com.aoindustries.security.HashedPassword.Algorithm)
-	 * @see  #RECOMMENDED_ITERATIONS
+	 * @see  Algorithm#getRecommendedIterations()
 	 */
 	public static byte[] hash(String password, Algorithm algorithm, byte[] salt, int iterations) {
 		if(salt.length != algorithm.getSaltBytes()) {
@@ -284,7 +330,12 @@ public class HashedPassword implements Serializable {
 			char[] chars = password.toCharArray();
 			try {
 				// See https://crackstation.net/hashing-security.htm
-				PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, algorithm.getHashBytes() * 8);
+				PBEKeySpec spec = new PBEKeySpec(
+					chars,
+					salt,
+					algorithm.validateIterations(IllegalArgumentException::new, iterations),
+					algorithm.getHashBytes() * 8
+				);
 				SecretKeyFactory skf = algorithm.getSecretKeyFactory();
 				byte[] hash = skf.generateSecret(spec).getEncoded();
 				assert hash.length == algorithm.getHashBytes();
@@ -340,10 +391,13 @@ public class HashedPassword implements Serializable {
 			byte[] salt = DECODER.decode(hashedPassword.substring(pos1 + 1, pos2));
 			int pos3 = hashedPassword.indexOf(SEPARATOR, pos2 + 1);
 			if(pos3 == -1) throw new IllegalArgumentException("Third separator (" + SEPARATOR + ") not found");
-			int iterations = Integer.parseInt(hashedPassword.substring(pos2 + 1, pos3));
-			if(iterations < 1) throw new IllegalArgumentException("Invalid iterations: " + iterations);
 			byte[] hash = DECODER.decode(hashedPassword.substring(pos3 + 1));
-			return new HashedPassword(algorithm, salt, iterations, hash);
+			return new HashedPassword(
+				algorithm,
+				salt,
+				Integer.parseInt(hashedPassword.substring(pos2 + 1, pos3)),
+				hash
+			);
 		}
 	}
 
@@ -366,13 +420,13 @@ public class HashedPassword implements Serializable {
 				throw newThrowable.apply(
 					"salt length mismatch: expected " + algorithm.getSaltBytes() + ", got " + salt.length
 				);
-			} else if(hash.length != algorithm.getHashBytes()) {
+			}
+			if(hash.length != algorithm.getHashBytes()) {
 				throw newThrowable.apply(
 					"hash length mismatch: expected " + algorithm.getHashBytes() + ", got " + hash.length
 				);
-			} else if(iterations < 1) {
-				throw newThrowable.apply("iterations < 1: " + iterations);
 			}
+			algorithm.validateIterations(newThrowable, iterations);
 		}
 	}
 
@@ -395,6 +449,8 @@ public class HashedPassword implements Serializable {
 	 *
 	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
 	 *                                    or {@code hash.length != algorithm.getHashBytes()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
 	public HashedPassword(
 		Algorithm algorithm,
@@ -453,7 +509,8 @@ public class HashedPassword implements Serializable {
 			assert hash == null;
 			str = NO_PASSWORD_VALUE;
 		} else {
-			str = algorithm.name()
+			assert iterations >= 0;
+			str = algorithm.getAlgorithmName()
 				+ SEPARATOR + ENCODER.withoutPadding().encodeToString(salt)
 				+ SEPARATOR + iterations
 				+ SEPARATOR + ENCODER.withoutPadding().encodeToString(hash);
@@ -472,7 +529,7 @@ public class HashedPassword implements Serializable {
 	public boolean matches(String password) {
 		if(algorithm == null) {
 			// Perform a hash with default settings, just to occupy the same amount of time as if had a password
-			hash(password, RECOMMENDED_ALGORITHM, DUMMY_SALT, RECOMMENDED_ITERATIONS);
+			hash(password, RECOMMENDED_ALGORITHM, DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
 			return false;
 		} else {
 			// Hash again with the original salt and iterations
@@ -512,39 +569,71 @@ public class HashedPassword implements Serializable {
 			algorithm != null
 			&& (
 				algorithm.compareTo(RECOMMENDED_ALGORITHM) < 0
-				|| iterations < RECOMMENDED_ITERATIONS
+				|| iterations < algorithm.getRecommendedIterations()
 			);
 	}
 
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String... args) {
-		boolean verbose = false;
+		boolean benchmark = false;
 		int argsIndex = 0;
-		if(argsIndex < args.length && "-v".equals(args[argsIndex])) {
-			verbose = true;
+		if(argsIndex < args.length && "-b".equals(args[argsIndex])) {
+			benchmark = true;
 			argsIndex++;
 		}
 		if(argsIndex >= args.length) {
-			System.err.println("usage: [-v] " + HashedPassword.class.getName() + " password [password...]");
+			System.err.println("usage: " + HashedPassword.class.getName() + " [-b] password [password...]");
 			System.exit(SysExits.EX_USAGE);
 		} else {
-			Algorithm algorithm = RECOMMENDED_ALGORITHM;
-			int iterations = RECOMMENDED_ITERATIONS;
-			for(; argsIndex < args.length; argsIndex++) {
-				String password = args[argsIndex];
-				long startNanos, endNanos;
-				byte[] salt = generateSalt(algorithm);
-				startNanos = verbose ? System.nanoTime() : 0;
-				byte[] hash = hash(password, algorithm, salt, iterations);
-				endNanos = verbose ? System.nanoTime() : 0;
-				System.out.println(new HashedPassword(algorithm, salt, iterations, hash));
-				if(verbose) {
-					long nanos = endNanos - startNanos;
-					System.out.println("Completed in " + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms");
-					long millis = nanos / 1000000;
-					if(millis < SUGGEST_INCREASE_ITERATIONS_MILLIS) {
-						System.err.println("Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of RECOMMENDED_ITERATIONS (currently " + RECOMMENDED_ITERATIONS + ")");
+			if(benchmark) {
+				// Do ten times, but only report the last pass
+				for(int i = 10 ; i > 0; i--) {
+					boolean output = (i == 1);
+					for(Algorithm algorithm : Algorithm.values) {
+						try {
+							int recommendedIterations = algorithm.getRecommendedIterations();
+							for(int j = argsIndex; j < args.length; j++) {
+								String password = args[j];
+								long startNanos, endNanos;
+								byte[] salt = generateSalt(algorithm);
+								startNanos = output ? System.nanoTime() : 0;
+								byte[] hash = hash(password, algorithm, salt, recommendedIterations);
+								endNanos = output ? System.nanoTime() : 0;
+								HashedPassword hashedPassword = new HashedPassword(algorithm, salt, recommendedIterations, hash);
+								if(output) {
+									System.out.println(hashedPassword);
+									long nanos = endNanos - startNanos;
+									System.out.println("Completed in " + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms");
+									long millis = nanos / 1000000;
+									if(millis < SUGGEST_INCREASE_ITERATIONS_MILLIS) {
+										System.out.flush();
+										System.err.println("Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of recommendedIterations (currently " + recommendedIterations + ")");
+										System.err.flush();
+									}
+								}
+							}
+						} catch(WrappedException e) {
+							if(output) {
+								System.out.flush();
+								System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
+								System.err.flush();
+							}
+						}
 					}
+				}
+			} else {
+				Algorithm algorithm = RECOMMENDED_ALGORITHM;
+				int recommendedIterations = algorithm.getRecommendedIterations();
+				for(; argsIndex < args.length; argsIndex++) {
+					byte[] salt = generateSalt(algorithm);
+					System.out.println(
+						new HashedPassword(
+							algorithm,
+							salt,
+							recommendedIterations,
+							hash(args[argsIndex], algorithm, salt, recommendedIterations)
+						)
+					);
 				}
 			}
 		}
