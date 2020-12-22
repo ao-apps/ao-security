@@ -24,17 +24,22 @@ package com.aoindustries.security;
 
 import com.aoindustries.exception.WrappedException;
 import com.aoindustries.lang.SysExits;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -554,67 +559,84 @@ public class HashedPassword implements Serializable {
 
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String... args) {
+		List<String> passwords = new ArrayList<>(args.length);
 		boolean benchmark = false;
-		int argsIndex = 0;
-		if(argsIndex < args.length && "-b".equals(args[argsIndex])) {
-			benchmark = true;
-			argsIndex++;
+		boolean help = false;
+		for(String arg : args) {
+			if("-b".equals(arg) || "--benchamrk".equals(arg)) {
+				benchmark = true;
+			} else if("-h".equals(arg) || "--help".equals(arg)) {
+				help = true;
+			} else {
+				passwords.add(arg);
+			}
 		}
-		if(argsIndex >= args.length) {
-			System.err.println("usage: " + HashedPassword.class.getName() + " [-b] password [password...]");
+		if(help) {
+			System.err.println("usage: " + HashedPassword.class.getName() + " [-b|--benchmark] [-h|--help] [password...]");
+			System.err.println("\tReads from standard input when no password arguments");
 			System.exit(SysExits.EX_USAGE);
 		} else {
-			if(benchmark) {
-				// Do ten times, but only report the last pass
-				for(int i = 10 ; i > 0; i--) {
-					boolean output = (i == 1);
-					for(Algorithm algorithm : Algorithm.values) {
-						try {
-							int recommendedIterations = algorithm.getRecommendedIterations();
-							for(int j = argsIndex; j < args.length; j++) {
-								String password = args[j];
-								long startNanos, endNanos;
-								byte[] salt = generateSalt(algorithm);
-								startNanos = output ? System.nanoTime() : 0;
-								byte[] hash = hash(password, algorithm, salt, recommendedIterations);
-								endNanos = output ? System.nanoTime() : 0;
-								HashedPassword hashedPassword = new HashedPassword(algorithm, salt, recommendedIterations, hash);
-								if(output) {
-									System.out.println(hashedPassword);
-									long nanos = endNanos - startNanos;
-									System.out.println("Completed in " + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms");
-									long millis = nanos / 1000000;
-									if(millis < SUGGEST_INCREASE_ITERATIONS_MILLIS) {
+			Stream<String> lines;
+			if(passwords.isEmpty()) {
+				lines = new BufferedReader(new InputStreamReader(System.in)).lines();
+			} else {
+				lines = passwords.stream();
+			}
+			final boolean benchmarkFinal = benchmark;
+			final boolean[] warmedUp = {false};
+			lines.forEachOrdered(
+				password -> {
+					if(password.isEmpty()) {
+						System.out.println(NO_PASSWORD);
+					} else if(benchmarkFinal) {
+						// Do ten times, but only report the last pass
+						for(int i = warmedUp[0] ? 1 : 10 ; i > 0; i--) {
+							boolean output = (i == 1);
+							for(Algorithm algorithm : Algorithm.values) {
+								try {
+									int recommendedIterations = algorithm.getRecommendedIterations();
+									long startNanos, endNanos;
+									byte[] salt = generateSalt(algorithm);
+									startNanos = output ? System.nanoTime() : 0;
+									byte[] hash = hash(password, algorithm, salt, recommendedIterations);
+									endNanos = output ? System.nanoTime() : 0;
+									HashedPassword hashedPassword = new HashedPassword(algorithm, salt, recommendedIterations, hash);
+									if(output) {
+										System.out.println(hashedPassword);
+										long nanos = endNanos - startNanos;
+										System.out.println("Completed in " + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms");
+										long millis = nanos / 1000000;
+										if(millis < SUGGEST_INCREASE_ITERATIONS_MILLIS) {
+											System.out.flush();
+											System.err.println("Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of recommendedIterations (currently " + recommendedIterations + ")");
+											System.err.flush();
+										}
+									}
+								} catch(WrappedException e) {
+									if(output) {
 										System.out.flush();
-										System.err.println("Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of recommendedIterations (currently " + recommendedIterations + ")");
+										System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
 										System.err.flush();
 									}
 								}
 							}
-						} catch(WrappedException e) {
-							if(output) {
-								System.out.flush();
-								System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
-								System.err.flush();
-							}
 						}
+						warmedUp[0] = true;
+					} else {
+						Algorithm algorithm = RECOMMENDED_ALGORITHM;
+						int recommendedIterations = algorithm.getRecommendedIterations();
+						byte[] salt = generateSalt(algorithm);
+						System.out.println(
+							new HashedPassword(
+								algorithm,
+								salt,
+								recommendedIterations,
+								hash(password, algorithm, salt, recommendedIterations)
+							)
+						);
 					}
 				}
-			} else {
-				Algorithm algorithm = RECOMMENDED_ALGORITHM;
-				int recommendedIterations = algorithm.getRecommendedIterations();
-				for(; argsIndex < args.length; argsIndex++) {
-					byte[] salt = generateSalt(algorithm);
-					System.out.println(
-						new HashedPassword(
-							algorithm,
-							salt,
-							recommendedIterations,
-							hash(args[argsIndex], algorithm, salt, recommendedIterations)
-						)
-					);
-				}
-			}
+			);
 		}
 	}
 }
