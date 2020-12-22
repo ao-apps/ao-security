@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-22T00:03:24-06:00"
+		dateModified="2020-12-22T02:30:44-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -104,6 +104,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 								for benchmark mode, which runs all algorithms, gives timing, and will recommend increasing
 								<code>recommendedIterations</code> when a hash is performed in under 100 ms.
 							</li>
+							<li>Convenience constructors that perform all the steps of generating salt and hash.</li>
 						</ol>
 					</li>
 					<li>

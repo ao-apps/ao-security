@@ -24,6 +24,7 @@ package com.aoindustries.security;
 
 import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.IoUtils;
+import com.aoindustries.lang.SysExits;
 import static com.aoindustries.security.HashedPassword.DECODER;
 import static com.aoindustries.security.HashedPassword.ENCODER;
 import static com.aoindustries.security.HashedPassword.SEPARATOR;
@@ -120,6 +121,17 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
+		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length.
+		 *
+		 * @see  #hash(byte[])
+		 */
+		public byte[] generateKey() {
+			byte[] key = new byte[getKeyBytes()];
+			Identifier.secureRandom.nextBytes(key);
+			return validateKey(AssertionError::new, key);
+		}
+
+		/**
 		 * Gets the number of bytes required to store the generated hash.
 		 */
 		public int getHashBytes() {
@@ -135,10 +147,21 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
-		 * Gets a {@link MessageDigest} for this algorithm.
+		 * Hashes the given key.
+		 *
+		 * @see  #generateKey()
 		 */
-		public MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
-			return MessageDigest.getInstance(getAlgorithmName());
+		public byte[] hash(byte[] key) {
+			try {
+				return validateHash(
+					IllegalArgumentException::new,
+					MessageDigest.getInstance(getAlgorithmName()).digest(
+						validateKey(IllegalArgumentException::new, key)
+					)
+				);
+			} catch(NoSuchAlgorithmException e) {
+				throw new WrappedException(e);
+			}
 		}
 	}
 
@@ -179,45 +202,16 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static final HashedKey NO_KEY = new HashedKey();
 
 	/**
-	 * Generates a random plaintext key of {@link Algorithm#getKeyBytes()} bytes in length.
-	 *
-	 * @see  #hash(com.aoindustries.security.HashedKey.Algorithm, byte[])
-	 */
-	public static byte[] generateKey(Algorithm algorithm) {
-		byte[] key = new byte[algorithm.getKeyBytes()];
-		Identifier.secureRandom.nextBytes(key);
-		return algorithm.validateKey(AssertionError::new, key);
-	}
-
-	/**
 	 * Generates a random plaintext key of {@link #HASH_BYTES} bytes in length.
 	 *
 	 * @see  #hash(byte[])
 	 *
 	 * @deprecated  This generates a key for {@linkplain Algorithm#SHA_256 the previous default algorithm},
-	 *              please use {@link #generateKey(com.aoindustries.security.HashedKey.Algorithm)} instead.
+	 *              please use {@link Algorithm#generateKey()} instead.
 	 */
 	@Deprecated
 	public static byte[] generateKey() {
-		return generateKey(Algorithm.SHA_256);
-	}
-
-	/**
-	 * Hashes the given key.
-	 *
-	 * @see  #generateKey(com.aoindustries.security.HashedKey.Algorithm)
-	 */
-	public static byte[] hash(Algorithm algorithm, byte[] key) {
-		try {
-			return algorithm.validateHash(
-				IllegalArgumentException::new,
-				algorithm.getMessageDigest().digest(
-					algorithm.validateKey(IllegalArgumentException::new, key)
-				)
-			);
-		} catch(NoSuchAlgorithmException e) {
-			throw new WrappedException(e);
-		}
+		return Algorithm.SHA_256.generateKey();
 	}
 
 	/**
@@ -226,11 +220,11 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @see  #generateKey()
 	 *
 	 * @deprecated  This generates a hash for {@linkplain Algorithm#SHA_256 the previous default algorithm},
-	 *              please use {@link #hash(com.aoindustries.security.HashedKey.Algorithm, byte[])} instead.
+	 *              please use {@link Algorithm#hash(byte[])} instead.
 	 */
 	@Deprecated
 	public static byte[] hash(byte[] key) {
-		return hash(Algorithm.SHA_256, key);
+		return Algorithm.SHA_256.hash(key);
 	}
 
 	/**
@@ -401,8 +395,16 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String... args) {
 		Algorithm algorithm = RECOMMENDED_ALGORITHM;
-		byte[] key = generateKey(algorithm);
-		System.out.println(ENCODER.encodeToString(key));
-		System.out.println(new HashedKey(algorithm, hash(algorithm, key)));
+		try {
+			byte[] key = algorithm.generateKey();
+			HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
+			System.out.println(ENCODER.encodeToString(key));
+			System.out.println(hashedKey);
+		} catch(Error | RuntimeException e) {
+			System.out.flush();
+			System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
+			System.err.flush();
+			System.exit(SysExits.EX_SOFTWARE);
+		}
 	}
 }
