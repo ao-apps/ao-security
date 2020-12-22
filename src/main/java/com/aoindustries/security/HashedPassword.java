@@ -79,7 +79,8 @@ public class HashedPassword implements Serializable {
 	public static final String NO_PASSWORD_VALUE = "*";
 
 	static final Base64.Decoder DECODER = Base64.getDecoder();
-	static final Base64.Encoder ENCODER = Base64.getEncoder().withoutPadding();
+	static final Base64.Encoder ENCODER = Base64.getEncoder();
+	static final Base64.Encoder ENCODER_NO_PADDING = ENCODER.withoutPadding();
 
 	/**
 	 * The number of milliseconds under which it will be suggested to recommend iterations from
@@ -207,6 +208,9 @@ public class HashedPassword implements Serializable {
 				}
 			}
 
+			/**
+			 * SHA-1 includes base-64 padding, to match historical usage.
+			 */
 			@Override
 			String toString(byte[] salt, int iterations, byte[] hash) {
 				return ENCODER.encodeToString(hash);
@@ -308,8 +312,8 @@ public class HashedPassword implements Serializable {
 		String toString(byte[] salt, int iterations, byte[] hash) {
 			return SEPARATOR + getAlgorithmName()
 				+ SEPARATOR + iterations
-				+ SEPARATOR + ENCODER.encodeToString(salt)
-				+ SEPARATOR + ENCODER.encodeToString(hash);
+				+ SEPARATOR + ENCODER_NO_PADDING.encodeToString(salt)
+				+ SEPARATOR + ENCODER_NO_PADDING.encodeToString(hash);
 		}
 
 		/**
