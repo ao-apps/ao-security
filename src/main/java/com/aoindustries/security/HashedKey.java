@@ -68,6 +68,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		SHA_224("SHA-224", 224 / 8),
 		SHA_256("SHA-256", 256 / 8),
 		SHA_384("SHA-384", 384 / 8),
+		SHA_512("SHA-512", 512 / 8),
 		SHA_512_224("SHA-512/224", 224 / 8),
 		SHA_512_256("SHA-512/256", 256 / 8),
 		SHA3_224("SHA3-224", 224 / 8),
@@ -179,7 +180,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * remain supported.
 	 */
 	// Java 9: SHA3_512 could become the default, although SHA2 might still be best for this application?
-	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512_256;
+	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512;
 
 	/**
 	 * Private dummy key array, used to keep constant time when no key available.
