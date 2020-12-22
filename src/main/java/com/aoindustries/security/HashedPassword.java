@@ -155,6 +155,14 @@ public class HashedPassword implements Serializable {
 			return saltBytes;
 		}
 
+		<E extends Throwable> byte[] validateSalt(Function<? super String,E> newThrowable, byte[] salt) throws E {
+			int expected = getSaltBytes();
+			if(salt.length != expected) {
+				throw newThrowable.apply("salt length mismatch: expected " + expected + ", got " + salt.length);
+			}
+			return salt;
+		}
+
 		/**
 		 * Gets the minimum number of iterations allowed or {@code 0} when algorithm is not iterated.
 		 */
@@ -215,6 +223,14 @@ public class HashedPassword implements Serializable {
 		 */
 		public int getHashBytes() {
 			return hashBytes;
+		}
+
+		<E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
+			int expected = getHashBytes();
+			if(hash.length != expected) {
+				throw newThrowable.apply("hash length mismatch: expected " + expected + ", got " + hash.length);
+			}
+			return hash;
 		}
 
 		/**
@@ -319,25 +335,21 @@ public class HashedPassword implements Serializable {
 	 * @see  Algorithm#getRecommendedIterations()
 	 */
 	public static byte[] hash(String password, Algorithm algorithm, byte[] salt, int iterations) {
-		if(salt.length != algorithm.getSaltBytes()) {
-			throw new IllegalArgumentException(
-				"Invalid salt length: expecting " + algorithm.getSaltBytes() + ", got " + salt.length
-			);
-		}
 		try {
 			char[] chars = password.toCharArray();
 			try {
 				// See https://crackstation.net/hashing-security.htm
-				PBEKeySpec spec = new PBEKeySpec(
-					chars,
-					salt,
-					algorithm.validateIterations(IllegalArgumentException::new, iterations),
-					algorithm.getHashBytes() * 8
+				return algorithm.validateHash(
+					AssertionError::new,
+					algorithm.getSecretKeyFactory().generateSecret(
+						new PBEKeySpec(
+							chars,
+							algorithm.validateSalt(IllegalArgumentException::new, salt),
+							algorithm.validateIterations(IllegalArgumentException::new, iterations),
+							algorithm.getHashBytes() * 8
+						)
+					).getEncoded()
 				);
-				SecretKeyFactory skf = algorithm.getSecretKeyFactory();
-				byte[] hash = skf.generateSecret(spec).getEncoded();
-				assert hash.length == algorithm.getHashBytes();
-				return hash;
 			} finally {
 				Arrays.fill(chars, (char)0);
 			}
@@ -413,18 +425,10 @@ public class HashedPassword implements Serializable {
 			if(hash != null) throw newThrowable.apply("hash must be null when algorithm is null");
 		} else {
 			if(salt == null) throw newThrowable.apply("salt required when have algorithm");
-			if(hash == null) throw newThrowable.apply("hash required when have algorithm");
-			if(salt.length != algorithm.getSaltBytes()) {
-				throw newThrowable.apply(
-					"salt length mismatch: expected " + algorithm.getSaltBytes() + ", got " + salt.length
-				);
-			}
-			if(hash.length != algorithm.getHashBytes()) {
-				throw newThrowable.apply(
-					"hash length mismatch: expected " + algorithm.getHashBytes() + ", got " + hash.length
-				);
-			}
+			algorithm.validateSalt(newThrowable, salt);
 			algorithm.validateIterations(newThrowable, iterations);
+			if(hash == null) throw newThrowable.apply("hash required when have algorithm");
+			algorithm.validateHash(newThrowable, hash);
 		}
 	}
 

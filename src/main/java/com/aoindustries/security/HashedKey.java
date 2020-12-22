@@ -116,11 +116,27 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			return keyBytes;
 		}
 
+		<E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
+			int expected = getKeyBytes();
+			if(key.length != expected) {
+				throw newThrowable.apply("key length mismatch: expected " + expected + ", got " + key.length);
+			}
+			return key;
+		}
+
 		/**
 		 * Gets the number of bytes required to store the generated hash.
 		 */
 		public int getHashBytes() {
 			return hashBytes;
+		}
+
+		<E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
+			int expected = getHashBytes();
+			if(hash.length != expected) {
+				throw newThrowable.apply("hash length mismatch: expected " + expected + ", got " + hash.length);
+			}
+			return hash;
 		}
 
 		/**
@@ -178,7 +194,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static byte[] generateKey(Algorithm algorithm) {
 		byte[] key = new byte[algorithm.getKeyBytes()];
 		Identifier.secureRandom.nextBytes(key);
-		return key;
+		return algorithm.validateKey(AssertionError::new, key);
 	}
 
 	/**
@@ -200,15 +216,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @see  #generateKey(com.aoindustries.security.HashedKey.Algorithm)
 	 */
 	public static byte[] hash(Algorithm algorithm, byte[] key) {
-		if(key.length != algorithm.getKeyBytes()) {
-			throw new IllegalArgumentException(
-				"Invalid key length: expecting " + algorithm.getKeyBytes() + ", got " + key.length
-			);
-		}
 		try {
-			byte[] hash = algorithm.getMessageDigest().digest(key);
-			assert hash.length == algorithm.getHashBytes();
-			return hash;
+			return algorithm.validateHash(
+				IllegalArgumentException::new,
+				algorithm.getMessageDigest().digest(
+					algorithm.validateKey(IllegalArgumentException::new, key)
+				)
+			);
 		} catch(NoSuchAlgorithmException e) {
 			throw new WrappedException(e);
 		}
@@ -266,11 +280,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			if(hash != null) throw newThrowable.apply("hash must be null when algorithm is null");
 		} else {
 			if(hash == null) throw newThrowable.apply("hash required when have algorithm");
-			if(hash.length != algorithm.getHashBytes()) {
-				throw newThrowable.apply(
-					"hash length mismatch: expected " + algorithm.getHashBytes() + ", got " + hash.length
-				);
-			}
+			algorithm.validateHash(newThrowable, hash);
 		}
 	}
 
