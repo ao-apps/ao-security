@@ -23,6 +23,7 @@
 package com.aoindustries.security;
 
 import com.aoindustries.exception.WrappedException;
+import com.aoindustries.io.IoUtils;
 import com.aoindustries.lang.SysExits;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -90,7 +91,68 @@ public class HashedPassword implements Serializable {
 	 */
 	// Note: These must be ordered by relative strength, from weakest to strongest for isRehashRecommended() to work
 	public enum Algorithm {
-		// TODO: Add old UnixCrypt here for backwards compatibility?  Could then remove other HashedPassword entirely.
+		/**
+		 * @deprecated  {@link UnixCrypt} should not be used for any cryptographic purpose, plus this is barely salted
+		 *              and not iterated so is subject to both dictionary and brute-force attacks.
+		 */
+		@Deprecated
+		CRYPT("crypt", 2, 0, 0, 0, 64 / 8) {
+			@Override
+			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
+				super.validateSalt(newThrowable, salt);
+				if((salt[0] & 0xf0) != 0) throw new IllegalArgumentException("Salt must be twelve bits only");
+				return salt;
+			}
+
+			/**
+			 * Clears the high-order four bits since the salt is only twelve bits.
+			 */
+			@Override
+			public byte[] generateSalt() {
+				byte[] salt = new byte[2];
+				Identifier.secureRandom.nextBytes(salt);
+				salt[0] &= 0x0f;
+				return validateSalt(AssertionError::new, salt);
+			}
+
+			public byte[] hash(String password, byte[] salt, int iterations) {
+				validateSalt(IllegalArgumentException::new, salt);
+				validateIterations(IllegalArgumentException::new, iterations);
+				byte[] hash = new byte[8];
+				long rsltblock = UnixCrypt.cryptImpl(
+					password,
+					((salt[0] << 8) & 0x0f00)
+					| (salt[1] & 0xff)
+				);
+				// System.out.println("rsltblock = " + rsltblock);
+				IoUtils.longToBuffer(
+					rsltblock,
+					hash
+				);
+				return validateHash(AssertionError::new, hash);
+			}
+
+			@Override
+			String toString(byte[] salt, int iterations, byte[] hash) {
+				return new String(new char[] {
+					// Salt
+					(char)UnixCrypt.ITOA64[  salt[1] & 0x3f],
+					(char)UnixCrypt.ITOA64[((salt[0] <<  2) & 0x3c) | ((salt[1] >>> 6) & 0x03)],
+					// Hash
+					(char)UnixCrypt.ITOA64[((hash[0] >>> 2) & 0x3f)],
+					(char)UnixCrypt.ITOA64[((hash[0] <<  4) & 0x30) | ((hash[1] >>> 4) & 0x0f)],
+					(char)UnixCrypt.ITOA64[((hash[1] <<  2) & 0x3c) | ((hash[2] >>> 6) & 0x03)],
+					(char)UnixCrypt.ITOA64[  hash[2] & 0x3f],
+					(char)UnixCrypt.ITOA64[((hash[3] >>> 2) & 0x3f)],
+					(char)UnixCrypt.ITOA64[((hash[3] <<  4) & 0x30) | ((hash[4] >>> 4) & 0x0f)],
+					(char)UnixCrypt.ITOA64[((hash[4] <<  2) & 0x3c) | ((hash[5] >>> 6) & 0x03)],
+					(char)UnixCrypt.ITOA64[  hash[5] & 0x3f],
+					(char)UnixCrypt.ITOA64[((hash[6] >>> 2) & 0x3f)],
+					(char)UnixCrypt.ITOA64[((hash[6] <<  4) & 0x30) | ((hash[7] >>> 4) & 0x0f)],
+					(char)UnixCrypt.ITOA64[((hash[7] <<  2) & 0x3c)]
+				});
+			}
+		},
 		/**
 		 * @deprecated  MD5 should not be used for any cryptographic purpose, plus this is neither salted nor
 		 *              iterated so is subject to both dictionary and brute-force attacks.
@@ -110,6 +172,11 @@ public class HashedPassword implements Serializable {
 				} catch(NoSuchAlgorithmException e) {
 					throw new WrappedException(e);
 				}
+			}
+
+			@Override
+			String toString(byte[] salt, int iterations, byte[] hash) {
+				return ENCODER.encodeToString(hash);
 			}
 		},
 		/**
@@ -131,6 +198,11 @@ public class HashedPassword implements Serializable {
 				} catch(NoSuchAlgorithmException e) {
 					throw new WrappedException(e);
 				}
+			}
+
+			@Override
+			String toString(byte[] salt, int iterations, byte[] hash) {
+				return ENCODER.encodeToString(hash);
 			}
 		},
 		/**
@@ -212,6 +284,16 @@ public class HashedPassword implements Serializable {
 				Identifier.secureRandom.nextBytes(salt);
 			}
 			return validateSalt(AssertionError::new, salt);
+		}
+
+		/**
+		 * Gets the toString representation for this algorithm.
+		 */
+		String toString(byte[] salt, int iterations, byte[] hash) {
+			return SEPARATOR + getAlgorithmName()
+				+ SEPARATOR + ENCODER.encodeToString(salt)
+				+ SEPARATOR + iterations
+				+ SEPARATOR + ENCODER.encodeToString(hash);
 		}
 
 		/**
@@ -449,6 +531,37 @@ public class HashedPassword implements Serializable {
 				Integer.parseInt(hashedPassword.substring(pos2 + 1, pos3)),
 				hash
 			);
+		} else if(hashedPassword.length() == 13) {
+			// Salt
+			int salt =
+				  ((UnixCrypt.A64TOI[hashedPassword.charAt( 1)] & 0x3f) << 6)
+				|  (UnixCrypt.A64TOI[hashedPassword.charAt( 0)] & 0x3f);
+			long rsltblock =
+				  ((UnixCrypt.A64TOI[hashedPassword.charAt( 2)] & 0x3fL) << 58)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 3)] & 0x3fL) << 52)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 4)] & 0x3fL) << 46)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 5)] & 0x3fL) << 40)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 6)] & 0x3fL) << 34)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 7)] & 0x3fL) << 28)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 8)] & 0x3fL) << 22)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 9)] & 0x3fL) << 16)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt(10)] & 0x3fL) << 10)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt(11)] & 0x3fL) <<  4)
+				| ((UnixCrypt.A64TOI[hashedPassword.charAt(12)] & 0x3cL) >>  2);
+			// System.out.println("rsltblock = " + rsltblock);
+			byte[] hash = new byte[8];
+			IoUtils.longToBuffer(rsltblock, hash);
+			HashedPassword result = new HashedPassword(
+				Algorithm.CRYPT,
+				new byte[] {
+					(byte)((salt >>> 8) & 0x0f),
+					(byte)salt
+				},
+				0,
+				hash
+			);
+			assert hashedPassword.equals(result.toString());
+			return result;
 		} else {
 			byte[] hash = DECODER.decode(hashedPassword);
 			int hashlen = hash.length;
@@ -616,19 +729,7 @@ public class HashedPassword implements Serializable {
 			return NO_PASSWORD_VALUE;
 		} else {
 			assert iterations >= 0;
-			// These algorithms short-cut to be base-64 of hash only
-			if(
-				algorithm == Algorithm.MD5
-				|| algorithm == Algorithm.SHA_1
-			) {
-				return ENCODER.encodeToString(hash);
-			} else {
-				// All others use separator and explicitely list the algorithm
-				return SEPARATOR + algorithm.getAlgorithmName()
-					+ SEPARATOR + ENCODER.encodeToString(salt)
-					+ SEPARATOR + iterations
-					+ SEPARATOR + ENCODER.encodeToString(hash);
-			}
+			return algorithm.toString(salt, iterations, hash);
 		}
 	}
 
@@ -766,6 +867,8 @@ public class HashedPassword implements Serializable {
 											System.err.flush();
 										}
 									}
+									assert hashedPassword.matches(password);
+									assert valueOf(hashedPassword.toString()).matches(password);
 								} catch(Error | RuntimeException e) {
 									hasFailed[0] = true;
 									if(output) {
@@ -782,14 +885,15 @@ public class HashedPassword implements Serializable {
 						try {
 							int recommendedIterations = algorithm.getRecommendedIterations();
 							byte[] salt = algorithm.generateSalt();
-							System.out.println(
-								new HashedPassword(
-									password,
-									algorithm,
-									salt,
-									recommendedIterations
-								)
+							HashedPassword hashedPassword = new HashedPassword(
+								password,
+								algorithm,
+								salt,
+								recommendedIterations
 							);
+							System.out.println(hashedPassword);
+							assert hashedPassword.matches(password);
+							assert valueOf(hashedPassword.toString()).matches(password);
 						} catch(Error | RuntimeException e) {
 							hasFailed[0] = true;
 							System.out.flush();
