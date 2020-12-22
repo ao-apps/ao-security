@@ -62,8 +62,15 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @see MessageDigest
 	 */
 	public enum Algorithm {
+		/**
+		 * @deprecated  MD5 should not be used for any cryptographic purpose.
+		 */
 		@Deprecated
 		MD5("MD5", 128 / 8),
+		/**
+		 * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
+		 */
+		@Deprecated
 		SHA_1("SHA-1", 160 / 8),
 		SHA_224("SHA-224", 224 / 8),
 		SHA_256("SHA-256", 256 / 8),
@@ -157,7 +164,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		public byte[] hash(byte[] key) {
 			try {
 				return validateHash(
-					IllegalArgumentException::new,
+					AssertionError::new,
 					MessageDigest.getInstance(getAlgorithmName()).digest(
 						validateKey(IllegalArgumentException::new, key)
 					)
@@ -241,10 +248,10 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			return null;
 		} else if(NO_KEY_VALUE.equals(hashedKey)) {
 			return NO_KEY;
-		} else {
-			int pos = hashedKey.indexOf(SEPARATOR);
-			if(pos == -1) throw new IllegalArgumentException("Separator (" + SEPARATOR + ") not found");
-			String algorithmName = hashedKey.substring(0, pos);
+		} else if(hashedKey.length() > 0 && hashedKey.charAt(0) == SEPARATOR) {
+			int pos = hashedKey.indexOf(SEPARATOR, 1);
+			if(pos == -1) throw new IllegalArgumentException("Second separator (" + SEPARATOR + ") not found");
+			String algorithmName = hashedKey.substring(1, pos);
 			Algorithm algorithm = null;
 			// Search backwards, since higher strength algorithms will be used more
 			for(int i = Algorithm.values.length - 1; i >= 0; i--) {
@@ -257,6 +264,24 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
 			byte[] hash = DECODER.decode(hashedKey.substring(pos + 1));
 			return new HashedKey(algorithm, hash);
+		} else {
+			byte[] hash = DECODER.decode(hashedKey);
+			int hashlen = hash.length;
+			if(hashlen == Algorithm.MD5.getHashBytes()) {
+				return new HashedKey(Algorithm.MD5, hash);
+			} else if(hashlen == Algorithm.SHA_1.getHashBytes()) {
+				return new HashedKey(Algorithm.SHA_1, hash);
+			} else if(hashlen == Algorithm.SHA_224.getHashBytes()) {
+				return new HashedKey(Algorithm.SHA_224, hash);
+			} else if(hashlen == Algorithm.SHA_256.getHashBytes()) {
+				return new HashedKey(Algorithm.SHA_256, hash);
+			} else if(hashlen == Algorithm.SHA_384.getHashBytes()) {
+				return new HashedKey(Algorithm.SHA_384, hash);
+			} else if(hashlen == Algorithm.SHA_512.getHashBytes()) {
+				return new HashedKey(Algorithm.SHA_512, hash);
+			} else {
+				throw new IllegalArgumentException("Unable to guess algorithm by hash length: " + hashlen);
+			}
 		}
 	}
 
@@ -332,8 +357,21 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			assert hash == null;
 			return NO_KEY_VALUE;
 		} else {
-			return algorithm.getAlgorithmName()
-				+ SEPARATOR + ENCODER.encodeToString(hash);
+			// These algorithms short-cut to be base-64 of hash only
+			if(
+				algorithm == Algorithm.MD5
+				|| algorithm == Algorithm.SHA_1
+				|| algorithm == Algorithm.SHA_224
+				|| algorithm == Algorithm.SHA_256
+				|| algorithm == Algorithm.SHA_384
+				|| algorithm == Algorithm.SHA_512
+			) {
+				return ENCODER.encodeToString(hash);
+			} else {
+				// All others use separator and explicitely list the algorithm
+				return SEPARATOR + algorithm.getAlgorithmName()
+					+ SEPARATOR + ENCODER.encodeToString(hash);
+			}
 		}
 	}
 
@@ -441,7 +479,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 								System.out.println(ENCODER.encodeToString(key));
 								System.out.println(hashedKey);
 								long nanos = endNanos - startNanos;
-								System.out.println("Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
+								System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
 								System.out.println();
 							}
 						} catch(Error | RuntimeException e) {
