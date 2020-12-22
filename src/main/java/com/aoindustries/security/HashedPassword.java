@@ -115,6 +115,7 @@ public class HashedPassword implements Serializable {
 				return validateSalt(AssertionError::new, salt);
 			}
 
+			@Override
 			public byte[] hash(String password, byte[] salt, int iterations) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
@@ -159,6 +160,7 @@ public class HashedPassword implements Serializable {
 		 */
 		@Deprecated
 		MD5("MD5", 0, 0, 0, 0, 128 / 8) {
+			@Override
 			public byte[] hash(String password, byte[] salt, int iterations) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
@@ -185,6 +187,7 @@ public class HashedPassword implements Serializable {
 		 */
 		@Deprecated
 		SHA_1("SHA-1", 0, 0, 0, 0, 160 / 8) {
+			@Override
 			public byte[] hash(String password, byte[] salt, int iterations) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
@@ -280,12 +283,12 @@ public class HashedPassword implements Serializable {
 		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)
 		 */
 		public byte[] generateSalt() {
-			int saltBytes = getSaltBytes();
+			int _saltBytes = getSaltBytes();
 			byte[] salt;
-			if(saltBytes == 0) {
+			if(_saltBytes == 0) {
 				salt = EMPTY_BYTE_ARRAY;
 			} else {
-				salt = new byte[saltBytes];
+				salt = new byte[_saltBytes];
 				Identifier.secureRandom.nextBytes(salt);
 			}
 			return validateSalt(AssertionError::new, salt);
@@ -341,18 +344,18 @@ public class HashedPassword implements Serializable {
 		}
 
 		<E extends Throwable> int validateIterations(Function<? super String,E> newThrowable, int iterations) throws E {
-			int minimumIterations = getMinimumIterations();
-			if(iterations < minimumIterations) {
+			int _minimumIterations = getMinimumIterations();
+			if(iterations < _minimumIterations) {
 				throw newThrowable.apply(
 					getAlgorithmName() + ": iterations < minimumIterations: "
-					+ iterations + " < " + minimumIterations
+					+ iterations + " < " + _minimumIterations
 				);
 			}
-			int maximumIterations = getMaximumIterations();
-			if(iterations > maximumIterations) {
+			int _maximumIterations = getMaximumIterations();
+			if(iterations > _maximumIterations) {
 				throw newThrowable.apply(
 					getAlgorithmName() + ": iterations > maximumIterations: "
-					+ iterations + " < " + maximumIterations
+					+ iterations + " < " + _maximumIterations
 				);
 			}
 			return iterations;
@@ -538,9 +541,11 @@ public class HashedPassword implements Serializable {
 			);
 		} else if(hashedPassword.length() == 13) {
 			// Salt
+			@SuppressWarnings("deprecation")
 			int salt =
 				  ((UnixCrypt.A64TOI[hashedPassword.charAt( 1)] & 0x3f) << 6)
 				|  (UnixCrypt.A64TOI[hashedPassword.charAt( 0)] & 0x3f);
+			@SuppressWarnings("deprecation")
 			long rsltblock =
 				  ((UnixCrypt.A64TOI[hashedPassword.charAt( 2)] & 0x3fL) << 58)
 				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 3)] & 0x3fL) << 52)
