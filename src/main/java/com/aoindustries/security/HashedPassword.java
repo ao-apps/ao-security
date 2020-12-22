@@ -51,42 +51,26 @@ import javax.crypto.spec.PBEKeySpec;
 public class HashedPassword implements Serializable {
 
 	/**
-	 * Value selected to be URL-safe and distinct from the values used by {@link Base64#getUrlEncoder()}.
+	 * Value selected to be distinct from the values used by {@link Base64#getEncoder()},
+	 * and is similar to the value used in <code>/etc/shadow</code>
 	 */
-	static final char SEPARATOR = '.';
+	static final char SEPARATOR = '$';
 
 	/**
 	 * Indicates that no password is set.
+	 * <p>
+	 * This matches a value often used in <code>/etc/shadow</code> when the user has no password set
+	 * (although <code>!</code> is also commonly used for this purpose).
+	 * </p>
+	 * <p>
+	 * This is also used as the value used for
+	 * <a href="https://aoindustries.com/aoserv/client/apidocs/com/aoindustries/aoserv/client/schema/AoservProtocol.html#FILTERED">filtered data in the AOServ Protocol</a>.
+	 * </p>
 	 */
-	public static final String NO_PASSWORD_VALUE = Character.valueOf(SEPARATOR).toString();
-	static {
-		assert isUrlSafe(NO_PASSWORD_VALUE);
-	}
+	public static final String NO_PASSWORD_VALUE = "*";
 
-	/**
-	 * Checks that a string only contains the simplest of URL-safe characters.
-	 * See <a href="https://www.ietf.org/rfc/rfc3986.html#section-2.3">2.3.  Unreserved Characters</a>.
-	 */
-	static boolean isUrlSafe(String value) {
-		for(int i = 0, len = value.length(); i < len; i++) {
-			char ch = value.charAt(i);
-			if(
-				(ch < '0' || ch > '9')
-				&& (ch < 'A' || ch > 'Z')
-				&& (ch < 'a' || ch > 'z')
-				&& ch != '-'
-				&& ch != '.'
-				&& ch != '_'
-				&& ch != '~'
-			) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	static final Base64.Decoder DECODER = Base64.getUrlDecoder();
-	static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
+	static final Base64.Decoder DECODER = Base64.getDecoder();
+	static final Base64.Encoder ENCODER = Base64.getEncoder().withoutPadding();
 
 	/**
 	 * The number of milliseconds under which it will be suggested to recommend iterations from
@@ -124,7 +108,6 @@ public class HashedPassword implements Serializable {
 		private final int hashBytes;
 
 		private Algorithm(String algorithmName, int saltBytes, int recommendedIterations, int hashBytes) {
-			assert isUrlSafe(algorithmName);
 			assert algorithmName.indexOf(SEPARATOR) == -1;
 			this.algorithmName = algorithmName;
 			this.saltBytes = saltBytes;
@@ -297,12 +280,9 @@ public class HashedPassword implements Serializable {
 	public static final int RECOMMENDED_ITERATIONS = Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations();
 
 	/**
-	 * A constant that may be used in places where no password is set.
+	 * A singleton that may be used in places where no password is set.
 	 */
 	public static final HashedPassword NO_PASSWORD = new HashedPassword();
-	static {
-		assert isUrlSafe(NO_PASSWORD.toString());
-	}
 
 	/**
 	 * Generates a random salt of {@link Algorithm#getSaltBytes()} bytes in length.
@@ -496,29 +476,26 @@ public class HashedPassword implements Serializable {
 	}
 
 	/**
-	 * Gets the string representation of the hashed password, which will only contain
-	 * <a href="https://www.ietf.org/rfc/rfc3986.html#section-2.3">the simplest of URL-safe characters</a>.
+	 * Gets the string representation of the hashed password.  The format is subject to change
+	 * over time, but will maintain backward compatibility.
 	 * <p>
 	 * Please see {@link #valueOf(java.lang.String)} for the inverse operation.
 	 * </p>
 	 */
 	@Override
 	public String toString() {
-		String str;
 		if(algorithm == null) {
 			assert salt == null;
 			assert iterations == 0;
 			assert hash == null;
-			str = NO_PASSWORD_VALUE;
+			return NO_PASSWORD_VALUE;
 		} else {
 			assert iterations >= 0;
-			str = algorithm.getAlgorithmName()
-				+ SEPARATOR + ENCODER.withoutPadding().encodeToString(salt)
+			return algorithm.getAlgorithmName()
+				+ SEPARATOR + ENCODER.encodeToString(salt)
 				+ SEPARATOR + iterations
-				+ SEPARATOR + ENCODER.withoutPadding().encodeToString(hash);
+				+ SEPARATOR + ENCODER.encodeToString(hash);
 		}
-		assert isUrlSafe(str);
-		return str;
 	}
 
 	/**

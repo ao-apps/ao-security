@@ -27,7 +27,6 @@ import com.aoindustries.io.IoUtils;
 import static com.aoindustries.security.HashedPassword.DECODER;
 import static com.aoindustries.security.HashedPassword.ENCODER;
 import static com.aoindustries.security.HashedPassword.SEPARATOR;
-import static com.aoindustries.security.HashedPassword.isUrlSafe;
 import static com.aoindustries.security.HashedPassword.slowEquals;
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -54,9 +53,6 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * Indicates that no key is set.
 	 */
 	public static final String NO_KEY_VALUE = HashedPassword.NO_PASSWORD_VALUE;
-	static {
-		assert isUrlSafe(NO_KEY_VALUE);
-	}
 
 	/**
 	 * See <a href="https://docs.oracle.com/en/java/javase/12/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest Algorithms</a>
@@ -86,7 +82,6 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		private final int hashBytes;
 
 		private Algorithm(String algorithmName, int keyBytes, int hashBytes) {
-			assert isUrlSafe(algorithmName);
 			assert algorithmName.indexOf(SEPARATOR) == -1;
 			this.algorithmName = algorithmName;
 			this.keyBytes = keyBytes;
@@ -179,12 +174,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static final int HASH_BYTES = Algorithm.SHA_256.getHashBytes();
 
 	/**
-	 * A constant that may be used in places where no key is set.
+	 * A singleton that may be used in places where no key is set.
 	 */
 	public static final HashedKey NO_KEY = new HashedKey();
-	static {
-		assert isUrlSafe(NO_KEY.toString());
-	}
 
 	/**
 	 * Generates a random plaintext key of {@link Algorithm#getKeyBytes()} bytes in length.
@@ -330,24 +322,21 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	}
 
 	/**
-	 * Gets the string representation of the hashed key, which will only contain
-	 * <a href="https://www.ietf.org/rfc/rfc3986.html#section-2.3">the simplest of URL-safe characters</a>.
+	 * Gets the string representation of the hashed key  The format is subject to change
+	 * over time, but will maintain backward compatibility.
 	 * <p>
 	 * Please see {@link #valueOf(java.lang.String)} for the inverse operation.
 	 * </p>
 	 */
 	@Override
 	public String toString() {
-		String str;
 		if(algorithm == null) {
 			assert hash == null;
-			str = NO_KEY_VALUE;
+			return NO_KEY_VALUE;
 		} else {
-			str = algorithm.getAlgorithmName()
+			return algorithm.getAlgorithmName()
 				+ SEPARATOR + ENCODER.encodeToString(hash);
 		}
-		assert isUrlSafe(str);
-		return str;
 	}
 
 	/**
