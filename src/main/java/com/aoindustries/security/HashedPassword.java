@@ -296,8 +296,8 @@ public class HashedPassword implements Serializable {
 		 */
 		String toString(byte[] salt, int iterations, byte[] hash) {
 			return SEPARATOR + getAlgorithmName()
-				+ SEPARATOR + ENCODER.encodeToString(salt)
 				+ SEPARATOR + iterations
+				+ SEPARATOR + ENCODER.encodeToString(salt)
 				+ SEPARATOR + ENCODER.encodeToString(hash);
 		}
 
@@ -526,14 +526,14 @@ public class HashedPassword implements Serializable {
 			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
 			int pos2 = hashedPassword.indexOf(SEPARATOR, pos1 + 1);
 			if(pos2 == -1) throw new IllegalArgumentException("Third separator (" + SEPARATOR + ") not found");
-			byte[] salt = DECODER.decode(hashedPassword.substring(pos1 + 1, pos2));
 			int pos3 = hashedPassword.indexOf(SEPARATOR, pos2 + 1);
 			if(pos3 == -1) throw new IllegalArgumentException("Fourth separator (" + SEPARATOR + ") not found");
+			byte[] salt = DECODER.decode(hashedPassword.substring(pos2 + 1, pos3));
 			byte[] hash = DECODER.decode(hashedPassword.substring(pos3 + 1));
 			return new HashedPassword(
 				algorithm,
 				salt,
-				Integer.parseInt(hashedPassword.substring(pos2 + 1, pos3)),
+				Integer.parseInt(hashedPassword.substring(pos1 + 1, pos2)),
 				hash
 			);
 		} else if(hashedPassword.length() == 13) {
