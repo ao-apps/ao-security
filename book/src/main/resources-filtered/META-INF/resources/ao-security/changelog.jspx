@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-22T03:34:55-06:00"
+		dateModified="2020-12-22T08:26:11-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -57,7 +57,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						<ol>
 							<li>New constant <code>NO_KEY</code> that may be used when there is no key.</li>
 							<li>
-								Now supports multiple algorithms, with the recommended algorithm being "SHA-512".
+								Now supports multiple algorithms, with the recommended algorithm being "SHA-512/256".
 								Previously, all keys were "SHA-256".
 							</li>
 							<li>Length-constant time equality checks</li>

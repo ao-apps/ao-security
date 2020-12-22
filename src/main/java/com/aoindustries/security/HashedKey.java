@@ -190,7 +190,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * remain supported.
 	 */
 	// Java 9: SHA3_512 could become the default, although SHA2 might still be best for this application?
-	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512;
+	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512_256;
 
 	/**
 	 * Private dummy key array, used to keep constant time when no key available.
