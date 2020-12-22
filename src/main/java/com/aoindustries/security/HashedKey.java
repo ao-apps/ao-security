@@ -95,6 +95,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		private Algorithm(String algorithmName, int keyBytes, int hashBytes) {
 			assert algorithmName.indexOf(SEPARATOR) == -1;
 			this.algorithmName = algorithmName;
+			// TODO: Half hashBytes?  https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf
+			//       4.1 Hash Function Properties
+			//       "The expected collision-resistance strength of a hash function is half the length of the hash valueproduced by that hash function"
 			this.keyBytes = keyBytes;
 			this.hashBytes = hashBytes;
 		}
