@@ -561,6 +561,30 @@ public class HashedPassword implements Serializable {
 		}
 	}
 
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * @return  No defensive copy
+	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField")
+	public byte[] getSalt() {
+		return salt;
+	}
+
+	public int getIterations() {
+		return iterations;
+	}
+
+	/**
+	 * @return  No defensive copy
+	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField")
+	public byte[] getHash() {
+		return hash;
+	}
+
 	/**
 	 * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
 	 * <p>

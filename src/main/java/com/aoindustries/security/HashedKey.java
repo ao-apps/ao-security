@@ -392,6 +392,18 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 	}
 
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * @return  No defensive copy
+	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField")
+	public byte[] getHash() {
+		return hash;
+	}
+
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String... args) {
 		Algorithm algorithm = RECOMMENDED_ALGORITHM;
