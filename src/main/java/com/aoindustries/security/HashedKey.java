@@ -73,7 +73,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		SHA3_224("SHA3-224", 224 / 8),
 		SHA3_256("SHA3-256", 256 / 8),
 		SHA3_384("SHA3-384", 384 / 8),
-		SHA3_512("SHA3-512", 512 / 8); // Java 9: This could become the default, although SHA2 might still be best for this application
+		SHA3_512("SHA3-512", 512 / 8);
 
 		/**
 		 * Avoid repetitive allocation.
@@ -178,6 +178,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * The algorithm recommended for use with new keys.  This may change at any time, but previous algorithms will
 	 * remain supported.
 	 */
+	// Java 9: SHA3_512 could become the default, although SHA2 might still be best for this application?
 	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512_256;
 
 	/**
