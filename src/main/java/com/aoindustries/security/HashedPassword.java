@@ -212,11 +212,16 @@ public class HashedPassword implements Serializable {
 		 *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
 		 */
 		@Deprecated
-		PBKDF2WITHHMACSHA1  ("PBKDF2WithHmacSHA1",   256 / 8, 1, Integer.MAX_VALUE, 40000, 256 / 8), // Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
-		PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 224 / 8, 1, Integer.MAX_VALUE, 50000, 224 / 8),
-		PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 256 / 8, 1, Integer.MAX_VALUE, 50000, 256 / 8),
-		PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 384 / 8, 1, Integer.MAX_VALUE, 37000, 384 / 8),
-		PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 512 / 8, 1, Integer.MAX_VALUE, 37000, 512 / 8);
+		PBKDF2WITHHMACSHA1  (
+			"PBKDF2WithHmacSHA1",
+			256 / 8, // Maybe this could/should be 128 bits like the others, but we used 256 bits in the previous versions
+			1, Integer.MAX_VALUE, 40000,
+			256 / 8 // Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
+		), 
+		PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / 8, 1, Integer.MAX_VALUE, 50000, 224 / 8),
+		PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 128 / 8, 1, Integer.MAX_VALUE, 50000, 256 / 8),
+		PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 128 / 8, 1, Integer.MAX_VALUE, 37000, 384 / 8),
+		PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 128 / 8, 1, Integer.MAX_VALUE, 37000, 512 / 8);
 
 		/**
 		 * Avoid repetitive allocation.
