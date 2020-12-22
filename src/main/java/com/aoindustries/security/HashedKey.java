@@ -24,6 +24,7 @@ package com.aoindustries.security;
 
 import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.IoUtils;
+import com.aoindustries.lang.Strings;
 import com.aoindustries.lang.SysExits;
 import static com.aoindustries.security.HashedPassword.DECODER;
 import static com.aoindustries.security.HashedPassword.ENCODER;
@@ -279,12 +280,14 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
 			byte[] hash = DECODER.decode(hashedKey.substring(pos + 1));
 			return new HashedKey(algorithm, hash);
+		} else if(hashedKey.length() == (Algorithm.MD5.getHashBytes() * 2)) {
+			byte[] hash = Strings.convertByteArrayFromHex(hashedKey.toCharArray());
+			assert hash.length == Algorithm.MD5.getHashBytes();
+			return new HashedKey(Algorithm.MD5, hash);
 		} else {
 			byte[] hash = DECODER.decode(hashedKey);
 			int hashlen = hash.length;
-			if(hashlen == Algorithm.MD5.getHashBytes()) {
-				return new HashedKey(Algorithm.MD5, hash);
-			} else if(hashlen == Algorithm.SHA_1.getHashBytes()) {
+			if(hashlen == Algorithm.SHA_1.getHashBytes()) {
 				return new HashedKey(Algorithm.SHA_1, hash);
 			} else if(hashlen == Algorithm.SHA_224.getHashBytes()) {
 				return new HashedKey(Algorithm.SHA_224, hash);
@@ -372,18 +375,22 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			assert hash == null;
 			return NO_KEY_VALUE;
 		} else {
+			// MD5 is represented as hex characters of hash only
+			if(algorithm == Algorithm.MD5) {
+				return Strings.convertToHex(hash);
+			}
 			// These algorithms short-cut to be base-64 of hash only
-			if(
-				algorithm == Algorithm.MD5
-				|| algorithm == Algorithm.SHA_1
+			else if(
+				algorithm == Algorithm.SHA_1
 				|| algorithm == Algorithm.SHA_224
 				|| algorithm == Algorithm.SHA_256
 				|| algorithm == Algorithm.SHA_384
 				|| algorithm == Algorithm.SHA_512
 			) {
 				return ENCODER.encodeToString(hash);
-			} else {
-				// All others use separator and explicitely list the algorithm
+			}
+			// All others use separator and explicitely list the algorithm
+			else {
 				return SEPARATOR + algorithm.getAlgorithmName()
 					+ SEPARATOR + ENCODER.encodeToString(hash);
 			}

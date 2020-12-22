@@ -24,6 +24,7 @@ package com.aoindustries.security;
 
 import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.IoUtils;
+import com.aoindustries.lang.Strings;
 import com.aoindustries.lang.SysExits;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -176,9 +177,12 @@ public class HashedPassword implements Serializable {
 				}
 			}
 
+			/**
+			 * MD5 is represented as hex characters of hash only.
+			 */
 			@Override
 			String toString(byte[] salt, int iterations, byte[] hash) {
-				return ENCODER.encodeToString(hash);
+				return Strings.convertToHex(hash);
 			}
 		},
 		/**
@@ -576,12 +580,14 @@ public class HashedPassword implements Serializable {
 			);
 			assert hashedPassword.equals(result.toString());
 			return result;
+		} else if(hashedPassword.length() == (Algorithm.MD5.getHashBytes() * 2)) {
+			byte[] hash = Strings.convertByteArrayFromHex(hashedPassword.toCharArray());
+			assert hash.length == Algorithm.MD5.getHashBytes();
+			return new HashedPassword(Algorithm.MD5, EMPTY_BYTE_ARRAY, 0, hash);
 		} else {
 			byte[] hash = DECODER.decode(hashedPassword);
 			int hashlen = hash.length;
-			if(hashlen == Algorithm.MD5.getHashBytes()) {
-				return new HashedPassword(Algorithm.MD5, EMPTY_BYTE_ARRAY, 0, hash);
-			} else if(hashlen == Algorithm.SHA_1.getHashBytes()) {
+			if(hashlen == Algorithm.SHA_1.getHashBytes()) {
 				return new HashedPassword(Algorithm.SHA_1, EMPTY_BYTE_ARRAY, 0, hash);
 			} else {
 				throw new IllegalArgumentException("Unable to guess algorithm by hash length: " + hashlen);
