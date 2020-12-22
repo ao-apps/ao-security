@@ -678,19 +678,20 @@ public class HashedPassword implements Serializable {
 							for(Algorithm algorithm : Algorithm.values) {
 								try {
 									int recommendedIterations = algorithm.getRecommendedIterations();
-									long startNanos, endNanos;
 									byte[] salt = algorithm.generateSalt();
-									startNanos = output ? System.nanoTime() : 0;
+									long startNanos = output ? System.nanoTime() : 0;
 									HashedPassword hashedPassword = new HashedPassword(password, algorithm, salt, recommendedIterations);
-									endNanos = output ? System.nanoTime() : 0;
+									long endNanos = output ? System.nanoTime() : 0;
 									if(output) {
 										System.out.println(hashedPassword);
 										long nanos = endNanos - startNanos;
 										System.out.println("Completed in " + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms");
+										System.out.println();
 										long millis = nanos / 1000000;
 										if(millis < SUGGEST_INCREASE_ITERATIONS_MILLIS) {
 											System.out.flush();
-											System.err.println("Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of recommendedIterations (currently " + recommendedIterations + ")");
+											System.err.println(algorithm.getAlgorithmName() + ": Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of recommendedIterations (currently " + recommendedIterations + ")");
+											System.err.println();
 											System.err.flush();
 										}
 									}

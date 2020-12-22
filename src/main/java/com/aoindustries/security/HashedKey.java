@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -406,17 +407,65 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String... args) {
-		Algorithm algorithm = RECOMMENDED_ALGORITHM;
-		try {
-			byte[] key = algorithm.generateKey();
-			HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
-			System.out.println(ENCODER.encodeToString(key));
-			System.out.println(hashedKey);
-		} catch(Error | RuntimeException e) {
-			System.out.flush();
-			System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
-			System.err.flush();
-			System.exit(SysExits.EX_SOFTWARE);
+		boolean benchmark = false;
+		boolean help = false;
+		for(String arg : args) {
+			if("-b".equals(arg) || "--benchamrk".equals(arg)) {
+				benchmark = true;
+			} else if("-h".equals(arg) || "--help".equals(arg)) {
+				help = true;
+			} else {
+				System.err.println("Unrecognized argument: " + arg);
+				help = true;
+			}
+		}
+		if(help) {
+			System.err.println("usage: " + HashedKey.class.getName() + " [-b|--benchmark] [-h|--help]");
+			System.exit(SysExits.EX_USAGE);
+		} else {
+			boolean hasFailed = false;
+			if(benchmark) {
+				// Do ten times, but only report the last pass
+				for(int i = 10 ; i > 0; i--) {
+					boolean output = (i == 1);
+					for(Algorithm algorithm : Algorithm.values) {
+						try {
+							byte[] key = algorithm.generateKey();
+							long startNanos = output ? System.nanoTime() : 0;
+							HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
+							long endNanos = output ? System.nanoTime() : 0;
+							if(output) {
+								System.out.println(ENCODER.encodeToString(key));
+								System.out.println(hashedKey);
+								long nanos = endNanos - startNanos;
+								System.out.println("Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
+								System.out.println();
+							}
+						} catch(Error | RuntimeException e) {
+							hasFailed = true;
+							if(output) {
+								System.out.flush();
+								System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
+								System.err.flush();
+							}
+						}
+					}
+				}
+			} else {
+				Algorithm algorithm = RECOMMENDED_ALGORITHM;
+				try {
+					byte[] key = algorithm.generateKey();
+					HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
+					System.out.println(ENCODER.encodeToString(key));
+					System.out.println(hashedKey);
+				} catch(Error | RuntimeException e) {
+					hasFailed = true;
+					System.out.flush();
+					System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
+					System.err.flush();
+				}
+			}
+			if(hasFailed) System.exit(SysExits.EX_SOFTWARE);
 		}
 	}
 }

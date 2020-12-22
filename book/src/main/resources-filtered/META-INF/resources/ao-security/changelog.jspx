@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-22T02:30:44-06:00"
+		dateModified="2020-12-22T03:12:16-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -71,7 +71,10 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 								</p>
 							</li>
 							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
-							<li>New main method that can be used to generate a key and hash pair.</li>
+							<li>
+								New main method that can be used to generate a key and hash pair.  Includes a <code>-b</code>
+								option for benchmark mode, which runs all algorithms and gives timings.
+							</li>
 						</ol>
 					</li>
 					<li><code>HashedPassword</code> improvements:
@@ -101,7 +104,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
 							<li>
 								New main method that can be used to hash passwords.  Includes a <code>-b</code> option
-								for benchmark mode, which runs all algorithms, gives timing, and will recommend increasing
+								for benchmark mode, which runs all algorithms, gives timings, and will recommend increasing
 								<code>recommendedIterations</code> when a hash is performed in under 100 ms.
 							</li>
 							<li>Convenience constructors that perform all the steps of generating salt and hash.</li>
