@@ -154,9 +154,9 @@ public class HashedPassword implements Serializable {
 		/**
 		 * Generates a random salt of {@link #getSaltBytes()} bytes in length.
 		 *
-		 * @see  #HashedPassword(java.lang.String)
-		 * @see  #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
-		 * @see  #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)
+		 * @see  HashedPassword#HashedPassword(java.lang.String)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)
 		 */
 		public byte[] generateSalt() {
 			byte[] salt = new byte[getSaltBytes()];
@@ -196,8 +196,8 @@ public class HashedPassword implements Serializable {
 		 * </p>
 		 *
 		 * @see  #hash(java.lang.String, byte[], int)
-		 * @see  #HashedPassword(java.lang.String)
-		 * @see  #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
+		 * @see  HashedPassword#HashedPassword(java.lang.String)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
 		 */
 		public int getRecommendedIterations() {
 			return recommendedIterations;
