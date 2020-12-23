@@ -110,7 +110,8 @@ public class HashedPassword implements Serializable {
 			 * Clears the high-order four bits since the salt is only twelve bits.
 			 */
 			@Override
-			public byte[] generateSalt() {
+			byte[] generateSalt(int saltBytes) {
+				if(saltBytes != 2) throw new IllegalArgumentException();
 				byte[] salt = new byte[2];
 				Identifier.secureRandom.nextBytes(salt);
 				salt[0] &= 0x0f;
@@ -118,9 +119,10 @@ public class HashedPassword implements Serializable {
 			}
 
 			@Override
-			public byte[] hash(String password, byte[] salt, int iterations) {
+			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
+				if(hashBytes != 8) throw new IllegalArgumentException();
 				byte[] hash = new byte[8];
 				long rsltblock = UnixCrypt.cryptImpl(
 					password,
@@ -163,9 +165,10 @@ public class HashedPassword implements Serializable {
 		@Deprecated
 		MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
 			@Override
-			public byte[] hash(String password, byte[] salt, int iterations) {
+			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
+				if(hashBytes != 16) throw new IllegalArgumentException();
 				try {
 					return validateHash(
 						AssertionError::new,
@@ -193,9 +196,10 @@ public class HashedPassword implements Serializable {
 		@Deprecated
 		SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
 			@Override
-			public byte[] hash(String password, byte[] salt, int iterations) {
+			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
+				if(hashBytes != 20) throw new IllegalArgumentException();
 				try {
 					return validateHash(
 						AssertionError::new,
@@ -223,12 +227,45 @@ public class HashedPassword implements Serializable {
 		 *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
 		 */
 		@Deprecated
-		PBKDF2WITHHMACSHA1  (
-			"PBKDF2WithHmacSHA1",
-			256 / Byte.SIZE, // TODO: Support both: Maybe this could/should be 128 bits like the others, but we used 256 bits in the previous versions
-			1, Integer.MAX_VALUE, 40000,
-			256 / Byte.SIZE // TODO: Support both: Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
-		), 
+		PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
+			/**
+			 * Also allows the 256-bit salt for compatibility with previous versions.
+			 */
+			@Override
+			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
+				if(salt.length != SALT_BYTES) {
+					super.validateSalt(newThrowable, salt);
+				}
+				return salt;
+			}
+
+			/**
+			 * Also allows the 256-bit hash for compatibility with previous versions.
+			 */
+			@Override
+			<E extends Throwable> byte[] validateHash(Function<? super String, E> newThrowable, byte[] hash) throws E {
+				if(hash.length != HASH_BYTES) {
+					super.validateHash(newThrowable, hash);
+				}
+				return hash;
+			}
+
+			/**
+			 * Performs an additional check that (salt, hash) are either the old sizes or the new, but not a mismatched
+			 * combination between them.
+			 */
+			@Override
+			<E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
+				super.validate(newThrowable, salt, iterations, hash);
+				if((salt.length == SALT_BYTES) != (hash.length == HASH_BYTES)) {
+					throw newThrowable.apply(
+						"salt length and hash length mismatch: expected either the old default lengths ("
+						+ SALT_BYTES + ", " + HASH_BYTES + ") or the new lengths ("
+						+ getSaltBytes() + ", " + getHashBytes() + "), got (" + salt.length + ", " + hash.length + ")"
+					);
+				}
+			}
+		},
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
@@ -288,6 +325,20 @@ public class HashedPassword implements Serializable {
 		}
 
 		/**
+		 * Generates a random salt of the given number of bytes.
+		 */
+		byte[] generateSalt(int saltBytes) {
+			byte[] salt;
+			if(saltBytes == 0) {
+				salt = EMPTY_BYTE_ARRAY;
+			} else {
+				salt = new byte[saltBytes];
+				Identifier.secureRandom.nextBytes(salt);
+			}
+			return validateSalt(AssertionError::new, salt);
+		}
+
+		/**
 		 * Generates a random salt of {@link #getSaltBytes()} bytes in length.
 		 *
 		 * @see  HashedPassword#HashedPassword(java.lang.String)
@@ -295,15 +346,7 @@ public class HashedPassword implements Serializable {
 		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)
 		 */
 		public byte[] generateSalt() {
-			int _saltBytes = getSaltBytes();
-			byte[] salt;
-			if(_saltBytes == 0) {
-				salt = EMPTY_BYTE_ARRAY;
-			} else {
-				salt = new byte[_saltBytes];
-				Identifier.secureRandom.nextBytes(salt);
-			}
-			return validateSalt(AssertionError::new, salt);
+			return generateSalt(getSaltBytes());
 		}
 
 		/**
@@ -388,13 +431,18 @@ public class HashedPassword implements Serializable {
 			return hash;
 		}
 
+		<E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
+			if(salt == null) throw newThrowable.apply("salt required when have algorithm");
+			validateSalt(newThrowable, salt);
+			validateIterations(newThrowable, iterations);
+			if(hash == null) throw newThrowable.apply("hash required when have algorithm");
+			validateHash(newThrowable, hash);
+		}
+
 		/**
-		 * Hash the given password
-		 *
-		 * @see  #generateSalt()
-		 * @see  #getRecommendedIterations()
+		 * Hash the given password to the given number of bytes.
 		 */
-		public byte[] hash(String password, byte[] salt, int iterations) {
+		byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 			try {
 				char[] chars = password.toCharArray();
 				try {
@@ -406,7 +454,7 @@ public class HashedPassword implements Serializable {
 								chars,
 								validateSalt(IllegalArgumentException::new, salt),
 								validateIterations(IllegalArgumentException::new, iterations),
-								getHashBytes() * 8
+								hashBytes * Byte.SIZE
 							)
 						).getEncoded()
 					);
@@ -416,6 +464,16 @@ public class HashedPassword implements Serializable {
 			} catch(InvalidKeySpecException | NoSuchAlgorithmException e) {
 				throw new WrappedException(e);
 			}
+		}
+
+		/**
+		 * Hash the given password to {@link #getHashBytes()} bytes.
+		 *
+		 * @see  #generateSalt()
+		 * @see  #getRecommendedIterations()
+		 */
+		public byte[] hash(String password, byte[] salt, int iterations) {
+			return hash(password, salt, iterations, getHashBytes());
 		}
 
 		static {
@@ -456,7 +514,7 @@ public class HashedPassword implements Serializable {
 	 *              please use {@link Algorithm#getSaltBytes()} instead.
 	 */
 	@Deprecated
-	public static final int SALT_BYTES = Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes();
+	public static final int SALT_BYTES = 256 / Byte.SIZE;
 
 	/**
 	 * The number of bytes in the hash.
@@ -465,14 +523,16 @@ public class HashedPassword implements Serializable {
 	 *              please use {@link Algorithm#getHashBytes()} instead.
 	 */
 	@Deprecated
-	public static final int HASH_BYTES = Algorithm.PBKDF2WITHHMACSHA1.getHashBytes();
+	public static final int HASH_BYTES = 256 / Byte.SIZE;
 
 	/**
 	 * @deprecated  This is the value matching {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
 	 *              please use {@link Algorithm#getRecommendedIterations()} instead.
 	 */
 	@Deprecated
-	public static final int RECOMMENDED_ITERATIONS = Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations();
+	public static final int RECOMMENDED_ITERATIONS = Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations()
+		// Half the iterations of the new settings because it performs at half the speed due to the additional hash length (256 bits > 160 bits)
+		/ 2;
 
 	/**
 	 * A singleton that may be used in places where no password is set.
@@ -492,7 +552,7 @@ public class HashedPassword implements Serializable {
 	 */
 	@Deprecated
 	public static byte[] generateSalt() {
-		return Algorithm.PBKDF2WITHHMACSHA1.generateSalt();
+		return Algorithm.PBKDF2WITHHMACSHA1.generateSalt(SALT_BYTES);
 	}
 
 	/**
@@ -510,7 +570,7 @@ public class HashedPassword implements Serializable {
 	 */
 	@Deprecated
 	public static byte[] hash(String password, byte[] salt, int iterations) {
-		return Algorithm.PBKDF2WITHHMACSHA1.hash(password, salt, iterations);
+		return Algorithm.PBKDF2WITHHMACSHA1.hash(password, salt, iterations, HASH_BYTES);
 	}
 
 	private static final byte[] EMPTY_BYTE_ARRAY = {};
@@ -613,11 +673,7 @@ public class HashedPassword implements Serializable {
 			if(iterations != 0) throw newThrowable.apply("iterations must be 0 when algorithm is null");
 			if(hash != null) throw newThrowable.apply("hash must be null when algorithm is null");
 		} else {
-			if(salt == null) throw newThrowable.apply("salt required when have algorithm");
-			algorithm.validateSalt(newThrowable, salt);
-			algorithm.validateIterations(newThrowable, iterations);
-			if(hash == null) throw newThrowable.apply("hash required when have algorithm");
-			algorithm.validateHash(newThrowable, hash);
+			algorithm.validate(newThrowable, salt, iterations, hash);
 		}
 	}
 
@@ -657,20 +713,26 @@ public class HashedPassword implements Serializable {
 	/**
 	 * @param iterations  The number of has iterations
 	 *
-	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
-	 *                                    or {@code hash.length != algorithm.getHashBytes()}
+	 * @throws  IllegalArgumentException  when {@code salt.length != SALT_BYTES}
+	 *                                    or {@code hash.length != HASH_BYTES}
 	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 *
 	 * @deprecated  This represents a hash using {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
 	 *              please use {@link #HashedPassword(java.lang.String)},
 	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)},
-	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)}
+	 *              or {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)}
 	 *              instead.
 	 */
 	@Deprecated
 	public HashedPassword(byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
 		this(Algorithm.PBKDF2WITHHMACSHA1, salt, iterations, hash);
+		if(salt.length != SALT_BYTES) {
+			throw new IllegalArgumentException("salt length mismatch: expected " + SALT_BYTES + ", got " + salt.length);
+		}
+		if(hash.length != HASH_BYTES) {
+			throw new IllegalArgumentException("hash length mismatch: expected " + HASH_BYTES + ", got " + hash.length);
+		}
 	}
 
 	/**
@@ -785,8 +847,8 @@ public class HashedPassword implements Serializable {
 			RECOMMENDED_ALGORITHM.hash(password, DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
 			return false;
 		} else {
-			// Hash again with the original salt and iterations
-			byte[] newHash = algorithm.hash(password, salt, iterations);
+			// Hash again with the original salt, iterations, and hash size
+			byte[] newHash = algorithm.hash(password, salt, iterations, hash.length);
 			return slowEquals(hash, newHash);
 		}
 	}

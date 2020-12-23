@@ -267,7 +267,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 */
 	@Deprecated
 	public static byte[] generateKey() {
-		return Algorithm.SHA_256.generateKey(HASH_BYTES);
+		return Algorithm.SHA_256.generateKey(HASH_BYTES); // The full 256-bit key for compatibility with previous versions
 	}
 
 	/**
