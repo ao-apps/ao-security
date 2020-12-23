@@ -467,7 +467,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		} else {
 			// TODO: constant time compare here?
 			int diff = algorithm.compareTo(other.algorithm);
-			if(diff != 0) return 0;
+			if(diff != 0) return diff;
 			byte[] h1 = hash;
 			byte[] h2 = other.hash;
 			int hashBytes = algorithm.getHashBytes();
@@ -479,7 +479,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 					Byte.toUnsignedInt(h2[i])
 				);
 				// Java 9: int diff = Byte.compareUnsigned(h1[i], h2[i]);
-				if(diff != 0) return 0;
+				if(diff != 0) return diff;
 			}
 			return 0;
 		}
