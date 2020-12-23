@@ -32,6 +32,11 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 	<groupId>com.aoindustries</groupId><artifactId>ao-security</artifactId><version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
+	<properties>
+		<!-- Dependencies -->
+		<commons-codec.version>1.15</commons-codec.version>
+	</properties>
+
 	<name>AO Security</name>
 	<url>https://aoindustries.com/ao-security/</url>
 	<description>Best-practices security made usable.</description>
@@ -72,6 +77,22 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		<url>https://github.com/aoindustries/ao-security/issues</url>
 	</issueManagement>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalDependencies>
+						<!-- Javadoc-only -->
+						<additionalDependency>
+							<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
+						</additionalDependency>
+					</additionalDependencies>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<profile>
 			<id>offlineLinks</id><activation><file><exists>src/main/java</exists></file></activation>
@@ -79,11 +100,23 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId>
+						<dependencies>
+							<!-- Javadoc-only -->
+							<dependency>
+								<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<id>unpack.offlineLinks</id><phase>generate-sources</phase><goals><goal>unpack</goal></goals>
 								<configuration>
 									<artifactItems>
+										<!-- Javadoc-only -->
+										<artifactItem>
+											<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
+											<classifier>javadoc</classifier><includes>element-list, package-list</includes>
+											<outputDirectory>${project.build.directory}/offlineLinks/commons-codec/commons-codec</outputDirectory>
+										</artifactItem>
 										<!-- Direct -->
 										<artifactItem>
 											<groupId>com.aoindustries</groupId><artifactId>ao-lang</artifactId>
@@ -105,6 +138,11 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						<groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
 							<offlineLinks>
+								<!-- Javadoc-only -->
+								<offlineLink>
+									<url>https://commons.apache.org/proper/commons-codec/archives/${commons-codec.version}/apidocs/</url>
+									<location>${project.build.directory}/offlineLinks/commons-codec/commons-codec</location>
+								</offlineLink>
 								<!-- Direct -->
 								<offlineLink>
 									<url>https://aoindustries.com/ao-lang/apidocs/</url>

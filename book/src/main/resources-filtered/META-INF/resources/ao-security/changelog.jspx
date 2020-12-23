@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-22T17:54:21-06:00"
+		dateModified="2020-12-22T20:35:56-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -137,6 +137,10 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						Moved read/write methods for <code>Identifier</code> and <code>SmallIdentifier</code> from
 						<code>StreamableInput</code> and <code>StreamableOutput</code> to static methods on a new
 						<code>SecurityStreamables</code> class.
+					</li>
+					<li>
+						Deprecated <code>UnixCrypt</code> in favor of the <ao:a href="https://commons.apache.org/proper/commons-codec/">Apache Commons Codec</ao:a>
+						implementation: <code><ao:a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/UnixCrypt.html">UnixCrypt</ao:a></code>.
 					</li>
 				</ul>
 			</changelog:release>

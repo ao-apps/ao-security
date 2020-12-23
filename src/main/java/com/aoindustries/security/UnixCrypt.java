@@ -1,9 +1,8 @@
 package com.aoindustries.security;
 
 /**
- * @deprecated  This is not secure anymore.  We will be removing in a future major version update.
- *              If you still require this type of encryption, please use
- *              <a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/UnixCrypt.html">Apache Commons Codec - UnixCrypt</a>.
+ * @deprecated  This is not secure anymore.  We will be removing in a future major version update.  If you still require
+ *              this type of encryption, please use {@link org.apache.commons.codec.digest.UnixCrypt}.
  */
 @Deprecated
 public class UnixCrypt {
@@ -266,6 +265,7 @@ public class UnixCrypt {
 
 	/**
 	 * @deprecated  This is not secure anymore.
+	 *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String)}
 	 */
 	@Deprecated
 	public static String crypt(String plaintext) {
@@ -284,6 +284,7 @@ public class UnixCrypt {
 	 * @param setting the salt to be used
 	 * @return the encrypted String
 	 * @deprecated  This is not secure anymore.
+	 *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String, java.lang.String)}
 	 */
 	@Deprecated
 	public static String crypt(String key, String setting) {
@@ -477,6 +478,7 @@ public class UnixCrypt {
 
 	/**
 	 * @deprecated  This is not secure anymore.
+	 *              Please use {@link org.apache.commons.codec.digest.UnixCrypt}
 	 */
 	@Deprecated
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
