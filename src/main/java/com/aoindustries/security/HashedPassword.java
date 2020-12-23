@@ -53,7 +53,6 @@ import javax.crypto.spec.PBEKeySpec;
  *
  * @author  AO Industries, Inc.
  */
-// TODO: Tests
 // TODO: ResultSet constructor, that takes multiple columns?  Constant for number of columns
 //       Same for prepared statement
 //       Implement SQLData, too? (With ServiceLoader?)
@@ -80,7 +79,6 @@ public class HashedPassword implements Serializable {
 
 	static final Base64.Decoder DECODER = Base64.getDecoder();
 	static final Base64.Encoder ENCODER = Base64.getEncoder();
-	static final Base64.Encoder ENCODER_NO_PADDING = ENCODER.withoutPadding();
 
 	/**
 	 * The number of milliseconds under which it will be suggested to recommend iterations from
@@ -92,6 +90,7 @@ public class HashedPassword implements Serializable {
 	 * @see  SecretKeyFactory
 	 */
 	// Note: These must be ordered by relative strength, from weakest to strongest for isRehashRecommended() to work
+	// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm-create.sql
 	public enum Algorithm {
 		/**
 		 * @deprecated  {@link UnixCrypt} should not be used for any cryptographic purpose, plus this is barely salted
@@ -99,10 +98,11 @@ public class HashedPassword implements Serializable {
 		 */
 		@Deprecated
 		CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 			@Override
 			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
 				super.validateSalt(newThrowable, salt);
-				if((salt[0] & 0xf0) != 0) throw new IllegalArgumentException("Salt must be twelve bits only");
+				if((salt[0] & 0xf0) != 0) throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
 				return salt;
 			}
 
@@ -134,8 +134,10 @@ public class HashedPassword implements Serializable {
 				return validateHash(AssertionError::new, hash);
 			}
 
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.toString-function.sql
 			@Override
 			String toString(byte[] salt, int iterations, byte[] hash) {
+				// System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
 				return new String(new char[] {
 					// Salt
 					(char)UnixCrypt.ITOA64[  salt[1] & 0x3f],
@@ -181,6 +183,7 @@ public class HashedPassword implements Serializable {
 			/**
 			 * MD5 is represented as hex characters of hash only.
 			 */
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.toString-function.sql
 			@Override
 			String toString(byte[] salt, int iterations, byte[] hash) {
 				return Strings.convertToHex(hash);
@@ -210,8 +213,9 @@ public class HashedPassword implements Serializable {
 			}
 
 			/**
-			 * SHA-1 includes base-64 padding, to match historical usage.
+			 * SHA-1 is base-64 only, to match historical usage.
 			 */
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.toString-function.sql
 			@Override
 			String toString(byte[] salt, int iterations, byte[] hash) {
 				return ENCODER.encodeToString(hash);
@@ -228,6 +232,7 @@ public class HashedPassword implements Serializable {
 			/**
 			 * Also allows the 256-bit salt for compatibility with previous versions.
 			 */
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 			@Override
 			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
 				if(salt.length != SALT_BYTES) {
@@ -240,6 +245,7 @@ public class HashedPassword implements Serializable {
 			 * Also allows the 256-bit hash for compatibility with previous versions.
 			 */
 			@Override
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateHash-function.sql
 			<E extends Throwable> byte[] validateHash(Function<? super String, E> newThrowable, byte[] hash) throws E {
 				if(hash.length != HASH_BYTES) {
 					super.validateHash(newThrowable, hash);
@@ -251,12 +257,13 @@ public class HashedPassword implements Serializable {
 			 * Performs an additional check that (salt, hash) are either the old sizes or the new, but not a mismatched
 			 * combination between them.
 			 */
+			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validate-function.sql
 			@Override
 			<E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
 				super.validate(newThrowable, salt, iterations, hash);
 				if((salt.length == SALT_BYTES) != (hash.length == HASH_BYTES)) {
 					throw newThrowable.apply(
-						"salt length and hash length mismatch: expected either the old default lengths ("
+						getAlgorithmName() + ": salt length and hash length mismatch: expected either the old default lengths ("
 						+ SALT_BYTES + ", " + HASH_BYTES + ") or the new lengths ("
 						+ getSaltBytes() + ", " + getHashBytes() + "), got (" + salt.length + ", " + hash.length + ")"
 					);
@@ -276,6 +283,28 @@ public class HashedPassword implements Serializable {
 		 * Avoid repetitive allocation.
 		 */
 		static final Algorithm[] values = values();
+
+		/**
+		 * Case-insensitive lookup by algorithm name.
+		 *
+		 * @return  The algorithm or {@code null} when {@code algorithmName == null}
+		 *
+		 * @throws  IllegalArgumentException when no enum with the given algorithm name (case-insensitive) is found
+		 */
+		public static Algorithm findAlgorithm(String algorithmName) throws IllegalArgumentException {
+			if(algorithmName == null) return null;
+			Algorithm algorithm = null;
+			// Search backwards, since higher strength algorithms will be used more
+			for(int i = Algorithm.values.length - 1; i >= 0; i--) {
+				Algorithm a = Algorithm.values[i];
+				if(a.getAlgorithmName().equalsIgnoreCase(algorithmName)) {
+					algorithm = a;
+					break;
+				}
+			}
+			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
+			return algorithm;
+		}
 
 		private final String algorithmName;
 		private final int saltBytes;
@@ -313,10 +342,11 @@ public class HashedPassword implements Serializable {
 			return saltBytes;
 		}
 
+		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 		<E extends Throwable> byte[] validateSalt(Function<? super String,E> newThrowable, byte[] salt) throws E {
 			int expected = getSaltBytes();
 			if(salt.length != expected) {
-				throw newThrowable.apply("salt length mismatch: expected " + expected + ", got " + salt.length);
+				throw newThrowable.apply(getAlgorithmName() + ": salt length mismatch: expected " + expected + ", got " + salt.length);
 			}
 			return salt;
 		}
@@ -349,11 +379,12 @@ public class HashedPassword implements Serializable {
 		/**
 		 * Gets the toString representation for this algorithm.
 		 */
+		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.toString-function.sql
 		String toString(byte[] salt, int iterations, byte[] hash) {
 			return SEPARATOR + getAlgorithmName()
 				+ SEPARATOR + iterations
-				+ SEPARATOR + ENCODER_NO_PADDING.encodeToString(salt)
-				+ SEPARATOR + ENCODER_NO_PADDING.encodeToString(hash);
+				+ SEPARATOR + ENCODER.encodeToString(salt)
+				+ SEPARATOR + ENCODER.encodeToString(hash);
 		}
 
 		/**
@@ -395,6 +426,7 @@ public class HashedPassword implements Serializable {
 			return recommendedIterations;
 		}
 
+		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateIterations-function.sql
 		<E extends Throwable> int validateIterations(Function<? super String,E> newThrowable, int iterations) throws E {
 			int _minimumIterations = getMinimumIterations();
 			if(iterations < _minimumIterations) {
@@ -420,14 +452,16 @@ public class HashedPassword implements Serializable {
 			return hashBytes;
 		}
 
+		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateHash-function.sql
 		<E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
 			int expected = getHashBytes();
 			if(hash.length != expected) {
-				throw newThrowable.apply("hash length mismatch: expected " + expected + ", got " + hash.length);
+				throw newThrowable.apply(getAlgorithmName() + ": hash length mismatch: expected " + expected + ", got " + hash.length);
 			}
 			return hash;
 		}
 
+		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validate-function.sql
 		<E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
 			if(salt == null) throw newThrowable.apply("salt required when have algorithm");
 			validateSalt(newThrowable, salt);
@@ -586,6 +620,7 @@ public class HashedPassword implements Serializable {
 	 *
 	 * @param hashedPassword  when {@code null}, returns {@code null}
 	 */
+	// Matches src/main/sql/com/aoindustries/security/HashedPassword.valueOf-function.sql
 	public static HashedPassword valueOf(String hashedPassword) {
 		if(hashedPassword == null) {
 			return null;
@@ -594,17 +629,7 @@ public class HashedPassword implements Serializable {
 		} else if(hashedPassword.length() > 0 && hashedPassword.charAt(0) == SEPARATOR) {
 			int pos1 = hashedPassword.indexOf(SEPARATOR, 1);
 			if(pos1 == -1) throw new IllegalArgumentException("Second separator (" + SEPARATOR + ") not found");
-			String algorithmName = hashedPassword.substring(1, pos1);
-			Algorithm algorithm = null;
-			// Search backwards, since higher strength algorithms will be used more
-			for(int i = Algorithm.values.length - 1; i >= 0; i--) {
-				Algorithm a = Algorithm.values[i];
-				if(a.getAlgorithmName().equalsIgnoreCase(algorithmName)) {
-					algorithm = a;
-					break;
-				}
-			}
-			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
+			Algorithm algorithm = Algorithm.findAlgorithm(hashedPassword.substring(1, pos1));
 			int pos2 = hashedPassword.indexOf(SEPARATOR, pos1 + 1);
 			if(pos2 == -1) throw new IllegalArgumentException("Third separator (" + SEPARATOR + ") not found");
 			int pos3 = hashedPassword.indexOf(SEPARATOR, pos2 + 1);
@@ -673,6 +698,7 @@ public class HashedPassword implements Serializable {
 	private final int iterations;
 	private final byte[] hash;
 
+	// Matches src/main/sql/com/aoindustries/security/HashedPassword.validate-function.sql
 	private <E extends Throwable> void validate(Function<? super String,E> newThrowable) throws E {
 		if(algorithm == null) {
 			if(salt != null) throw newThrowable.apply("salt must be null when algorithm is null");
@@ -734,10 +760,10 @@ public class HashedPassword implements Serializable {
 	public HashedPassword(byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
 		this(Algorithm.PBKDF2WITHHMACSHA1, salt, iterations, hash);
 		if(salt.length != SALT_BYTES) {
-			throw new IllegalArgumentException("salt length mismatch: expected " + SALT_BYTES + ", got " + salt.length);
+			throw new IllegalArgumentException(getAlgorithm().getAlgorithmName() + ": salt length mismatch: expected " + SALT_BYTES + ", got " + salt.length);
 		}
 		if(hash.length != HASH_BYTES) {
-			throw new IllegalArgumentException("hash length mismatch: expected " + HASH_BYTES + ", got " + hash.length);
+			throw new IllegalArgumentException(getAlgorithm().getAlgorithmName() + ": hash length mismatch: expected " + HASH_BYTES + ", got " + hash.length);
 		}
 	}
 
@@ -803,6 +829,7 @@ public class HashedPassword implements Serializable {
 	 * Please see {@link #valueOf(java.lang.String)} for the inverse operation.
 	 * </p>
 	 */
+	// Matches src/main/sql/com/aoindustries/security/HashedPassword.toString-function.sql
 	@Override
 	public String toString() {
 		if(algorithm == null) {

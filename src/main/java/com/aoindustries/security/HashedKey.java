@@ -28,7 +28,6 @@ import com.aoindustries.lang.Strings;
 import com.aoindustries.lang.SysExits;
 import static com.aoindustries.security.HashedPassword.DECODER;
 import static com.aoindustries.security.HashedPassword.ENCODER;
-import static com.aoindustries.security.HashedPassword.ENCODER_NO_PADDING;
 import static com.aoindustries.security.HashedPassword.SEPARATOR;
 import static com.aoindustries.security.HashedPassword.slowEquals;
 import java.io.IOException;
@@ -404,23 +403,20 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				String hex = Strings.convertToHex(hash);
 				return hex;
 			}
-			// SHA-1 includes base-64 padding, to match historical usage
-			else if(algorithm == Algorithm.SHA_1) {
-				return ENCODER.encodeToString(hash);
-			}
-			// These algorithms short-cut to be base-64 of hash only
+			// These algorithms are base-64 of hash only
 			else if(
-				algorithm == Algorithm.SHA_224
+				algorithm == Algorithm.SHA_1
+				|| algorithm == Algorithm.SHA_224
 				|| algorithm == Algorithm.SHA_256
 				|| algorithm == Algorithm.SHA_384
 				|| algorithm == Algorithm.SHA_512
 			) {
-				return ENCODER_NO_PADDING.encodeToString(hash);
+				return ENCODER.encodeToString(hash);
 			}
 			// All others use separator and explicitely list the algorithm
 			else {
 				return SEPARATOR + algorithm.getAlgorithmName()
-					+ SEPARATOR + ENCODER_NO_PADDING.encodeToString(hash);
+					+ SEPARATOR + ENCODER.encodeToString(hash);
 			}
 		}
 	}
@@ -529,7 +525,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 							HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
 							long endNanos = output ? System.nanoTime() : 0;
 							if(output) {
-								System.out.println(ENCODER_NO_PADDING.encodeToString(key));
+								System.out.println(ENCODER.encodeToString(key));
 								System.out.println(hashedKey);
 								long nanos = endNanos - startNanos;
 								System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
@@ -550,7 +546,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				try {
 					byte[] key = algorithm.generateKey();
 					HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
-					System.out.println(ENCODER_NO_PADDING.encodeToString(key));
+					System.out.println(ENCODER.encodeToString(key));
 					System.out.println(hashedKey);
 				} catch(Error | RuntimeException e) {
 					hasFailed = true;
