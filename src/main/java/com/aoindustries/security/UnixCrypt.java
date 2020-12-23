@@ -272,8 +272,8 @@ public class UnixCrypt {
 		return crypt(
 			plaintext,
 			new String(new char[] {
-				(char)ITOA64[(int)(Math.random()*64)],
-				(char)ITOA64[(int)(Math.random()*64)]
+				(char)ITOA64[Identifier.secureRandom.nextInt(64)],
+				(char)ITOA64[Identifier.secureRandom.nextInt(64)]
 			})
 		);
 	}
