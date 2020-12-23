@@ -86,7 +86,7 @@ public class HashedPassword implements Serializable {
 	 * The number of milliseconds under which it will be suggested to recommend iterations from
 	 * main method with verbose enabled.
 	 */
-	private static final long SUGGEST_INCREASE_ITERATIONS_MILLIS = 100; // 1/10th of a second
+	static final long SUGGEST_INCREASE_ITERATIONS_MILLIS = 100; // 1/10th of a second
 
 	/**
 	 * @see  SecretKeyFactory
@@ -974,12 +974,20 @@ public class HashedPassword implements Serializable {
 									if(output) {
 										System.out.println(hashedPassword);
 										long nanos = endNanos - startNanos;
-										System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms");
+										System.out.println(
+											algorithm.getAlgorithmName() + ": Completed in "
+											+ BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
+										);
 										System.out.println();
-										long millis = nanos / 1000000;
+										long millis = nanos / 1_000_000;
 										if(millis < SUGGEST_INCREASE_ITERATIONS_MILLIS && recommendedIterations != 0) {
 											System.out.flush();
-											System.err.println(algorithm.getAlgorithmName() + ": Password was hashed in under " + SUGGEST_INCREASE_ITERATIONS_MILLIS + " ms, recommend increasing the value of recommendedIterations (currently " + recommendedIterations + ")");
+											System.err.println(
+												algorithm.getAlgorithmName() + ": Password was hashed in under "
+												+ SUGGEST_INCREASE_ITERATIONS_MILLIS
+												+ " ms, recommend increasing the value of recommendedIterations (currently "
+												+ recommendedIterations + ")"
+											);
 											System.err.println();
 											System.err.flush();
 										}
