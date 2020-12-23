@@ -585,6 +585,7 @@ public class HashedPassword implements Serializable {
 			assert hashedPassword.equals(result.toString());
 			return result;
 		} else if(hashedPassword.length() == (Algorithm.MD5.getHashBytes() * 2)) {
+			@SuppressWarnings("deprecation")
 			byte[] hash = Strings.convertByteArrayFromHex(hashedPassword.toCharArray());
 			assert hash.length == Algorithm.MD5.getHashBytes();
 			return new HashedPassword(Algorithm.MD5, EMPTY_BYTE_ARRAY, 0, hash);

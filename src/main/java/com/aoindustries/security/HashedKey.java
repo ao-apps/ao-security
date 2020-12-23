@@ -311,6 +311,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			byte[] hash = DECODER.decode(hashedKey.substring(pos + 1));
 			return new HashedKey(algorithm, hash);
 		} else if(hashedKey.length() == (Algorithm.MD5.getHashBytes() * 2)) {
+			@SuppressWarnings("deprecation")
 			byte[] hash = Strings.convertByteArrayFromHex(hashedKey.toCharArray());
 			assert hash.length == Algorithm.MD5.getHashBytes();
 			return new HashedKey(Algorithm.MD5, hash);
@@ -400,7 +401,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		} else {
 			// MD5 is represented as hex characters of hash only
 			if(algorithm == Algorithm.MD5) {
-				return Strings.convertToHex(hash);
+				@SuppressWarnings("deprecation")
+				String hex = Strings.convertToHex(hash);
+				return hex;
 			}
 			// SHA-1 includes base-64 padding, to match historical usage
 			else if(algorithm == Algorithm.SHA_1) {
