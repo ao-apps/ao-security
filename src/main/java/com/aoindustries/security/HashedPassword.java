@@ -122,18 +122,15 @@ public class HashedPassword implements Serializable {
 			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
-				if(hashBytes != 8) throw new IllegalArgumentException();
-				byte[] hash = new byte[8];
+				if(hashBytes != Long.BYTES) throw new IllegalArgumentException();
+				byte[] hash = new byte[Long.BYTES];
 				long rsltblock = UnixCrypt.cryptImpl(
 					password,
-					((salt[0] << 8) & 0x0f00)
-					| (salt[1] & 0xff)
+					  ((salt[0] << Byte.SIZE) & 0x0f00)
+					| ( salt[1] & 0xff                )
 				);
 				// System.out.println("rsltblock = " + rsltblock);
-				IoUtils.longToBuffer(
-					rsltblock,
-					hash
-				);
+				IoUtils.longToBuffer(rsltblock, hash);
 				return validateHash(AssertionError::new, hash);
 			}
 
@@ -168,7 +165,7 @@ public class HashedPassword implements Serializable {
 			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
-				if(hashBytes != 16) throw new IllegalArgumentException();
+				if(hashBytes != (128 / Byte.SIZE)) throw new IllegalArgumentException();
 				try {
 					return validateHash(
 						AssertionError::new,
@@ -199,7 +196,7 @@ public class HashedPassword implements Serializable {
 			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
-				if(hashBytes != 20) throw new IllegalArgumentException();
+				if(hashBytes != (160 / Byte.SIZE)) throw new IllegalArgumentException();
 				try {
 					return validateHash(
 						AssertionError::new,
@@ -631,13 +628,13 @@ public class HashedPassword implements Serializable {
 				| ((UnixCrypt.A64TOI[hashedPassword.charAt(11)] & 0x3fL) <<  4)
 				| ((UnixCrypt.A64TOI[hashedPassword.charAt(12)] & 0x3cL) >>  2);
 			// System.out.println("rsltblock = " + rsltblock);
-			byte[] hash = new byte[8];
+			byte[] hash = new byte[Long.BYTES];
 			IoUtils.longToBuffer(rsltblock, hash);
 			HashedPassword result = new HashedPassword(
 				Algorithm.CRYPT,
 				new byte[] {
-					(byte)((salt >>> 8) & 0x0f),
-					(byte)salt
+					(byte)((salt >>> Byte.SIZE) & 0x0f),
+					(byte)  salt
 				},
 				0,
 				hash

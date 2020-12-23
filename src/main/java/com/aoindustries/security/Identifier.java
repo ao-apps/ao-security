@@ -127,18 +127,18 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	 * Creates a new, random Identifier using the provided Random source.
 	 */
 	public Identifier(Random random) {
-		byte[] bytes = new byte[16];
+		byte[] bytes = new byte[Long.BYTES * 2];
 		/*
-		for(int i=0; i<16; i+=2) {
+		for(int i = 0; i < (Long.BYTES * 2); i += 2) {
 			int val = random.nextInt();
-			bytes[i] = (byte)(val>>>8);
+			bytes[i] = (byte)(val >>> Byte.SIZE);
 			bytes[i+1] = (byte)(val);
 		}
 		 */
 		// This seems to never give non-zero in the high range:
 		random.nextBytes(bytes);
 		hi = IoUtils.bufferToLong(bytes);
-		lo = IoUtils.bufferToLong(bytes, 8);
+		lo = IoUtils.bufferToLong(bytes, Long.BYTES);
 	}
 
 	public Identifier(long hi, long lo) {

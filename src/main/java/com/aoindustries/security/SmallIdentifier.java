@@ -57,7 +57,7 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	 * Creates a new, random Identifier using the provided Random source.
 	 */
 	public SmallIdentifier(Random random) {
-		byte[] bytes = new byte[8];
+		byte[] bytes = new byte[Long.BYTES];
 		random.nextBytes(bytes);
 		value = IoUtils.bufferToLong(bytes);
 	}
