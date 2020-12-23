@@ -98,7 +98,7 @@ public class HashedPassword implements Serializable {
 		 *              and not iterated so is subject to both dictionary and brute-force attacks.
 		 */
 		@Deprecated
-		CRYPT("crypt", 2, 0, 0, 0, 64 / 8) {
+		CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
 			@Override
 			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
 				super.validateSalt(newThrowable, salt);
@@ -161,7 +161,7 @@ public class HashedPassword implements Serializable {
 		 *              iterated so is subject to both dictionary and brute-force attacks.
 		 */
 		@Deprecated
-		MD5("MD5", 0, 0, 0, 0, 128 / 8) {
+		MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
 			@Override
 			public byte[] hash(String password, byte[] salt, int iterations) {
 				validateSalt(IllegalArgumentException::new, salt);
@@ -191,7 +191,7 @@ public class HashedPassword implements Serializable {
 		 *              iterated so is subject to both dictionary and brute-force attacks.
 		 */
 		@Deprecated
-		SHA_1("SHA-1", 0, 0, 0, 0, 160 / 8) {
+		SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
 			@Override
 			public byte[] hash(String password, byte[] salt, int iterations) {
 				validateSalt(IllegalArgumentException::new, salt);
@@ -225,18 +225,18 @@ public class HashedPassword implements Serializable {
 		@Deprecated
 		PBKDF2WITHHMACSHA1  (
 			"PBKDF2WithHmacSHA1",
-			256 / 8, // TODO: Support both: Maybe this could/should be 128 bits like the others, but we used 256 bits in the previous versions
+			256 / Byte.SIZE, // TODO: Support both: Maybe this could/should be 128 bits like the others, but we used 256 bits in the previous versions
 			1, Integer.MAX_VALUE, 40000,
-			256 / 8 // TODO: Support both: Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
+			256 / Byte.SIZE // TODO: Support both: Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
 		), 
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
 		@Deprecated
-		PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / 8, 1, Integer.MAX_VALUE, 50000, 224 / 8),
-		PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 128 / 8, 1, Integer.MAX_VALUE, 50000, 256 / 8),
-		PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 128 / 8, 1, Integer.MAX_VALUE, 37000, 384 / 8),
-		PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 128 / 8, 1, Integer.MAX_VALUE, 37000, 512 / 8);
+		PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 224 / Byte.SIZE),
+		PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 256 / Byte.SIZE),
+		PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 384 / Byte.SIZE),
+		PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 512 / Byte.SIZE);
 
 		/**
 		 * Avoid repetitive allocation.

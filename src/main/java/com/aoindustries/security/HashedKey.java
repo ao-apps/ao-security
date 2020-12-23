@@ -67,18 +67,18 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * @deprecated  MD5 should not be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		MD5("MD5", 128 / 8, 128 / 8),
+		MD5("MD5", 128 / Byte.SIZE, 128 / Byte.SIZE),
 		/**
 		 * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		SHA_1("SHA-1", 8, 160 / 8),
+		SHA_1("SHA-1", 8, 160 / Byte.SIZE),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
 		@Deprecated
-		SHA_224("SHA-224", 224 / 8),
-		SHA_256("SHA-256", 256 / 8) {
+		SHA_224("SHA-224", 224 / Byte.SIZE),
+		SHA_256("SHA-256", 256 / Byte.SIZE) {
 			/**
 			 * Also allows the full 256-bit key for compatibility with previous versions.
 			 */
@@ -91,22 +91,22 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				return key;
 			}
 		},
-		SHA_384("SHA-384", 384 / 8),
-		SHA_512("SHA-512", 512 / 8),
+		SHA_384("SHA-384", 384 / Byte.SIZE),
+		SHA_512("SHA-512", 512 / Byte.SIZE),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
 		@Deprecated
-		SHA_512_224("SHA-512/224", 224 / 8),
-		SHA_512_256("SHA-512/256", 256 / 8),
+		SHA_512_224("SHA-512/224", 224 / Byte.SIZE),
+		SHA_512_256("SHA-512/256", 256 / Byte.SIZE),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
 		@Deprecated
-		SHA3_224("SHA3-224", 224 / 8),
-		SHA3_256("SHA3-256", 256 / 8),
-		SHA3_384("SHA3-384", 384 / 8),
-		SHA3_512("SHA3-512", 512 / 8);
+		SHA3_224("SHA3-224", 224 / Byte.SIZE),
+		SHA3_256("SHA3-256", 256 / Byte.SIZE),
+		SHA3_384("SHA3-384", 384 / Byte.SIZE),
+		SHA3_512("SHA3-512", 512 / Byte.SIZE);
 
 		/**
 		 * Avoid repetitive allocation.

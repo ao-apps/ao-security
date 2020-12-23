@@ -90,7 +90,7 @@ public class HashedKeyTest {
 	@Test
 	public void testSHA_256() {
 		testAlgorithm(HashedKey.Algorithm.SHA_256);
-		testAlgorithm(HashedKey.Algorithm.SHA_256, 256 / 8); // Full-length key was used in previous releases
+		testAlgorithm(HashedKey.Algorithm.SHA_256, 256 / Byte.SIZE); // Full-length key was used in previous releases
 	}
 
 	@Test
