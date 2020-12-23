@@ -514,6 +514,15 @@ public class HashedPassword implements Serializable {
 	public static final int SALT_BYTES = 256 / Byte.SIZE;
 
 	/**
+	 * Private dummy hash array, used to keep constant time when no salt available.
+	 * <p>
+	 * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
+	 * not have any password set?  Would it matter if it did?
+	 * </p>
+	 */
+	private static final byte[] DUMMY_HASH = new byte[RECOMMENDED_ALGORITHM.getHashBytes()];
+
+	/**
 	 * The number of bytes in the hash.
 	 *
 	 * @deprecated  This is the value matching {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
@@ -805,6 +814,44 @@ public class HashedPassword implements Serializable {
 			assert iterations >= 0;
 			return algorithm.toString(salt, iterations, hash);
 		}
+	}
+
+	/**
+	 * Checks if equal to another hashed password, always {@code false} when either is {@link #NO_PASSWORD}.
+	 * <p>
+	 * Performs comparisons in length-constant time.
+	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
+	 * </p>
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof HashedPassword)) return false;
+		HashedPassword other = (HashedPassword)obj;
+		// All done for length-constant time comparisons
+		if(algorithm == null | other.algorithm == null) {
+			// Perform an equality check with default settings, just to occupy the same amount of time as if had a key
+			boolean discardMe =
+				algorithm == other.algorithm
+				& slowEquals(DUMMY_SALT, DUMMY_SALT)
+				& iterations == other.iterations
+				& slowEquals(DUMMY_HASH, DUMMY_HASH);
+			assert discardMe == true || discardMe == false : "Suppress unused variable warning";
+			return false;
+		} else {
+			return
+				algorithm == other.algorithm
+				& slowEquals(salt, other.salt)
+				& iterations == other.iterations
+				& slowEquals(hash, other.hash);
+		}
+	}
+
+	/**
+	 * The hash code is just the first 32 bits of the hash.
+	 */
+	@Override
+	public int hashCode() {
+		return (hash == null) ? 0 : IoUtils.bufferToInt(hash);
 	}
 
 	public Algorithm getAlgorithm() {

@@ -439,12 +439,15 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		// All done for length-constant time comparisons
 		if(algorithm == null | other.algorithm == null) {
 			// Perform an equality check with default settings, just to occupy the same amount of time as if had a key
-			slowEquals(DUMMY_KEY, DUMMY_KEY);
+			boolean discardMe =
+				algorithm == other.algorithm
+				& slowEquals(DUMMY_KEY, DUMMY_KEY);
+			assert discardMe == true || discardMe == false : "Suppress unused variable warning";
 			return false;
 		} else {
 			return
 				algorithm == other.algorithm
-				& slowEquals(hash, ((HashedKey)obj).hash);
+				& slowEquals(hash, other.hash);
 		}
 	}
 
@@ -453,7 +456,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return IoUtils.bufferToInt(hash);
+		return (hash == null) ? 0 : IoUtils.bufferToInt(hash);
 	}
 
 	@Override
