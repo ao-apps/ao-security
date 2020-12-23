@@ -225,9 +225,9 @@ public class HashedPassword implements Serializable {
 		@Deprecated
 		PBKDF2WITHHMACSHA1  (
 			"PBKDF2WithHmacSHA1",
-			256 / 8, // Maybe this could/should be 128 bits like the others, but we used 256 bits in the previous versions
+			256 / 8, // TODO: Support both: Maybe this could/should be 128 bits like the others, but we used 256 bits in the previous versions
 			1, Integer.MAX_VALUE, 40000,
-			256 / 8 // Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
+			256 / 8 // TODO: Support both: Maybe this could/should be 160 bits to match SHA-1, but we used 256 bits in the previous versions
 		), 
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required

@@ -170,14 +170,21 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
+		 * Generates a random plaintext key of the given number of bytes.
+		 */
+		byte[] generateKey(int keyBytes) {
+			byte[] key = new byte[keyBytes];
+			Identifier.secureRandom.nextBytes(key);
+			return validateKey(AssertionError::new, key);
+		}
+
+		/**
 		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length.
 		 *
 		 * @see  #hash(byte[])
 		 */
 		public byte[] generateKey() {
-			byte[] key = new byte[getKeyBytes()];
-			Identifier.secureRandom.nextBytes(key);
-			return validateKey(AssertionError::new, key);
+			return generateKey(getKeyBytes());
 		}
 
 		/**
@@ -257,11 +264,11 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @see  #hash(byte[])
 	 *
 	 * @deprecated  This generates a key for {@linkplain Algorithm#SHA_256 the previous default algorithm},
-	 *              please use {@link Algorithm#generateKey()} instead.
+	 *              using the previous default of 256-bit length, please use {@link Algorithm#generateKey()} instead.
 	 */
 	@Deprecated
 	public static byte[] generateKey() {
-		return Algorithm.SHA_256.generateKey();
+		return Algorithm.SHA_256.generateKey(HASH_BYTES);
 	}
 
 	/**
