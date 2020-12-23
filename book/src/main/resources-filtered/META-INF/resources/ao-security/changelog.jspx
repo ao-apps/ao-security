@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-22T08:26:11-06:00"
+		dateModified="2020-12-22T17:54:21-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -57,8 +57,28 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						<ol>
 							<li>New constant <code>NO_KEY</code> that may be used when there is no key.</li>
 							<li>
-								Now supports multiple algorithms, with the recommended algorithm being "SHA-512/256".
+								Now supports multiple algorithms, with the recommended algorithm being "SHA-512".
 								Previously, all keys were "SHA-256".
+							</li>
+							<li>
+								<p>
+									For the SHA-* algorithms, the key length now defaults to half that of the hash length.
+									This is selected so the likelihood to guess the original key is equal to the hash's
+									expected collision resistance.
+								</p>
+								<p>
+									<ao:a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf">NIST 800-107: 4.1 Hash Function Properties</ao:a>:
+								</p>
+								<blockquote>
+									The expected collision-resistance strength of a hash function is half the length of
+									the hash value produced by that hash function.
+								</blockquote>
+								<p>
+									SHA-256 still allows a 256-bit key for compatibility, but new keys will be generated
+									with 128 bits.  However, given that the default algorithm has also been changed to
+									"SHA-512", expect the same default key length (URL parameter and cookie value lengths
+									will not change).
+								</p>
 							</li>
 							<li>Length-constant time equality checks</li>
 							<li><code>compareTo(HashedKey)</code> now orders unsigned</li>

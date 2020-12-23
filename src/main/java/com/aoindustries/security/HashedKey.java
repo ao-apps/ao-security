@@ -68,18 +68,30 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * @deprecated  MD5 should not be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		MD5("MD5", 128 / 8),
+		MD5("MD5", 128 / 8, 128 / 8),
 		/**
 		 * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		SHA_1("SHA-1", 160 / 8),
+		SHA_1("SHA-1", 8, 160 / 8),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
 		@Deprecated
 		SHA_224("SHA-224", 224 / 8),
-		SHA_256("SHA-256", 256 / 8),
+		SHA_256("SHA-256", 256 / 8) {
+			/**
+			 * Also allows the full 256-bit key for compatibility with previous versions.
+			 */
+			@Override
+			<E extends Throwable> byte[] validateKey(Function<? super String, E> newThrowable, byte[] key) throws E {
+				int expected = getHashBytes(); // Full-length key was used in previous releases
+				if(key.length != expected) {
+					super.validateKey(newThrowable, key);
+				}
+				return key;
+			}
+		},
 		SHA_384("SHA-384", 384 / 8),
 		SHA_512("SHA-512", 512 / 8),
 		/**
@@ -109,15 +121,25 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		private Algorithm(String algorithmName, int keyBytes, int hashBytes) {
 			assert algorithmName.indexOf(SEPARATOR) == -1;
 			this.algorithmName = algorithmName;
-			// TODO: Half hashBytes?  https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf
-			//       4.1 Hash Function Properties
-			//       "The expected collision-resistance strength of a hash function is half the length of the hash valueproduced by that hash function"
 			this.keyBytes = keyBytes;
 			this.hashBytes = hashBytes;
 		}
 
+		/**
+		 * <p>
+		 * Uses a default key length that is half the hash length.  This is selected so the likelihood to guess the
+		 * original key is equal to the hash's expected collision resistance.
+		 * </p>
+		 * <p>
+		 * <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf">NIST 800-107: 4.1 Hash Function Properties</a>:
+		 * </p>
+		 * <blockquote>
+		 * The expected collision-resistance strength of a hash function is half the length of
+		 * the hash value produced by that hash function.
+		 * </blockquote>
+		 */
 		private Algorithm(String algorithmName, int hashBytes) {
-			this(algorithmName, hashBytes, hashBytes);
+			this(algorithmName, hashBytes / 2, hashBytes);
 		}
 
 		@Override
@@ -204,7 +226,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * remain supported.
 	 */
 	// Java 9: SHA3_512 could become the default, although SHA2 might still be best for this application?
-	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512_256;
+	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512;
 
 	/**
 	 * Private dummy key array, used to keep constant time when no key available.
