@@ -633,9 +633,7 @@ public class HashedPassword implements Serializable {
 
 	/**
 	 * @param algorithm   The algorithm previously used to hash the password
-	 * @param salt        The provided parameter is zeroed.
 	 * @param iterations  The number of has iterations
-	 * @param hash        The provided parameter is zeroed.
 	 *
 	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
 	 *                                    or {@code hash.length != algorithm.getHashBytes()}
@@ -648,22 +646,15 @@ public class HashedPassword implements Serializable {
 		int iterations,
 		byte[] hash
 	) throws IllegalArgumentException {
-		try {
-			this.algorithm = Objects.requireNonNull(algorithm);
-			this.salt = Arrays.copyOf(salt, salt.length);
-			this.iterations = iterations;
-			this.hash = Arrays.copyOf(hash, hash.length);
-		} finally {
-			Arrays.fill(salt, (byte)0);
-			Arrays.fill(hash, (byte)0);
-		}
+		this.algorithm = Objects.requireNonNull(algorithm);
+		this.salt = Arrays.copyOf(salt, salt.length);
+		this.iterations = iterations;
+		this.hash = Arrays.copyOf(hash, hash.length);
 		validate(IllegalArgumentException::new);
 	}
 
 	/**
-	 * @param salt        The provided parameter is zeroed.
 	 * @param iterations  The number of has iterations
-	 * @param hash        The provided parameter is zeroed.
 	 *
 	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
 	 *                                    or {@code hash.length != algorithm.getHashBytes()}
@@ -685,7 +676,6 @@ public class HashedPassword implements Serializable {
 	 * Creates a new hashed password using the given algorithm, salt, and iterations.
 	 *
 	 * @param algorithm   The algorithm previously used to hash the password
-	 * @param salt        The provided parameter is zeroed.
 	 * @param iterations  The number of has iterations
 	 *
 	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
@@ -796,11 +786,7 @@ public class HashedPassword implements Serializable {
 		} else {
 			// Hash again with the original salt and iterations
 			byte[] newHash = algorithm.hash(password, salt, iterations);
-			try {
-				return slowEquals(hash, newHash);
-			} finally {
-				Arrays.fill(newHash, (byte)0);
-			}
+			return slowEquals(hash, newHash);
 		}
 	}
 

@@ -357,23 +357,16 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 
 	/**
 	 * @param algorithm  The algorithm previously used to hash the key
-	 * @param hash       The provided parameter is zeroed.
 	 *
 	 * @throws  IllegalArgumentException  when {@code hash.length != HASH_BYTES}
 	 */
 	public HashedKey(Algorithm algorithm, byte[] hash) throws IllegalArgumentException {
-		try {
-			this.algorithm = Objects.requireNonNull(algorithm);
-			this.hash = Arrays.copyOf(hash, hash.length);
-		} finally {
-			Arrays.fill(hash, (byte)0);
-		}
+		this.algorithm = Objects.requireNonNull(algorithm);
+		this.hash = Arrays.copyOf(hash, hash.length);
 		validate(IllegalArgumentException::new);
 	}
 
 	/**
-	 * @param hash  The provided parameter is zeroed.
-	 *
 	 * @deprecated  This represents a hash using {@linkplain Algorithm#SHA_256 the previous default algorithm},
 	 *              please use {@link #HashedKey(com.aoindustries.security.HashedKey.Algorithm, byte[])} instead.
 	 */
