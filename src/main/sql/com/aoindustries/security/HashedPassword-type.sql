@@ -22,17 +22,17 @@
  */
 -- TODO: Need newer PostgreSQL 11+ for this, 9.4 doesn't cut it.
 -- TODO: For now, adding an explicit check constraint to tables that use the compound type directly
---CREATE TYPE "com.aoindustries.security"."(HashedPassword)" AS (
+--CREATE TYPE "com.aoindustries.security"."<HashedPassword>" AS (
 --	algorithm text,
 --	salt bytea,
 --	iterations integer,
 --	"hash" bytea
 --);
 
---COMMENT ON TYPE "com.aoindustries.security"."(HashedPassword)" IS
+--COMMENT ON TYPE "com.aoindustries.security"."<HashedPassword>" IS
 --'Row definition for "com.aoindustries.security"."HashedPassword"';
 
---CREATE DOMAIN "com.aoindustries.security"."HashedPassword" AS "com.aoindustries.security"."(HashedPassword)" CHECK (
+--CREATE DOMAIN "com.aoindustries.security"."HashedPassword" AS "com.aoindustries.security"."<HashedPassword>" CHECK (
 --	"com.aoindustries.security"."HashedPassword.validate"(algorithm, salt, iterations, "hash") IS NULL
 --);
 
