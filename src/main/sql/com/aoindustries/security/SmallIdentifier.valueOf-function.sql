@@ -20,27 +20,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
-)
-RETURNS text AS $$
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."SmallIdentifier.valueOf" (encoded character(11))
+RETURNS "com.aoindustries.security"."SmallIdentifier" AS $$
 BEGIN
-	IF this IS NULL THEN
+	IF encoded IS NULL THEN
 		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
-	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
+	ELSIF length(encoded) != 11 THEN
+		RAISE EXCEPTION 'encoded length mismatch: expected 11, got %', length(encoded);
 	END IF;
+	RETURN "com.aoindustries.security"."Identifier.decode"(encoded);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON FUNCTION "com.aoindustries.security"."SmallIdentifier.valueOf" (character(11)) IS
+'Matches method com.aoindustries.security.SmallIdentifier.valueOf
+Matches method com.aoindustries.security.SmallIdentifier.<init>(String)';

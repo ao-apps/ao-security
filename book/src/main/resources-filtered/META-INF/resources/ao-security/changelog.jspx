@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-22T20:35:56-06:00"
+		dateModified="2020-12-24T01:48:40-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -142,6 +142,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						Deprecated <code>UnixCrypt</code> in favor of the <ao:a href="https://commons.apache.org/proper/commons-codec/">Apache Commons Codec</ao:a>
 						implementation: <code><ao:a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/UnixCrypt.html">UnixCrypt</ao:a></code>.
 					</li>
+					<li>Added SQL implementation in alternate "sql" classifier.</li>
 				</ul>
 			</changelog:release>
 		</c:if>

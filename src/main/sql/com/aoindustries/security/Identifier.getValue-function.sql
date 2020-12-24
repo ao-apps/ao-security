@@ -20,27 +20,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
-)
-RETURNS text AS $$
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.getValue" (ch CHARACTER)
+RETURNS BIGINT AS $$
+DECLARE
+	pos integer;
+	"CHARACTERS" text := 'ACDEFGHIJKLMNPRTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789';
 BEGIN
-	IF this IS NULL THEN
+	IF ch IS NULL THEN
 		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
+	ELSIF length(ch) != 1 THEN
+		RAISE EXCEPTION 'ch length mismatch: expected 1, got %', length(ch);
+	END IF;
+	pos := position(ch in "CHARACTERS");
+	IF pos = 0 THEN
+		RAISE EXCEPTION 'Unexpected character: %', ch;
 	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
+		RETURN pos - 1;
 	END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.getValue" (CHARACTER) IS
+'Matches method com.aoindustries.security.Identifier.getValue';

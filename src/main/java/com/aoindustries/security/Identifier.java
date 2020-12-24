@@ -35,6 +35,7 @@ import java.util.Random;
  *
  * @author  AO Industries, Inc.
  */
+// Matches src/main/sql/com/aoindustries/security/Identifier-type.sql
 public class Identifier implements Serializable, Comparable<Identifier> {
 
 	private static final long serialVersionUID = 1L;
@@ -42,13 +43,14 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	/**
 	 * @see  #toString()
 	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.valueOf-function.sql
 	public static Identifier valueOf(String encoded) throws IllegalArgumentException {
 		return new Identifier(encoded);
 	}
 
 	static final long BASE = 57;
 
-	private static final char[] characters = {
+	private static final char[] CHARACTERS = {
 		'A', /*'B',*/ 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 		'N', /*'O',*/ 'P', /*'Q',*/ 'R', /*'S',*/ 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', /*'l',*/ 'm',
@@ -56,7 +58,7 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 	};
 	static {
-		assert characters.length == BASE;
+		assert CHARACTERS.length == BASE;
 	}
 
 	private static final char LOWEST_CHAR = '0';
@@ -66,21 +68,23 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	static {
 		Arrays.fill(values, -1);
 		for(int i=0; i<BASE; i++) {
-			values[characters[i] - LOWEST_CHAR] = i;
+			values[CHARACTERS[i] - LOWEST_CHAR] = i;
 		}
 	}
 
 	/**
 	 * Gets the character for the low-order modulus BASE a long value.
 	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.getCharacter-function.sql
 	static char getCharacter(long value) {
 		int index = (int)remainder(value, BASE);
-		return characters[index];
+		return CHARACTERS[index];
 	}
 
 	/**
 	 * Gets the value for a character as a long.
 	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.getValue-function.sql
 	private static long getValue(char ch) {
 		if(ch >= LOWEST_CHAR && ch<=HIGHEST_CHAR) {
 			int value = values[ch - LOWEST_CHAR];
@@ -95,6 +99,7 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	/**
 	 * Decodes one set of 11 characters to a long.
 	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.decode-function.sql
 	static long decode(String encoded) {
 		assert encoded.length()==11;
 		return
@@ -149,6 +154,7 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	/**
 	 * @see  #toString()
 	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.valueOf-function.sql
 	public Identifier(String encoded) throws IllegalArgumentException {
 		if(encoded.length()!=22) throw new IllegalArgumentException();
 		this.hi = decode(encoded.substring(0, 11));
@@ -183,6 +189,7 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	 * The external representation is a string of characters encoded in base 57, with
 	 * the first 11 characters for "hi" and the last 11 characters for "lo".
 	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.toString-function.sql
 	@Override
 	public String toString() {
 		return new String(

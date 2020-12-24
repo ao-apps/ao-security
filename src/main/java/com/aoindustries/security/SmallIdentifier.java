@@ -33,6 +33,7 @@ import java.util.Random;
  *
  * @author  AO Industries, Inc.
  */
+// Matches src/main/sql/com/aoindustries/security/SmallIdentifier-type.sql
 public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier> {
 
 	private static final long serialVersionUID = 1L;
@@ -40,6 +41,7 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	/**
 	 * @see  #toString()
 	 */
+	// Matches src/main/sql/com/aoindustries/security/SmallIdentifier.valueOf-function.sql
 	public static SmallIdentifier valueOf(String encoded) throws IllegalArgumentException {
 		return new SmallIdentifier(encoded);
 	}
@@ -69,6 +71,7 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	/**
 	 * @see  #toString()
 	 */
+	// Matches src/main/sql/com/aoindustries/security/SmallIdentifier.valueOf-function.sql
 	public SmallIdentifier(String encoded) throws IllegalArgumentException {
 		if(encoded.length()!=11) throw new IllegalArgumentException();
 		this.value = Identifier.decode(encoded);
@@ -97,6 +100,7 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	 * The external representation is a string of characters encoded in base 57, with
 	 * 11 characters for "value".
 	 */
+	// Matches src/main/sql/com/aoindustries/security/SmallIdentifier.toString-function.sql
 	@Override
 	public String toString() {
 		return new String(

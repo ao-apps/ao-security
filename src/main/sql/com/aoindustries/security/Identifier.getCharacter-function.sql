@@ -20,27 +20,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
-)
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.getCharacter" ("value" NUMERIC(20,0))
 RETURNS text AS $$
+DECLARE
+	"BASE" NUMERIC(20,0) := 57;
+	modval INTEGER := mod("value", "BASE");
+	"CHARACTERS" text[] := '{A,C,D,E,F,G,H,I,J,K,L,M,N,P,R,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9}';
 BEGIN
-	IF this IS NULL THEN
+	IF modval IS NULL THEN
 		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
+	ELSIF modval < 0 OR modval >= "BASE" THEN
+		RAISE EXCEPTION 'Unexpected value: %', modval;
 	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
+		RETURN "CHARACTERS"[modval + 1];
 	END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.getCharacter" (NUMERIC(20,0)) IS
+'Matches method com.aoindustries.security.Identifier.getCharacter';

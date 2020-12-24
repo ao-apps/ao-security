@@ -20,27 +20,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
-)
-RETURNS text AS $$
-BEGIN
-	IF this IS NULL THEN
-		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
-	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
-	END IF;
-END;
-$$ LANGUAGE plpgsql
-IMMUTABLE
-RETURNS NULL ON NULL INPUT;
+CREATE CAST (text AS "com.aoindustries.security"."Identifier")
+WITH FUNCTION "com.aoindustries.security"."Identifier.valueOf" (character(22))
+AS ASSIGNMENT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON CAST (text AS "com.aoindustries.security"."Identifier") IS
+'Matches method com.aoindustries.security.Identifier.valueOf';
+
+CREATE CAST ("com.aoindustries.security"."Identifier" AS text)
+WITH FUNCTION "com.aoindustries.security"."Identifier.toString" ("com.aoindustries.security"."Identifier");
+
+COMMENT ON CAST ("com.aoindustries.security"."Identifier" AS text) IS
+'Matches method com.aoindustries.security.Identifier.toString';

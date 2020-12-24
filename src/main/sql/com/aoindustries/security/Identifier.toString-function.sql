@@ -20,27 +20,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.toString" (
+	hi BIGINT,
+	lo BIGINT
 )
 RETURNS text AS $$
 BEGIN
-	IF this IS NULL THEN
-		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
-	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
-	END IF;
+	RETURN
+		   "com.aoindustries.security"."SmallIdentifier.toString"(hi)
+		|| "com.aoindustries.security"."SmallIdentifier.toString"(lo);
 END;
-$$ LANGUAGE plpgsql
+$$ LANGUAGE plpgsql -- TODO: Language SQL?
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.toString" (BIGINT, BIGINT) IS
+'Matches method com.aoindustries.security.Identifier.toString';
+
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.toString" (
+	this "com.aoindustries.security"."Identifier"
+)
+RETURNS text AS $$
+BEGIN
+	RETURN "com.aoindustries.security"."Identifier.toString"(this.hi, this.lo);
+END;
+$$ LANGUAGE plpgsql -- TODO: Language SQL?
+IMMUTABLE
+RETURNS NULL ON NULL INPUT;
+
+COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.toString" ("com.aoindustries.security"."Identifier") IS
+'Matches method com.aoindustries.security.Identifier.toString';

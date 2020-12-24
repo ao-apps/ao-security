@@ -20,27 +20,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
-)
-RETURNS text AS $$
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.valueOf" (encoded character(22))
+RETURNS "com.aoindustries.security"."Identifier" AS $$
 BEGIN
-	IF this IS NULL THEN
+	IF encoded IS NULL THEN
 		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
-	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
+	ELSIF length(encoded) != 22 THEN
+		RAISE EXCEPTION 'encoded length mismatch: expected 22, got %', length(encoded);
 	END IF;
+	RETURN ROW(
+		"com.aoindustries.security"."Identifier.decode"(substr(encoded, 1, 11)),
+		"com.aoindustries.security"."Identifier.decode"(substr(encoded, 12))
+	);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.valueOf" (character(22)) IS
+'Matches method com.aoindustries.security.Identifier.valueOf
+Matches method com.aoindustries.security.Identifier.<init>(String)';

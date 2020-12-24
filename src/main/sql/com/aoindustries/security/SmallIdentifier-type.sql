@@ -20,27 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.toString" (
-	this "com.aoindustries.security"."HashedPassword"
-)
-RETURNS text AS $$
-BEGIN
-	IF this IS NULL THEN
-		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
-	ELSE
-		RETURN "com.aoindustries.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
-	END IF;
-END;
-$$ LANGUAGE plpgsql
-IMMUTABLE
-RETURNS NULL ON NULL INPUT;
+CREATE DOMAIN "com.aoindustries.security"."SmallIdentifier" AS bigint;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword") IS
-'Matches method com.aoindustries.security.HashedPassword.toString';
+COMMENT ON DOMAIN "com.aoindustries.security"."SmallIdentifier"
+IS 'Matches class com.aoindustries.security.SmallIdentifier';

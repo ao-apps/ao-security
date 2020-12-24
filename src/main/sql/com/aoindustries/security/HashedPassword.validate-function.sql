@@ -50,15 +50,15 @@ COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.validate" (text,
 
 -- TODO: Remove once HashedPassword is a domain in PostgreSQL 11+:
 CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.validate" (
-	"hashedPassword" "com.aoindustries.security"."HashedPassword"
+	this "com.aoindustries.security"."HashedPassword"
 )
 RETURNS text AS $$
 BEGIN
 	RETURN "com.aoindustries.security"."HashedPassword.Algorithm.validate"(
-		"hashedPassword".algorithm,
-		"hashedPassword".salt,
-		"hashedPassword".iterations,
-		"hashedPassword"."hash"
+		this.algorithm,
+		this.salt,
+		this.iterations,
+		this."hash"
 	);
 END;
 $$ LANGUAGE plpgsql
