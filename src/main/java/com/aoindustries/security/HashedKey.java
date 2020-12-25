@@ -49,6 +49,7 @@ import java.util.function.Function;
 // TODO: ResultSet constructor, that takes multiple columns?  Constant for number of columns
 //       Same for prepared statement
 //       Implement SQLData, too? (With ServiceLoader?)
+// Matches src/main/sql/com/aoindustries/security/HashedKey-type.sql
 public class HashedKey implements Comparable<HashedKey>, Serializable {
 
 	/**
@@ -61,6 +62,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 *
 	 * @see MessageDigest
 	 */
+	// Matches src/main/sql/com/aoindustries/security/HashedKey.Algorithm-create.sql
 	public enum Algorithm {
 		/**
 		 * @deprecated  MD5 should not be used for any cryptographic purpose.
@@ -68,10 +70,21 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		@Deprecated
 		MD5("MD5", 128 / Byte.SIZE, 128 / Byte.SIZE),
 		/**
+		 * SHA-1 is now considered to have at best 65-bits of collision resistance, if using SHA-1 (which you
+		 * shouldn't) its key size is correspondingly limited to 64 bits.  See:
+		 * <ul>
+		 * <li><a href="https://blog.cloudflare.com/why-its-harder-to-forge-a-sha-1-certificate-than-it-is-to-find-a-sha-1-collision/">Why it’s harder to forge a SHA-1 certificate than it is to find a SHA-1 collision</a></li>
+		 * <li><a href="https://marc-stevens.nl/research/papers/PhD%20Thesis%20Marc%20Stevens%20-%20Attacks%20on%20Hash%20Functions%20and%20Applications.pdf">Attacks on Hash Functions and Applications - PhD Thesis Marc Stevens - Attacks on Hash Functions and Applications.pdf</a></li>
+		 * </ul>
+		 *
 		 * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		SHA_1("SHA-1", 8, 160 / Byte.SIZE),
+		SHA_1(
+			"SHA-1",
+			64 / 8,
+			160 / Byte.SIZE
+		),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
@@ -111,6 +124,28 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * Avoid repetitive allocation.
 		 */
 		static final Algorithm[] values = values();
+
+		/**
+		 * Case-insensitive lookup by algorithm name.
+		 *
+		 * @return  The algorithm or {@code null} when {@code algorithmName == null}
+		 *
+		 * @throws  IllegalArgumentException when no enum with the given algorithm name (case-insensitive) is found
+		 */
+		public static Algorithm findAlgorithm(String algorithmName) throws IllegalArgumentException {
+			if(algorithmName == null) return null;
+			Algorithm algorithm = null;
+			// Search backwards, since higher strength algorithms will be used more
+			for(int i = Algorithm.values.length - 1; i >= 0; i--) {
+				Algorithm a = Algorithm.values[i];
+				if(a.getAlgorithmName().equalsIgnoreCase(algorithmName)) {
+					algorithm = a;
+					break;
+				}
+			}
+			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
+			return algorithm;
+		}
 
 		private final String algorithmName;
 		private final int keyBytes;
@@ -162,7 +197,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		<E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
 			int expected = getKeyBytes();
 			if(key.length != expected) {
-				throw newThrowable.apply("key length mismatch: expected " + expected + ", got " + key.length);
+				throw newThrowable.apply(getAlgorithmName() + ": key length mismatch: expected " + expected + ", got " + key.length);
 			}
 			return key;
 		}
@@ -192,10 +227,11 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			return hashBytes;
 		}
 
+		// Matches src/main/sql/com/aoindustries/security/HashedKey.Algorithm.validateHash-function.sql
 		<E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
 			int expected = getHashBytes();
 			if(hash.length != expected) {
-				throw newThrowable.apply("hash length mismatch: expected " + expected + ", got " + hash.length);
+				throw newThrowable.apply(getAlgorithmName() + ": hash length mismatch: expected " + expected + ", got " + hash.length);
 			}
 			return hash;
 		}
@@ -287,6 +323,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 *
 	 * @param hashedKey  when {@code null}, returns {@code null}
 	 */
+	// Matches src/main/sql/com/aoindustries/security/HashedKey.valueOf-function.sql
 	public static HashedKey valueOf(String hashedKey) {
 		if(hashedKey == null) {
 			return null;
@@ -295,17 +332,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		} else if(hashedKey.length() > 0 && hashedKey.charAt(0) == SEPARATOR) {
 			int pos = hashedKey.indexOf(SEPARATOR, 1);
 			if(pos == -1) throw new IllegalArgumentException("Second separator (" + SEPARATOR + ") not found");
-			String algorithmName = hashedKey.substring(1, pos);
-			Algorithm algorithm = null;
-			// Search backwards, since higher strength algorithms will be used more
-			for(int i = Algorithm.values.length - 1; i >= 0; i--) {
-				Algorithm a = Algorithm.values[i];
-				if(a.getAlgorithmName().equalsIgnoreCase(algorithmName)) {
-					algorithm = a;
-					break;
-				}
-			}
-			if(algorithm == null) throw new IllegalArgumentException("Unsupported algorithm: " + algorithmName);
+			Algorithm algorithm = Algorithm.findAlgorithm(hashedKey.substring(1, pos));
 			byte[] hash = DECODER.decode(hashedKey.substring(pos + 1));
 			return new HashedKey(algorithm, hash);
 		} else if(hashedKey.length() == (Algorithm.MD5.getHashBytes() * 2)) {
@@ -337,6 +364,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	private final Algorithm algorithm;
 	private final byte[] hash;
 
+	// Matches src/main/sql/com/aoindustries/security/HashedKey.validate-function.sql
 	private <E extends Throwable> void validate(Function<? super String,E> newThrowable) throws E {
 		if(algorithm == null) {
 			if(hash != null) throw newThrowable.apply("hash must be null when algorithm is null");
@@ -391,6 +419,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * Please see {@link #valueOf(java.lang.String)} for the inverse operation.
 	 * </p>
 	 */
+	// Matches src/main/sql/com/aoindustries/security/HashedKey.toString-function.sql
 	@Override
 	public String toString() {
 		if(algorithm == null) {

@@ -56,6 +56,7 @@ import javax.crypto.spec.PBEKeySpec;
 // TODO: ResultSet constructor, that takes multiple columns?  Constant for number of columns
 //       Same for prepared statement
 //       Implement SQLData, too? (With ServiceLoader?)
+// Matches src/main/sql/com/aoindustries/security/HashedPassword-type.sql
 public class HashedPassword implements Serializable {
 
 	/**

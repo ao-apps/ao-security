@@ -31,10 +31,9 @@ BEGIN
 	-- Matches method com.aoindustries.security.HashedPassword.Algorithm.CRYPT.validateSalt
 	IF algorithm = 'crypt' AND (get_byte(salt, 0) & 240) != 0 THEN
 		RETURN algorithm || ': salt must be twelve bits only';
-	END IF;
 	-- Matches method com.aoindustries.security.HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.validateSalt
 	-- Also allows the 256-bit salt for compatibility with previous versions.
-	IF NOT (algorithm = 'PBKDF2WithHmacSHA1' AND octet_length(salt) = (256 / 8)) THEN
+	ELSIF NOT (algorithm = 'PBKDF2WithHmacSHA1' AND octet_length(salt) = (256 / 8)) THEN
 		-- Matches method com.aoindustries.security.HashedPassword.Algorithm.validateSalt
 		expected := (SELECT "saltBytes" FROM "com.aoindustries.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
 		IF octet_length(salt) != expected THEN

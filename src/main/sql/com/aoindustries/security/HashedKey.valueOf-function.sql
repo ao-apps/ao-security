@@ -20,8 +20,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.valueOf" ("hashedPassword" text)
-RETURNS "com.aoindustries.security"."HashedPassword" AS $$
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedKey.valueOf" ("hashedKey" text)
+RETURNS "com.aoindustries.security"."HashedKey" AS $$
 DECLARE
 	split text[];
 	splitlen integer;
@@ -29,45 +29,49 @@ DECLARE
 	"algorithm" text;
 	"hash" bytea;
 	hashlen integer;
-	"result" "com.aoindustries.security"."HashedPassword";
+	"result" "com.aoindustries.security"."HashedKey";
 	"resultValid" text;
 BEGIN
-	IF "hashedPassword" IS NULL THEN
+	IF "hashedKey" IS NULL THEN
 		"result" := NULL;
-	ELSIF "hashedPassword" = '*' THEN
-		"result" := ROW(NULL, NULL, 0, NULL);
-	ELSIF "hashedPassword" LIKE '$%' THEN
-		split := regexp_split_to_array("hashedPassword", '\$');
+	ELSIF "hashedKey" = '*' THEN
+		"result" := ROW(NULL, NULL);
+	ELSIF "hashedKey" LIKE '$%' THEN
+		split := regexp_split_to_array("hashedKey", '\$');
 		splitlen := array_length(split, 1);
-		IF splitlen != 5 THEN
-			RAISE EXCEPTION 'Unexpected number of parts: expected 5, got %: %', splitlen, "hashedPassword";
+		IF splitlen != 3 THEN
+			RAISE EXCEPTION 'Unexpected number of parts: expected 3, got %: %', splitlen, "hashedKey";
 		END IF;
 		"algorithmName" := split[2];
-		algorithm := (SELECT "name" FROM "com.aoindustries.security"."HashedPassword.Algorithm" WHERE lower("name")=lower("algorithmName"));
+		algorithm := (SELECT "name" FROM "com.aoindustries.security"."HashedKey.Algorithm" WHERE lower("name")=lower("algorithmName"));
 		IF algorithm IS NULL THEN
 			RAISE EXCEPTION 'Unsupported algorithm: %', "algorithmName";
 		END IF;
 		"result" := ROW(
 			"algorithm",
-			decode(split[4], 'base64'),
-			split[3],
-			decode(split[5], 'base64')
+			decode(split[3], 'base64')
 		);
-	ELSIF length("hashedPassword") = 13 THEN
-		RAISE EXCEPTION 'Due to limited (hopefully none at all) use of crypt, parsing will not be implemented in SQL.  Please use the Java API to perform data conversion: %', "hashedPassword";
-	ELSIF length("hashedPassword") = (128 / 4) THEN
-		"result" := ROW('MD5', E''::bytea, 0, decode("hashedPassword", 'hex'));
+	ELSIF length("hashedKey") = (128 / 4) THEN
+		"result" := ROW('MD5', decode("hashedKey", 'hex'));
 	ELSE
-		"hash" := decode("hashedPassword", 'base64');
+		"hash" := decode("hashedKey", 'base64');
 		hashlen := octet_length("hash");
 		IF hashlen = (160 / 8) THEN
-			"result" := ROW('SHA-1', E''::bytea, 0, "hash");
+			"result" := ROW('SHA-1', "hash");
+		ELSIF hashlen = (224 / 8) THEN
+			"result" := ROW('SHA-224', "hash");
+		ELSIF hashlen = (256 / 8) THEN
+			"result" := ROW('SHA-256', "hash");
+		ELSIF hashlen = (384 / 8) THEN
+			"result" := ROW('SHA-384', "hash");
+		ELSIF hashlen = (512 / 8) THEN
+			"result" := ROW('SHA-512', "hash");
 		ELSE
 			RAISE EXCEPTION 'Unable to guess algorithm by hash length: %', hashlen;
 		END IF;
 	END IF;
 	-- TODO: Don't validate here once is a domain in PostgreSQL 11+
-	"resultValid" := "com.aoindustries.security"."HashedPassword.validate"("result");
+	"resultValid" := "com.aoindustries.security"."HashedKey.validate"("result");
 	IF "resultValid" IS NOT NULL THEN
 		RAISE EXCEPTION '%', "resultValid";
 	END IF;
@@ -77,5 +81,5 @@ $$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.valueOf" (text) IS
-'Matches method com.aoindustries.security.HashedPassword.valueOf';
+COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.valueOf" (text) IS
+'Matches method com.aoindustries.security.HashedKey.valueOf';

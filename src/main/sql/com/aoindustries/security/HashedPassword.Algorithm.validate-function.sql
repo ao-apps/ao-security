@@ -34,8 +34,7 @@ DECLARE
 BEGIN
 	IF (SELECT "name" FROM "com.aoindustries.security"."HashedPassword.Algorithm" WHERE "name" = algorithm) IS NULL THEN
 		RETURN 'Unknown algorithm: ' || algorithm;
-	END IF;
-	IF salt IS NULL THEN
+	ELSIF salt IS NULL THEN
 		RETURN 'salt required when have algorithm';
 	END IF;
 	"saltValid" := "com.aoindustries.security"."HashedPassword.Algorithm.validateSalt"(algorithm, salt);
@@ -45,15 +44,13 @@ BEGIN
 	"iterationsValid" := "com.aoindustries.security"."HashedPassword.Algorithm.validateIterations"(algorithm, iterations);
 	IF "iterationsValid" IS NOT NULL THEN
 		RETURN "iterationsValid";
-	END IF;
-	IF "hash" IS NULL THEN
+	ELSIF "hash" IS NULL THEN
 		RETURN 'hash required when have algorithm';
 	END IF;
 	"hashValid" := "com.aoindustries.security"."HashedPassword.Algorithm.validateHash"(algorithm, "hash");
 	IF "hashValid" IS NOT NULL THEN
 		RETURN "hashValid";
-	END IF;
-	IF algorithm = 'PBKDF2WithHmacSHA1' THEN
+	ELSIF algorithm = 'PBKDF2WithHmacSHA1' THEN
 		-- Matches method com.aoindustries.security.HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.validate
 		-- Performs an additional check that (salt, hash) are either the old sizes or the new, but not a mismatched
 		-- combination between them.
