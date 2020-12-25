@@ -28,18 +28,18 @@ CREATE TABLE "com.aoindustries.security"."HashedKey.Algorithm" (
 );
 
 INSERT INTO "com.aoindustries.security"."HashedKey.Algorithm" VALUES
-('MD5',                  FALSE,     128 / 8, 128 / 8),
-('SHA-1',                FALSE,      64 / 8, 160 / 8),
-('SHA-224',              FALSE, 224 / 2 / 8, 224 / 8),
-('SHA-256',               TRUE, 256 / 2 / 8, 256 / 8),
-('SHA-384',               TRUE, 384 / 2 / 8, 384 / 8),
-('SHA-512',               TRUE, 512 / 2 / 8, 512 / 8),
-('SHA-512/224',          FALSE, 224 / 2 / 8, 224 / 8),
-('SHA-512/256',           TRUE, 256 / 2 / 8, 256 / 8),
-('SHA3-224',             FALSE, 224 / 2 / 8, 224 / 8),
-('SHA3-256',              TRUE, 256 / 2 / 8, 256 / 8),
-('SHA3-384',              TRUE, 384 / 2 / 8, 384 / 8),
-('SHA3-512',              TRUE, 512 / 2 / 8, 512 / 8);
+('MD5',         FALSE, 128 / 8, 128 / 8),
+('SHA-1',       FALSE, 128 / 8, 160 / 8),
+('SHA-224',     FALSE, 224 / 8, 224 / 8),
+('SHA-256',      TRUE, 256 / 8, 256 / 8),
+('SHA-384',      TRUE, 384 / 8, 384 / 8),
+('SHA-512',      TRUE, 512 / 8, 512 / 8),
+('SHA-512/224', FALSE, 224 / 8, 224 / 8),
+('SHA-512/256',  TRUE, 256 / 8, 256 / 8),
+('SHA3-224',    FALSE, 224 / 8, 224 / 8),
+('SHA3-256',     TRUE, 256 / 8, 256 / 8),
+('SHA3-384',     TRUE, 384 / 8, 384 / 8),
+('SHA3-512',     TRUE, 512 / 8, 512 / 8);
 
 COMMENT ON TABLE "com.aoindustries.security"."HashedKey.Algorithm" IS
 'Matches enum com.aoindustries.security.HashedKey.Algorithm';

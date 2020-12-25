@@ -68,10 +68,10 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * @deprecated  MD5 should not be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		MD5("MD5", 128 / Byte.SIZE, 128 / Byte.SIZE),
+		MD5("MD5", 128 / Byte.SIZE),
 		/**
 		 * SHA-1 is now considered to have at best 65-bits of collision resistance, if using SHA-1 (which you
-		 * shouldn't) its key size is correspondingly limited to 64 bits.  See:
+		 * shouldn't) its key size is correspondingly limited to 128 bits.  See:
 		 * <ul>
 		 * <li><a href="https://blog.cloudflare.com/why-its-harder-to-forge-a-sha-1-certificate-than-it-is-to-find-a-sha-1-collision/">Why it’s harder to forge a SHA-1 certificate than it is to find a SHA-1 collision</a></li>
 		 * <li><a href="https://marc-stevens.nl/research/papers/PhD%20Thesis%20Marc%20Stevens%20-%20Attacks%20on%20Hash%20Functions%20and%20Applications.pdf">Attacks on Hash Functions and Applications - PhD Thesis Marc Stevens - Attacks on Hash Functions and Applications.pdf</a></li>
@@ -80,29 +80,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
 		 */
 		@Deprecated
-		SHA_1(
-			"SHA-1",
-			64 / 8,
-			160 / Byte.SIZE
-		),
+		SHA_1("SHA-1", 128 / Byte.SIZE, 160 / Byte.SIZE),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
 		@Deprecated
 		SHA_224("SHA-224", 224 / Byte.SIZE),
-		SHA_256("SHA-256", 256 / Byte.SIZE) {
-			/**
-			 * Also allows the full 256-bit key for compatibility with previous versions.
-			 */
-			@Override
-			<E extends Throwable> byte[] validateKey(Function<? super String, E> newThrowable, byte[] key) throws E {
-				int expected = getHashBytes(); // Full-length key was used in previous releases
-				if(key.length != expected) {
-					super.validateKey(newThrowable, key);
-				}
-				return key;
-			}
-		},
+		SHA_256("SHA-256", 256 / Byte.SIZE),
 		SHA_384("SHA-384", 384 / Byte.SIZE),
 		SHA_512("SHA-512", 512 / Byte.SIZE),
 		/**
@@ -159,20 +143,10 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
-		 * <p>
-		 * Uses a default key length that is half the hash length.  This is selected so the likelihood to guess the
-		 * original key is equal to the hash's expected collision resistance.
-		 * </p>
-		 * <p>
-		 * <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf">NIST 800-107: 4.1 Hash Function Properties</a>:
-		 * </p>
-		 * <blockquote>
-		 * The expected collision-resistance strength of a hash function is half the length of
-		 * the hash value produced by that hash function.
-		 * </blockquote>
+		 * Uses a default key length that is equal to the hash length.
 		 */
 		private Algorithm(String algorithmName, int hashBytes) {
-			this(algorithmName, hashBytes / 2, hashBytes);
+			this(algorithmName, hashBytes, hashBytes);
 		}
 
 		@Override
@@ -267,7 +241,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * remain supported.
 	 */
 	// Java 9: SHA3_512 could become the default, although SHA2 might still be best for this application?
-	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_512;
+	public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.SHA_256;
 
 	/**
 	 * Private dummy key array, used to keep constant time when no key available.
@@ -302,7 +276,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 */
 	@Deprecated
 	public static byte[] generateKey() {
-		return Algorithm.SHA_256.generateKey(HASH_BYTES); // The full 256-bit key for compatibility with previous versions
+		int keyBytes = Algorithm.SHA_256.getKeyBytes();
+		assert keyBytes == HASH_BYTES;
+		return Algorithm.SHA_256.generateKey(keyBytes);
 	}
 
 	/**
