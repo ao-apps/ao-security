@@ -476,11 +476,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	}
 
 	/**
-	 * The hash code is just the first 32 bits of the hash.
+	 * The hash code is taken from the last 32 bits of the hash.
+	 * The last 32 bits are selected because the first bits might include zero padding when the hash length is not a
+	 * multiple of {@link Byte#SIZE}.
 	 */
 	@Override
 	public int hashCode() {
-		return (hash == null) ? 0 : IoUtils.bufferToInt(hash);
+		return (hash == null) ? 0 : IoUtils.bufferToInt(hash, hash.length - Integer.BYTES);
 	}
 
 	@Override
