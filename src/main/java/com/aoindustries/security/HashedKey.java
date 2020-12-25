@@ -335,6 +335,23 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 	}
 
+	/**
+	 * Restores a {@link HashedKey} from its individual fields.  This is useful for reading the object from a
+	 * database, for example.
+	 *
+	 * @param algorithm  The algorithm previously used to hash the key
+	 *
+	 * @throws  IllegalArgumentException  when {@code hash.length != algorithm.getHashBytes()}
+	 */
+	public static HashedKey valueOf(Algorithm algorithm, byte[] hash) throws IllegalArgumentException {
+		if(algorithm == null) {
+			if(hash != null) throw new IllegalArgumentException("hash must be null when algorithm is null");
+			return NO_KEY;
+		} else {
+			return new HashedKey(algorithm, hash);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private final Algorithm algorithm;
@@ -361,8 +378,12 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	/**
 	 * @param algorithm  The algorithm previously used to hash the key
 	 *
-	 * @throws  IllegalArgumentException  when {@code hash.length != HASH_BYTES}
+	 * @throws  IllegalArgumentException  when {@code hash.length != algorithm.getHashBytes()}
+	 *
+	 * @deprecated  Please use {@link #valueOf(com.aoindustries.security.HashedKey.Algorithm, byte[])},
+	 *              which is able to automatically return the {@link #NO_KEY} singleton.
 	 */
+	@Deprecated
 	public HashedKey(Algorithm algorithm, byte[] hash) throws IllegalArgumentException {
 		this.algorithm = Objects.requireNonNull(algorithm);
 		this.hash = Arrays.copyOf(hash, hash.length);
@@ -370,11 +391,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	}
 
 	/**
+	 * @throws  IllegalArgumentException  when {@code hash.length != HASH_BYTES}
+	 *
 	 * @deprecated  This represents a hash using {@linkplain Algorithm#SHA_256 the previous default algorithm},
 	 *              please use {@link #HashedKey(com.aoindustries.security.HashedKey.Algorithm, byte[])} instead.
 	 */
 	@Deprecated
-	public HashedKey(byte[] hash) {
+	public HashedKey(byte[] hash) throws IllegalArgumentException {
 		this(Algorithm.SHA_256, hash);
 	}
 

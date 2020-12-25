@@ -692,6 +692,34 @@ public class HashedPassword implements Serializable {
 		}
 	}
 
+	/**
+	 * Restores a {@link HashedPassword} from its individual fields.  This is useful for reading the object from a
+	 * database, for example.
+	 *
+	 * @param algorithm   The algorithm previously used to hash the password
+	 * @param iterations  The number of has iterations
+	 *
+	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
+	 *                                    or {@code hash.length != algorithm.getHashBytes()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 */
+	public static HashedPassword valueOf(
+		Algorithm algorithm,
+		byte[] salt,
+		int iterations,
+		byte[] hash
+	) throws IllegalArgumentException {
+		if(algorithm == null) {
+			if(salt != null) throw new IllegalArgumentException("salt must be null when algorithm is null");
+			if(iterations != 0) throw new IllegalArgumentException("iterations must be 0 when algorithm is null");
+			if(hash != null) throw new IllegalArgumentException("hash must be null when algorithm is null");
+			return NO_PASSWORD;
+		} else {
+			return new HashedPassword(algorithm, salt, iterations, hash);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private final Algorithm algorithm;
@@ -729,7 +757,11 @@ public class HashedPassword implements Serializable {
 	 *                                    or {@code hash.length != algorithm.getHashBytes()}
 	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 *
+	 * @deprecated  Please use {@link #valueOf(com.aoindustries.security.HashedPassword.Algorithm, byte[], int, byte[])},
+	 *              which is able to automatically return the {@link #NO_PASSWORD} singleton.
 	 */
+	@Deprecated
 	public HashedPassword(
 		Algorithm algorithm,
 		byte[] salt,

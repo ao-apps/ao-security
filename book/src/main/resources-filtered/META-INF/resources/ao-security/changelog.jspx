@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-25T01:21:28-06:00"
+		dateModified="2020-12-25T01:39:21-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -64,6 +64,12 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							so that URL parameter and cookie value lengths will not change.  We believe <code>SHA-512</code>
 							would be overkill, especially considering it is a hash of an equally-sized random key.
 						</p>
+					</li>
+					<li>
+						Deprecated the all-field constructors, with new <code>valueOf(…)</code> methods.  This is because
+						the public constructor does not accept a null algorithm, since the <code>NO_KEY</code> /
+						<code>NO_PASSWORD</code> singletons must be used.  With this change, the static method can
+						determine the correct action, instead of forcing it on the calling code.
 					</li>
 				</ul>
 			</changelog:release>
