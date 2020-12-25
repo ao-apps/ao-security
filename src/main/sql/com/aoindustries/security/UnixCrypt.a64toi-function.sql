@@ -43,4 +43,6 @@ IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."UnixCrypt.a64toi" (CHARACTER) IS
-'Matches method com.aoindustries.security.UnixCrypt.a64toi';
+'Gets the numeric value represented by the given character.
+
+Matches method com.aoindustries.security.UnixCrypt.a64toi';
