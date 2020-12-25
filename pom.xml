@@ -25,11 +25,11 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.aoindustries</groupId><artifactId>ao-oss-parent</artifactId><version>1.14.0<!-- -POST-SNAPSHOT --></version>
+		<groupId>com.aoindustries</groupId><artifactId>ao-oss-parent</artifactId><version>1.14.0-POST-SNAPSHOT</version>
 		<relativePath>../ao-oss-parent/pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.aoindustries</groupId><artifactId>ao-security</artifactId><version>1.0.0-POST-SNAPSHOT</version>
+	<groupId>com.aoindustries</groupId><artifactId>ao-security</artifactId><version>1.0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<properties>
@@ -218,7 +218,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		<dependencies>
 			<!-- Direct -->
 			<dependency>
-				<groupId>com.aoindustries</groupId><artifactId>ao-lang</artifactId><version>4.11.1<!-- ${POST-SNAPSHOT} --></version>
+				<groupId>com.aoindustries</groupId><artifactId>ao-lang</artifactId><version>4.11.1${POST-SNAPSHOT}</version>
 			</dependency>
 			<!-- Test Direct -->
 			<dependency>
