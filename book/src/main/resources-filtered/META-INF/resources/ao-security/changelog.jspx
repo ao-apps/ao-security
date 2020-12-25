@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-24T23:10:24-06:00"
+		dateModified="2020-12-24T23:17:05-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -62,9 +62,9 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							</li>
 							<li>
 								<p>
-									For the SHA-* algorithms, the key length now defaults to half that of the hash length.
-									This is selected so the likelihood to guess the original key is equal to the hash's
-									expected collision resistance.
+									For the SHA-* algorithms (with the exception of SHA-1 explained below), the key length
+									now defaults to half that of the hash length.  This is selected so the likelihood to
+									guess the original key is equal to the hash's expected collision resistance.
 								</p>
 								<p>
 									<ao:a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf">NIST 800-107: 4.1 Hash Function Properties</ao:a>:
@@ -79,6 +79,17 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 									"SHA-512", expect the same default key length (URL parameter and cookie value lengths
 									will not change).
 								</p>
+								<p>
+									For SHA-1, which is deprecated and should not be used anyway, we have further reduced
+									the key size to 64 bits (instead of the 80 bits it would be if assumed half the hash size).
+									This is because SHA-1 is now considered to have at best 65-bits of collision resistance.
+									If using SHA-1 (which you shouldn't) its key size is correspondingly limited to 64 bits.
+									See:
+								</p>
+								<ul>
+									<li><ao:a href="https://blog.cloudflare.com/why-its-harder-to-forge-a-sha-1-certificate-than-it-is-to-find-a-sha-1-collision/">Why it’s harder to forge a SHA-1 certificate than it is to find a SHA-1 collision</ao:a></li>
+									<li><ao:a href="https://marc-stevens.nl/research/papers/PhD%20Thesis%20Marc%20Stevens%20-%20Attacks%20on%20Hash%20Functions%20and%20Applications.pdf">Attacks on Hash Functions and Applications - PhD Thesis Marc Stevens - Attacks on Hash Functions and Applications.pdf</ao:a></li>
+								</ul>
 							</li>
 							<li>Length-constant time equality checks</li>
 							<li><code>compareTo(HashedKey)</code> now orders unsigned</li>
