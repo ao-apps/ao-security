@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-24T01:48:40-06:00"
+		dateModified="2020-12-24T23:10:24-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -55,7 +55,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 					<li>Length-constant time equality checks <code>Identifier</code>.</li>
 					<li><code>HashedKey</code> improvements:
 						<ol>
-							<li>New constant <code>NO_KEY</code> that may be used when there is no key.</li>
+							<li>New constant <code>NO_KEY</code> that must be used when there is no key.</li>
 							<li>
 								Now supports multiple algorithms, with the recommended algorithm being "SHA-512".
 								Previously, all keys were "SHA-256".
@@ -102,7 +102,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 					</li>
 					<li><code>HashedPassword</code> improvements:
 						<ol>
-							<li>New constant <code>NO_PASSWORD</code> that may be used when there is no password.</li>
+							<li>New constant <code>NO_PASSWORD</code> that must be used when there is no password.</li>
 							<li>Now supports multiple algorithms, with the recommended algorithm being "PBKDF2WithHmacSHA512".</li>
 							<li>
 								Per-algorithm recommended iterations, with values increased significantly higher than

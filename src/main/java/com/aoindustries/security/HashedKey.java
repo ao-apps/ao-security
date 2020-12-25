@@ -288,7 +288,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static final int HASH_BYTES = Algorithm.SHA_256.getHashBytes();
 
 	/**
-	 * A singleton that may be used in places where no key is set.
+	 * A singleton that must be used in places where no key is set.
 	 */
 	public static final HashedKey NO_KEY = new HashedKey();
 

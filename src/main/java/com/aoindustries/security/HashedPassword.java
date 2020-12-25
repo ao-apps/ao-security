@@ -576,7 +576,7 @@ public class HashedPassword implements Serializable {
 		/ 2;
 
 	/**
-	 * A singleton that may be used in places where no password is set.
+	 * A singleton that must be used in places where no password is set.
 	 */
 	public static final HashedPassword NO_PASSWORD = new HashedPassword();
 
