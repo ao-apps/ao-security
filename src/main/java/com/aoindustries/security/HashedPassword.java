@@ -36,12 +36,14 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.crypto.SecretKeyFactory;
@@ -108,13 +110,16 @@ public class HashedPassword implements Serializable {
 			}
 
 			/**
+			 * {@inheritDoc}
+			 * <p>
 			 * Clears the high-order four bits since the salt is only twelve bits.
+			 * </p>
 			 */
 			@Override
-			byte[] generateSalt(int saltBytes) {
+			byte[] generateSalt(int saltBytes, Random random) {
 				if(saltBytes != 2) throw new IllegalArgumentException();
 				byte[] salt = new byte[2];
-				Identifier.secureRandom.nextBytes(salt);
+				random.nextBytes(salt);
 				salt[0] &= 0x0f;
 				return validateSalt(AssertionError::new, salt);
 			}
@@ -353,28 +358,43 @@ public class HashedPassword implements Serializable {
 		}
 
 		/**
-		 * Generates a random salt of the given number of bytes.
+		 * Generates a random salt of the given number of bytes
+		 * using the provided {@link Random} source.
 		 */
-		byte[] generateSalt(int saltBytes) {
+		byte[] generateSalt(int saltBytes, Random random) {
 			byte[] salt;
 			if(saltBytes == 0) {
 				salt = EMPTY_BYTE_ARRAY;
 			} else {
 				salt = new byte[saltBytes];
-				Identifier.secureRandom.nextBytes(salt);
+				random.nextBytes(salt);
 			}
 			return validateSalt(AssertionError::new, salt);
 		}
 
 		/**
-		 * Generates a random salt of {@link #getSaltBytes()} bytes in length.
+		 * Generates a random salt of {@link #getSaltBytes()} bytes in length
+		 * using the provided {@link Random} source.
+		 *
+		 * @see  HashedPassword#HashedPassword(java.lang.String, java.util.Random)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int, java.util.Random)
+		 */
+		public byte[] generateSalt(Random random) {
+			return generateSalt(getSaltBytes(), random);
+		}
+
+		/**
+		 * Generates a random salt of {@link #getSaltBytes()} bytes in length
+		 * using a default {@link SecureRandom} instance, which is not a
+		 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 		 *
 		 * @see  HashedPassword#HashedPassword(java.lang.String)
 		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
 		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)
 		 */
 		public byte[] generateSalt() {
-			return generateSalt(getSaltBytes());
+			return generateSalt(Identifier.secureRandom);
 		}
 
 		/**
@@ -421,7 +441,9 @@ public class HashedPassword implements Serializable {
 		 *
 		 * @see  #hash(java.lang.String, byte[], int)
 		 * @see  HashedPassword#HashedPassword(java.lang.String)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, java.util.Random)
 		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
+		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)
 		 */
 		public int getRecommendedIterations() {
 			return recommendedIterations;
@@ -581,7 +603,9 @@ public class HashedPassword implements Serializable {
 	public static final HashedPassword NO_PASSWORD = new HashedPassword();
 
 	/**
-	 * Generates a random salt of {@link #SALT_BYTES} bytes in length.
+	 * Generates a random salt of {@link #SALT_BYTES} bytes in length
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
 	 * @see  #hash(java.lang.String, byte[], int)
 	 *
@@ -593,7 +617,7 @@ public class HashedPassword implements Serializable {
 	 */
 	@Deprecated
 	public static byte[] generateSalt() {
-		return Algorithm.PBKDF2WITHHMACSHA1.generateSalt(SALT_BYTES);
+		return Algorithm.PBKDF2WITHHMACSHA1.generateSalt(SALT_BYTES, Identifier.secureRandom);
 	}
 
 	/**
@@ -761,12 +785,7 @@ public class HashedPassword implements Serializable {
 	 *              which is able to automatically return the {@link #NO_PASSWORD} singleton.
 	 */
 	@Deprecated
-	public HashedPassword(
-		Algorithm algorithm,
-		byte[] salt,
-		int iterations,
-		byte[] hash
-	) throws IllegalArgumentException {
+	public HashedPassword(Algorithm algorithm, byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
 		this.algorithm = Objects.requireNonNull(algorithm);
 		this.salt = Arrays.copyOf(salt, salt.length);
 		this.iterations = iterations;
@@ -815,7 +834,24 @@ public class HashedPassword implements Serializable {
 
 	/**
 	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
-	 * and the given iterations.
+	 * and the given iterations
+	 * using the provided {@link Random} source.
+	 *
+	 * @param algorithm   The algorithm previously used to hash the password
+	 * @param iterations  The number of has iterations
+	 *
+	 * @throws  IllegalArgumentException  when {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 */
+	public HashedPassword(String password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
+		this(password, algorithm, algorithm.generateSalt(random), iterations);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
+	 * and the given iterations
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
 	 * @param algorithm   The algorithm previously used to hash the password
 	 * @param iterations  The number of has iterations
@@ -824,24 +860,47 @@ public class HashedPassword implements Serializable {
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
 	public HashedPassword(String password, Algorithm algorithm, int iterations) throws IllegalArgumentException {
-		this(password, algorithm, algorithm.generateSalt(), iterations);
+		this(password, algorithm, iterations, Identifier.secureRandom);
 	}
 
 	/**
 	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
-	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}.
+	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using the provided {@link Random} source.
+	 */
+	public HashedPassword(String password, Algorithm algorithm, Random random) {
+		this(password, algorithm, algorithm.getRecommendedIterations(), random);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
+	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	public HashedPassword(String password, Algorithm algorithm) {
-		this(password, algorithm, algorithm.getRecommendedIterations());
+		this(password, algorithm, Identifier.secureRandom);
 	}
 
 	/**
 	 * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
 	 * {@linkplain Algorithm#generateSalt() a random salt}, and
-	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}.
+	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using the provided {@link Random} source.
+	 */
+	public HashedPassword(String password, Random random) {
+		this(password, RECOMMENDED_ALGORITHM, random);
+	}
+
+	/**
+	 * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+	 * {@linkplain Algorithm#generateSalt() a random salt}, and
+	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	public HashedPassword(String password) {
-		this(password, RECOMMENDED_ALGORITHM);
+		this(password, Identifier.secureRandom);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {

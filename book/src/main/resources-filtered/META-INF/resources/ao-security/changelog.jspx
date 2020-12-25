@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-25T11:47:45-06:00"
+		dateModified="2020-12-25T14:24:11-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,7 +46,20 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Documented that the default <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>
+						instance is not a <ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>.
+					</li>
+					<li>
+						Added overloads to all places that use <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>,
+						allowing the caller to provide their own random instance, which may be a
+						<ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>
+						where appropriate to the application.
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release

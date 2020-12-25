@@ -78,7 +78,7 @@ public class HashedPasswordTest {
 		final String password = generatePassword();
 		assertEquals(-1, algorithm.getAlgorithmName().indexOf(HashedPassword.SEPARATOR));
 		assertTrue(algorithm.getSaltBytes() >= 0);
-		byte[] salt = algorithm.generateSalt(saltBytes);
+		byte[] salt = algorithm.generateSalt(saltBytes, Identifier.secureRandom);
 		assertSame(salt, algorithm.validateSalt(AssertionError::new, salt));
 		assertTrue(algorithm.getMinimumIterations() >= 0);
 		assertTrue(algorithm.getMaximumIterations() >= 0);

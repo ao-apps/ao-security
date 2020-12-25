@@ -60,7 +60,7 @@ public class HashedKeyTest {
 
 	private static void testAlgorithm(HashedKey.Algorithm algorithm, int keyBytes) throws Exception {
 		assertTrue(algorithm.getKeyBytes() >= 0);
-		byte[] key = algorithm.generateKey(keyBytes);
+		byte[] key = algorithm.generateKey(keyBytes, Identifier.secureRandom);
 		assertSame(key, algorithm.validateKey(AssertionError::new, key));
 		assertTrue(algorithm.getHashBytes() >= 0);
 		byte[] algHash = algorithm.hash(key);

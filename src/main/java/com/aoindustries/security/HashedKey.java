@@ -37,8 +37,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Function;
 
 /**
@@ -177,21 +179,34 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
-		 * Generates a random plaintext key of the given number of bytes.
+		 * Generates a random plaintext key of the given number of bytes
+		 * using the provided {@link Random} source.
 		 */
-		byte[] generateKey(int keyBytes) {
+		byte[] generateKey(int keyBytes, Random random) {
 			byte[] key = new byte[keyBytes];
-			Identifier.secureRandom.nextBytes(key);
+			random.nextBytes(key);
 			return validateKey(AssertionError::new, key);
 		}
 
 		/**
-		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length.
+		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length
+		 * using the provided {@link Random} source.
+		 *
+		 * @see  #hash(byte[])
+		 */
+		public byte[] generateKey(Random random) {
+			return generateKey(getKeyBytes(), random);
+		}
+
+		/**
+		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length
+		 * using a default {@link SecureRandom} instance, which is not a
+		 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 		 *
 		 * @see  #hash(byte[])
 		 */
 		public byte[] generateKey() {
-			return generateKey(getKeyBytes());
+			return generateKey(Identifier.secureRandom);
 		}
 
 		/**
@@ -267,7 +282,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static final HashedKey NO_KEY = new HashedKey();
 
 	/**
-	 * Generates a random plaintext key of {@link #HASH_BYTES} bytes in length.
+	 * Generates a random plaintext key of {@link #HASH_BYTES} bytes in length
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
 	 * @see  #hash(byte[])
 	 *
@@ -278,7 +295,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static byte[] generateKey() {
 		int keyBytes = Algorithm.SHA_256.getKeyBytes();
 		assert keyBytes == HASH_BYTES;
-		return Algorithm.SHA_256.generateKey(keyBytes);
+		return Algorithm.SHA_256.generateKey(keyBytes, Identifier.secureRandom);
 	}
 
 	/**

@@ -116,20 +116,27 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 			+ getValue(encoded.charAt(10))
 		;
 	}
+	/**
+	 * Note: This is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 */
 	static final SecureRandom secureRandom = new SecureRandom();
 
 	private final long hi;
 	private final long lo;
 
 	/**
-	 * Creates a new, random Identifier using the default SecureRandom instance.
+	 * Creates a new, random {@link Identifier}
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	public Identifier() {
 		this(secureRandom);
 	}
 
 	/**
-	 * Creates a new, random Identifier using the provided Random source.
+	 * Creates a new, random {@link Identifier}
+	 * using the provided {@link Random} source.
 	 */
 	public Identifier(Random random) {
 		byte[] bytes = new byte[Long.BYTES * 2];
