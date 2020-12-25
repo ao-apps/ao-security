@@ -47,7 +47,7 @@ CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedKey.validate" (
 )
 RETURNS text AS $$
 BEGIN
-	RETURN "com.aoindustries.security"."HashedKey.Algorithm.validate"(this.algorithm, this."hash");
+	RETURN "com.aoindustries.security"."HashedKey.validate"(this.algorithm, this."hash");
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE;

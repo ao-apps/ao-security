@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-24T23:32:56-06:00"
+		dateModified="2020-12-24T23:42:40-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,7 +46,15 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Fixed bug in SQL <code>HashedKey.validate</code> and <code>HashedPassword.validate</code>
+						functions.  The composite-type overload was incorrectly calling the <code>Algorithm.validate</code>
+						function directly, instead of calling the other overload.
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release

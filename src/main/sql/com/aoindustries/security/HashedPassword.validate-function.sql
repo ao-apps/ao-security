@@ -54,7 +54,7 @@ CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.validate"
 )
 RETURNS text AS $$
 BEGIN
-	RETURN "com.aoindustries.security"."HashedPassword.Algorithm.validate"(
+	RETURN "com.aoindustries.security"."HashedPassword.validate"(
 		this.algorithm,
 		this.salt,
 		this.iterations,
