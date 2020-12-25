@@ -30,7 +30,7 @@ BEGIN
 		   "com.aoindustries.security"."SmallIdentifier.toString"(hi)
 		|| "com.aoindustries.security"."SmallIdentifier.toString"(lo);
 END;
-$$ LANGUAGE plpgsql -- TODO: Language SQL?
+$$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
@@ -44,7 +44,7 @@ RETURNS text AS $$
 BEGIN
 	RETURN "com.aoindustries.security"."Identifier.toString"(this.hi, this.lo);
 END;
-$$ LANGUAGE plpgsql -- TODO: Language SQL?
+$$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
