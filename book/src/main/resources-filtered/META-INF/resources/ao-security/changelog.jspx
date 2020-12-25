@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-25T10:01:27-06:00"
+		dateModified="2020-12-25T11:11:21-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,16 +46,25 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			>
-				<ul>
-					<li>
-						Implemented SQL function <code>HashedPassword.valueOf(TEXT)</code> for the "crypt" algorithm.
-						This allows the conversion of very old databases with just a simple SQL cast - no need to write
-						any Java conversion code.
-					</li>
-				</ul>
-			</changelog:release>
+			/>
 		</c:if>
+
+		<changelog:release
+			projectName="@{documented.name}"
+			version="1.0.3"
+			datePublished="2020-12-25T11:11:21-06:00"
+			groupId="@{project.groupId}"
+			artifactId="@{documented.artifactId}"
+			scmUrl="@{project.scm.url}"
+		>
+			<ul>
+				<li>
+					Implemented SQL function <code>HashedPassword.valueOf(TEXT)</code> for the "crypt" algorithm.
+					This allows the conversion of very old databases with just a simple SQL cast - no need to write
+					any Java conversion code.
+				</li>
+			</ul>
+		</changelog:release>
 
 		<changelog:release
 			projectName="@{documented.name}"
