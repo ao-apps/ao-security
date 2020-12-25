@@ -36,6 +36,7 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql
+-- PostgreSQL 9.6: PARALLEL SAFE
 IMMUTABLE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.validate" (text, bytea) IS
@@ -50,6 +51,7 @@ BEGIN
 	RETURN "com.aoindustries.security"."HashedKey.validate"(this.algorithm, this."hash");
 END;
 $$ LANGUAGE plpgsql
+-- PostgreSQL 9.6: PARALLEL SAFE
 IMMUTABLE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.validate" ("com.aoindustries.security"."HashedKey") IS

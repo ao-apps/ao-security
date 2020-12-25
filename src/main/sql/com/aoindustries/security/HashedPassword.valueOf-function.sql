@@ -102,6 +102,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
+-- PostgreSQL 9.6: PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.valueOf" (TEXT) IS

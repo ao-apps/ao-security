@@ -42,6 +42,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE;
+-- PostgreSQL 9.6: PARALLEL SAFE
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.Algorithm.validateIterations" (text, integer) IS
 'Matches method com.aoindustries.security.HashedPassword.Algorithm.validateIterations';

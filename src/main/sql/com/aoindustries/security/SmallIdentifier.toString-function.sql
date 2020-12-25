@@ -30,6 +30,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
+-- PostgreSQL 9.6: PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."SmallIdentifier.toString.positive_truncate_divide" (
@@ -71,6 +72,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
+-- PostgreSQL 9.6: PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."SmallIdentifier.toString" ("com.aoindustries.security"."SmallIdentifier") IS
