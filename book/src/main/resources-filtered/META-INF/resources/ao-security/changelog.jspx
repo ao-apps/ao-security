@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-24T23:17:05-06:00"
+		dateModified="2020-12-24T23:20:38-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -52,6 +52,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						Pulled existing security utilities out of <core:link book="/ao-lang" page="/index.jspx" /> into
 						this new <core:link page="index.jspx" /> project.
 					</li>
+					<li>Added SQL implementation in alternate "sql" classifier.</li>
 					<li>Length-constant time equality checks <code>Identifier</code>.</li>
 					<li><code>HashedKey</code> improvements:
 						<ol>
@@ -101,7 +102,9 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 								<p>
 									This may be used to insert the password into a database, and it is compatible with
 									<ao:a href="https://aoindustries.com/ao-dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
-									However, database-specific types could be more compact.
+									However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
+									This type is more compact and enforces much more integrity than just stuffing the
+									value in as a string.
 								</p>
 							</li>
 							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
@@ -132,7 +135,9 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 								<p>
 									This may be used to insert the password into a database, and it is compatible with
 									<ao:a href="https://aoindustries.com/ao-dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
-									However, database-specific types could be more compact.
+									However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
+									This type is more compact and enforces much more integrity than just stuffing the
+									value in as a string.
 								</p>
 							</li>
 							<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
@@ -153,7 +158,6 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						Deprecated <code>UnixCrypt</code> in favor of the <ao:a href="https://commons.apache.org/proper/commons-codec/">Apache Commons Codec</ao:a>
 						implementation: <code><ao:a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/UnixCrypt.html">UnixCrypt</ao:a></code>.
 					</li>
-					<li>Added SQL implementation in alternate "sql" classifier.</li>
 				</ul>
 			</changelog:release>
 		</c:if>
