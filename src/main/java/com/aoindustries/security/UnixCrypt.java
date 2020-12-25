@@ -118,19 +118,14 @@ public class UnixCrypt {
 		41, 42, 43, 44,   57, 58, 59, 60,
 		45, 46, 47, 48,   61, 62, 63, 64};
 
-	static final byte[] ITOA64 = {		/* 0..63 => ascii-64 */
-		(byte)'.', (byte)'/', (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5',
-		(byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D',
-		(byte)'E', (byte)'F', (byte)'G', (byte)'H', (byte)'I', (byte)'J', (byte)'K', (byte)'L', 
-		(byte)'M', (byte)'N', (byte)'O', (byte)'P', (byte)'Q', (byte)'R', (byte)'S', (byte)'T', 
-		(byte)'U', (byte)'V', (byte)'W', (byte)'X', (byte)'Y', (byte)'Z', (byte)'a', (byte)'b', 
-		(byte)'c', (byte)'d', (byte)'e', (byte)'f', (byte)'g', (byte)'h', (byte)'i', (byte)'j', 
-		(byte)'k', (byte)'l', (byte)'m', (byte)'n', (byte)'o', (byte)'p', (byte)'q', (byte)'r', 
-		(byte)'s', (byte)'t', (byte)'u', (byte)'v', (byte)'w', (byte)'x', (byte)'y', (byte)'z'};
+	/** 0..63 => ascii-64 */
+	private static final char[] ITOA64 =
+		"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
 
 	/* =====  Tables that are initialized at run time  ==================== */
 
-	static final byte[] A64TOI = new byte[128];	/* ascii-64 => 0..63 */
+	/** (ascii-64 - ' ') => 0..63 */
+	private static final byte[] A64TOI = new byte[128 - ' '];
 
 	/* Initial key schedule permutation */
 	private static final long[][] PC1ROT = new long[16][16];
@@ -155,8 +150,11 @@ public class UnixCrypt {
 		byte[] temp = new byte[64];
 
 		// inverse table.
+		for (int i = 0; i < A64TOI.length; i++) {
+			A64TOI[i] = -1;
+		}
 		for (int i=0; i<64; i++) {
-			A64TOI[ITOA64[i]] = (byte)i;
+			A64TOI[ITOA64[i] - ' '] = (byte)i;
 		}
 
 		// PC1ROT - bit reverse, then PC1, then Rotate, then PC2
@@ -259,9 +257,52 @@ public class UnixCrypt {
 	}
 
 	/**
-	 * You can't call the constructer.
+	 * You can't call the constructor.
 	 */
 	private UnixCrypt() { }
+
+	/**
+	 * Gets the character representation of the low-order six bits of the given int.
+	 *
+	 * @see  #a64toi(char)
+	 */
+	// Matches src/main/sql/com/aoindustries/security/UnixCrypt.itoa64-function.sql
+	static char itoa64(int i) {
+		assert 0x3f == (ITOA64.length - 1);
+		return ITOA64[i & 0x3f];
+	}
+
+	/**
+	 * Gets the character representation of the low-order six bits of the given long.
+	 *
+	 * @see  #a64toi(char)
+	 */
+	// Matches src/main/sql/com/aoindustries/security/UnixCrypt.itoa64-function.sql
+	static char itoa64(long i) {
+		return itoa64((int)i);
+	}
+
+	/**
+	 * Gets the numeric value represented by the given character.
+	 *
+	 * @throws  IllegalArgumentException  when the given character is not used to represent any value
+	 *
+	 * @see  #itoa64(int)
+	 * @see  #itoa64(long)
+	 */
+	// Matches src/main/sql/com/aoindustries/security/UnixCrypt.a64toi-function.sql
+	static int a64toi(char c) {
+		int index = (c - ' ');
+		byte i;
+		if(
+			(index < 0 || index >= A64TOI.length)
+			|| (i = A64TOI[index]) == -1
+		) {
+			throw new IllegalArgumentException("crypt: Unexpected character: " + c);
+		}
+		assert i == (i & 0x3f);
+		return i;
+	}
 
 	/**
 	 * @deprecated  This is not secure anymore.
@@ -272,8 +313,8 @@ public class UnixCrypt {
 		return crypt(
 			plaintext,
 			new String(new char[] {
-				(char)ITOA64[Identifier.secureRandom.nextInt(64)],
-				(char)ITOA64[Identifier.secureRandom.nextInt(64)]
+				itoa64(Identifier.secureRandom.nextInt(64)),
+				itoa64(Identifier.secureRandom.nextInt(64))
 			})
 		);
 	}
@@ -289,7 +330,7 @@ public class UnixCrypt {
 	@Deprecated
 	public static String crypt(String key, String setting) {
 		long constdatablock = 0L;		/* encryption constant */
-		byte[] cryptresult = new byte[13];	/* encrypted result */
+		char[] cryptresult = new char[13];	/* encrypted result */
 		long keyword = 0L;
 		int keylen = key.length();
 
@@ -302,20 +343,20 @@ public class UnixCrypt {
 		int salt = 0;
 		for (int i=2; --i>=0;) {
 			char c = (i < setting.length())? setting.charAt(i): '.';
-			cryptresult[i] = (byte)c;
-			salt = (salt<<6) | (0x00ff&A64TOI[c]);
+			cryptresult[i] = c;
+			salt = (salt << 6) | a64toi(c);
 		}
 
 		long rsltblock = des_cipher(constdatablock, salt, 25, KS);
 
-		cryptresult[12] = ITOA64[(((int)rsltblock)<<2)&0x3f];
+		cryptresult[12] = itoa64(rsltblock << 2);
 		rsltblock >>= 4;
-		for (int i=12; --i>=2; ) {
-			cryptresult[i] = ITOA64[((int)rsltblock)&0x3f];
+		for (int i = 12; --i >= 2; ) {
+			cryptresult[i] = itoa64(rsltblock);
 			rsltblock >>= 6;
 		}
 
-		return new String(cryptresult, 0, 13);
+		return new String(cryptresult);
 	}
 
 	/**

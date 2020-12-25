@@ -29,7 +29,6 @@ CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.Algorithm
 RETURNS text AS $$
 DECLARE
 	"argsValid" text;
-	"ITOA64" text[] := '{.,/,0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
 BEGIN
 	"argsValid" := "com.aoindustries.security"."HashedPassword.Algorithm.validate"(algorithm, salt, iterations, "hash");
 	IF "argsValid" IS NOT NULL THEN
@@ -38,20 +37,20 @@ BEGIN
 		-- Matches method com.aoindustries.security.HashedPassword.Algorithm.CRYPT.toString
 		RETURN
 			-- Salt
-			"ITOA64"[(  get_byte(salt, 1)       & 63                                   ) + 1] ||
-			"ITOA64"[(((get_byte(salt, 0) << 2) & 60) | ((get_byte(salt, 1) >> 6) &  3)) + 1] ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(salt, 1)                                        ) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"((get_byte(salt, 0) << 2) | ((get_byte(salt, 1) >> 6) &  3)) ||
 			-- Hash
-			"ITOA64"[(((get_byte(hash, 0) >> 2) & 63)                                  ) + 1] ||
-			"ITOA64"[(((get_byte(hash, 0) << 4) & 48) | ((get_byte(hash, 1) >> 4) & 15)) + 1] ||
-			"ITOA64"[(((get_byte(hash, 1) << 2) & 60) | ((get_byte(hash, 2) >> 6) &  3)) + 1] ||
-			"ITOA64"[(  get_byte(hash, 2)       & 63                                   ) + 1] ||
-			"ITOA64"[(((get_byte(hash, 3) >> 2) & 63)                                  ) + 1] ||
-			"ITOA64"[(((get_byte(hash, 3) << 4) & 48) | ((get_byte(hash, 4) >> 4) & 15)) + 1] ||
-			"ITOA64"[(((get_byte(hash, 4) << 2) & 60) | ((get_byte(hash, 5) >> 6) &  3)) + 1] ||
-			"ITOA64"[(  get_byte(hash, 5)       & 63                                   ) + 1] ||
-			"ITOA64"[(((get_byte(hash, 6) >> 2) & 63)                                  ) + 1] ||
-			"ITOA64"[(((get_byte(hash, 6) << 4) & 48) | ((get_byte(hash, 7) >> 4) & 15)) + 1] ||
-			"ITOA64"[(((get_byte(hash, 7) << 2) & 60)                                  ) + 1];
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(hash, 0) >> 2                                   ) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"((get_byte(hash, 0) << 4) | ((get_byte(hash, 1) >> 4) & 15)) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"((get_byte(hash, 1) << 2) | ((get_byte(hash, 2) >> 6) &  3)) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(hash, 2)                                        ) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(hash, 3) >> 2                                   ) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"((get_byte(hash, 3) << 4) | ((get_byte(hash, 4) >> 4) & 15)) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"((get_byte(hash, 4) << 2) | ((get_byte(hash, 5) >> 6) &  3)) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(hash, 5)                                        ) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(hash, 6) >> 2                                   ) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"((get_byte(hash, 6) << 4) | ((get_byte(hash, 7) >> 4) & 15)) ||
+			"com.aoindustries.security"."UnixCrypt.itoa64"( get_byte(hash, 7) << 2                                   );
 	ELSIF algorithm = 'MD5' THEN
 		-- Matches method com.aoindustries.security.HashedPassword.Algorithm.MD5.toString
 		-- MD5 is represented as hex characters of hash only.

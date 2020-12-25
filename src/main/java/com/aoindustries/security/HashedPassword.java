@@ -141,20 +141,20 @@ public class HashedPassword implements Serializable {
 				// System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
 				return new String(new char[] {
 					// Salt
-					(char)UnixCrypt.ITOA64[  salt[1] & 0x3f],
-					(char)UnixCrypt.ITOA64[((salt[0] <<  2) & 0x3c) | ((salt[1] >>> 6) & 0x03)],
+					UnixCrypt.itoa64( salt[1]                                ),
+					UnixCrypt.itoa64((salt[0] << 2) | ((salt[1] >> 6) & 0x03)),
 					// Hash
-					(char)UnixCrypt.ITOA64[((hash[0] >>> 2) & 0x3f)],
-					(char)UnixCrypt.ITOA64[((hash[0] <<  4) & 0x30) | ((hash[1] >>> 4) & 0x0f)],
-					(char)UnixCrypt.ITOA64[((hash[1] <<  2) & 0x3c) | ((hash[2] >>> 6) & 0x03)],
-					(char)UnixCrypt.ITOA64[  hash[2] & 0x3f],
-					(char)UnixCrypt.ITOA64[((hash[3] >>> 2) & 0x3f)],
-					(char)UnixCrypt.ITOA64[((hash[3] <<  4) & 0x30) | ((hash[4] >>> 4) & 0x0f)],
-					(char)UnixCrypt.ITOA64[((hash[4] <<  2) & 0x3c) | ((hash[5] >>> 6) & 0x03)],
-					(char)UnixCrypt.ITOA64[  hash[5] & 0x3f],
-					(char)UnixCrypt.ITOA64[((hash[6] >>> 2) & 0x3f)],
-					(char)UnixCrypt.ITOA64[((hash[6] <<  4) & 0x30) | ((hash[7] >>> 4) & 0x0f)],
-					(char)UnixCrypt.ITOA64[((hash[7] <<  2) & 0x3c)]
+					UnixCrypt.itoa64( hash[0] >> 2                           ),
+					UnixCrypt.itoa64((hash[0] << 4) | ((hash[1] >> 4) & 0x0f)),
+					UnixCrypt.itoa64((hash[1] << 2) | ((hash[2] >> 6) & 0x03)),
+					UnixCrypt.itoa64( hash[2]                                ),
+					UnixCrypt.itoa64( hash[3] >> 2                           ),
+					UnixCrypt.itoa64((hash[3] << 4) | ((hash[4] >> 4) & 0x0f)),
+					UnixCrypt.itoa64((hash[4] << 2) | ((hash[5] >> 6) & 0x03)),
+					UnixCrypt.itoa64( hash[5]                                ),
+					UnixCrypt.itoa64( hash[6] >> 2                           ),
+					UnixCrypt.itoa64((hash[6] << 4) | ((hash[7] >> 4) & 0x0f)),
+					UnixCrypt.itoa64( hash[7] << 2                           )
 				});
 			}
 		},
@@ -644,24 +644,23 @@ public class HashedPassword implements Serializable {
 				hash
 			);
 		} else if(hashedPassword.length() == 13) {
-			// Salt
 			@SuppressWarnings("deprecation")
 			int salt =
-				  ((UnixCrypt.A64TOI[hashedPassword.charAt( 1)] & 0x3f) << 6)
-				|  (UnixCrypt.A64TOI[hashedPassword.charAt( 0)] & 0x3f);
+				  (UnixCrypt.a64toi(hashedPassword.charAt( 1)) << 6)
+				|  UnixCrypt.a64toi(hashedPassword.charAt( 0));
 			@SuppressWarnings("deprecation")
 			long rsltblock =
-				  ((UnixCrypt.A64TOI[hashedPassword.charAt( 2)] & 0x3fL) << 58)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 3)] & 0x3fL) << 52)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 4)] & 0x3fL) << 46)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 5)] & 0x3fL) << 40)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 6)] & 0x3fL) << 34)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 7)] & 0x3fL) << 28)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 8)] & 0x3fL) << 22)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt( 9)] & 0x3fL) << 16)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt(10)] & 0x3fL) << 10)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt(11)] & 0x3fL) <<  4)
-				| ((UnixCrypt.A64TOI[hashedPassword.charAt(12)] & 0x3cL) >>  2);
+				  ((long)UnixCrypt.a64toi(hashedPassword.charAt( 2)) << 58)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 3)) << 52)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 4)) << 46)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 5)) << 40)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 6)) << 34)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 7)) << 28)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 8)) << 22)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt( 9)) << 16)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt(10)) << 10)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt(11)) <<  4)
+				| ((long)UnixCrypt.a64toi(hashedPassword.charAt(12)) >>  2);
 			// System.out.println("rsltblock = " + rsltblock);
 			byte[] hash = new byte[Long.BYTES];
 			IoUtils.longToBuffer(rsltblock, hash);
@@ -793,10 +792,10 @@ public class HashedPassword implements Serializable {
 	public HashedPassword(byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
 		this(Algorithm.PBKDF2WITHHMACSHA1, salt, iterations, hash);
 		if(salt.length != SALT_BYTES) {
-			throw new IllegalArgumentException(getAlgorithm().getAlgorithmName() + ": salt length mismatch: expected " + SALT_BYTES + ", got " + salt.length);
+			throw new IllegalArgumentException(Algorithm.PBKDF2WITHHMACSHA1 + ": salt length mismatch: expected " + SALT_BYTES + ", got " + salt.length);
 		}
 		if(hash.length != HASH_BYTES) {
-			throw new IllegalArgumentException(getAlgorithm().getAlgorithmName() + ": hash length mismatch: expected " + HASH_BYTES + ", got " + hash.length);
+			throw new IllegalArgumentException(Algorithm.PBKDF2WITHHMACSHA1 + ": hash length mismatch: expected " + HASH_BYTES + ", got " + hash.length);
 		}
 	}
 

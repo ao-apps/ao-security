@@ -20,24 +20,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.getCharacter" ("value" NUMERIC(20,0))
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."UnixCrypt.itoa64" (i INTEGER)
 RETURNS CHARACTER AS $$
 DECLARE
-	"BASE" NUMERIC(20,0) := 57;
-	modval INTEGER := mod("value", "BASE");
-	"CHARACTERS" CHARACTER[] := '{A,C,D,E,F,G,H,I,J,K,L,M,N,P,R,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9}';
+	"ITOA64" CHARACTER[] := '{.,/,0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
 BEGIN
-	IF modval IS NULL THEN
-		RETURN NULL;
-	ELSIF modval < 0 OR modval >= "BASE" THEN
-		RAISE EXCEPTION 'Unexpected value: %', modval;
-	ELSE
-		RETURN "CHARACTERS"[modval + 1];
-	END IF;
+	RETURN "ITOA64"[(i & 63) + 1];
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.getCharacter" (NUMERIC(20,0)) IS
-'Matches method com.aoindustries.security.Identifier.getCharacter';
+COMMENT ON FUNCTION "com.aoindustries.security"."UnixCrypt.itoa64" (INTEGER) IS
+'Gets the character representation of the low-order six bits of the given int.
+
+Matches method com.aoindustries.security.UnixCrypt.itoa64';
+
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."UnixCrypt.itoa64" (i BIGINT)
+RETURNS CHARACTER AS $$
+BEGIN
+	RETURN "com.aoindustries.security"."UnixCrypt.itoa64"((i & 63)::INTEGER);
+END;
+$$ LANGUAGE plpgsql
+IMMUTABLE
+RETURNS NULL ON NULL INPUT;
+
+COMMENT ON FUNCTION "com.aoindustries.security"."UnixCrypt.itoa64" (BIGINT) IS
+'Gets the character representation of the low-order six bits of the given long.
+
+Matches method com.aoindustries.security.UnixCrypt.itoa64';
