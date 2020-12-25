@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-25T01:39:21-06:00"
+		dateModified="2020-12-25T02:01:00-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,34 +46,43 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			>
-				<ul>
-					<li>
-						<p>
-							Reverted back to generating keys with as many bits as their corresponding hash function (with
-							the exception of SHA-1).  Keys themselves are subject to the birthday paradox and should thus
-							be as long as the hash.
-						</p>
-						<p>
-							We have set SHA-1 to a key of 128 bits, however, which is roughly double its currently
-							estimated collision resistance of 65 bits.  But, SHA-1 is deprecated, so this shouldn't
-							matter.
-						</p>
-						<p>
-							With this change, we have restored the recommended algorithm to the previous <code>SHA-256</code>
-							so that URL parameter and cookie value lengths will not change.  We believe <code>SHA-512</code>
-							would be overkill, especially considering it is a hash of an equally-sized random key.
-						</p>
-					</li>
-					<li>
-						Deprecated the all-field constructors, with new <code>valueOf(…)</code> methods.  This is because
-						the public constructor does not accept a null algorithm, since the <code>NO_KEY</code> /
-						<code>NO_PASSWORD</code> singletons must be used.  With this change, the static method can
-						determine the correct action, instead of forcing it on the calling code.
-					</li>
-				</ul>
-			</changelog:release>
+			/>
 		</c:if>
+
+		<changelog:release
+			projectName="@{documented.name}"
+			version="1.0.2"
+			datePublished="2020-12-25T02:01:00-06:00"
+			groupId="@{project.groupId}"
+			artifactId="@{documented.artifactId}"
+			scmUrl="@{project.scm.url}"
+		>
+			<ul>
+				<li>
+					<p>
+						Reverted back to generating keys with as many bits as their corresponding hash function (with
+						the exception of SHA-1).  Keys themselves are subject to the birthday paradox and should thus
+						be as long as the hash.
+					</p>
+					<p>
+						We have set SHA-1 to a key of 128 bits, however, which is roughly double its currently
+						estimated collision resistance of 65 bits.  But, SHA-1 is deprecated, so this shouldn't
+						matter.
+					</p>
+					<p>
+						With this change, we have restored the recommended algorithm to the previous <code>SHA-256</code>
+						so that URL parameter and cookie value lengths will not change.  We believe <code>SHA-512</code>
+						would be overkill, especially considering it is a hash of an equally-sized random key.
+					</p>
+				</li>
+				<li>
+					Deprecated the all-field constructors, with new <code>valueOf(…)</code> methods.  This is because
+					the public constructor does not accept a null algorithm, since the <code>NO_KEY</code> /
+					<code>NO_PASSWORD</code> singletons must be used.  With this change, the static method can
+					determine the correct action, instead of forcing it on the calling code.
+				</li>
+			</ul>
+		</changelog:release>
 
 		<changelog:release
 			projectName="@{documented.name}"
