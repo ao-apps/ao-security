@@ -73,13 +73,14 @@ BEGIN
 			| ("com.aoindustries.security"."UnixCrypt.a64toi"(substr("hashedPassword",11, 1))::BIGINT << 10)
 			| ("com.aoindustries.security"."UnixCrypt.a64toi"(substr("hashedPassword",12, 1))::BIGINT <<  4)
 			| ("com.aoindustries.security"."UnixCrypt.a64toi"(substr("hashedPassword",13, 1))::BIGINT >>  2);
-		salt_hex := '0000' || to_hex(salt);
-		rsltblock_hex := '0000000000000000' || to_hex(rsltblock);
+		-- Zero-pad hex to full binary length
+		salt_hex := right('000' || to_hex(salt), 4);
+		rsltblock_hex := right('000000000000000' || to_hex(rsltblock), 16);
 		"result" := ROW(
 			'crypt',
-			decode(right(salt_hex, 4), 'hex'),
+			decode(salt_hex, 'hex'),
 			0,
-			decode(right(to_hex(rsltblock), 16), 'hex')
+			decode(rsltblock_hex, 'hex')
 		);
 	ELSIF length("hashedPassword") = (128 / 4) THEN
 		"result" := ROW('MD5', E''::bytea, 0, decode("hashedPassword", 'hex'));

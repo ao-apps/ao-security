@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-25T11:11:21-06:00"
+		dateModified="2020-12-25T11:40:55-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,7 +46,15 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Corrected the zero-padding of hash for crypt algorithm in SQL function
+						<code>HashedPassword.valueOf(TEXT)</code>.  Hashes that started with zero nibbles could not be
+						parsed and would result in an exception.
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release
