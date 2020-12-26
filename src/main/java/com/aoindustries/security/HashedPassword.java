@@ -1031,7 +1031,9 @@ public class HashedPassword implements Serializable {
 	public boolean matches(String password) {
 		if(algorithm == null || password == null || password.isEmpty()) {
 			// Perform a hash with default settings, just to occupy the same amount of time as if had a password
-			RECOMMENDED_ALGORITHM.hash("<<DUMMY>>", DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
+			byte[] dummyHash = RECOMMENDED_ALGORITHM.hash("<<DUMMY>>", DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
+			boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+			assert !dummiesEqual;
 			return false;
 		} else {
 			// Hash again with the original salt, iterations, and hash size
