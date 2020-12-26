@@ -126,6 +126,7 @@ public class HashedPassword implements Serializable {
 
 			@Override
 			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
+				if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
 				if(hashBytes != Long.BYTES) throw new IllegalArgumentException();
@@ -171,6 +172,7 @@ public class HashedPassword implements Serializable {
 		MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
 			@Override
 			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
+				if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
 				if(hashBytes != (128 / Byte.SIZE)) throw new IllegalArgumentException();
@@ -203,6 +205,7 @@ public class HashedPassword implements Serializable {
 		SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
 			@Override
 			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
+				if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
 				validateSalt(IllegalArgumentException::new, salt);
 				validateIterations(IllegalArgumentException::new, iterations);
 				if(hashBytes != (160 / Byte.SIZE)) throw new IllegalArgumentException();
@@ -497,6 +500,7 @@ public class HashedPassword implements Serializable {
 		 * Hash the given password to the given number of bytes.
 		 */
 		byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
+			if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
 			try {
 				char[] chars = password.toCharArray();
 				try {
@@ -824,7 +828,8 @@ public class HashedPassword implements Serializable {
 	 * @param algorithm   The algorithm previously used to hash the password
 	 * @param iterations  The number of has iterations
 	 *
-	 * @throws  IllegalArgumentException  when {@code salt.length != algorithm.getSaltBytes()}
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *                                    on {@code salt.length != algorithm.getSaltBytes()}
 	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
@@ -840,7 +845,8 @@ public class HashedPassword implements Serializable {
 	 * @param algorithm   The algorithm previously used to hash the password
 	 * @param iterations  The number of has iterations
 	 *
-	 * @throws  IllegalArgumentException  when {@code iterations < algorithm.getMinimumIterations()}
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
 	public HashedPassword(String password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
@@ -856,7 +862,8 @@ public class HashedPassword implements Serializable {
 	 * @param algorithm   The algorithm previously used to hash the password
 	 * @param iterations  The number of has iterations
 	 *
-	 * @throws  IllegalArgumentException  when {@code iterations < algorithm.getMinimumIterations()}
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
 	public HashedPassword(String password, Algorithm algorithm, int iterations) throws IllegalArgumentException {
@@ -867,8 +874,10 @@ public class HashedPassword implements Serializable {
 	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
 	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
 	 * using the provided {@link Random} source.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
 	 */
-	public HashedPassword(String password, Algorithm algorithm, Random random) {
+	public HashedPassword(String password, Algorithm algorithm, Random random) throws IllegalArgumentException {
 		this(password, algorithm, algorithm.getRecommendedIterations(), random);
 	}
 
@@ -877,8 +886,10 @@ public class HashedPassword implements Serializable {
 	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
 	 * using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
 	 */
-	public HashedPassword(String password, Algorithm algorithm) {
+	public HashedPassword(String password, Algorithm algorithm) throws IllegalArgumentException {
 		this(password, algorithm, Identifier.secureRandom);
 	}
 
@@ -887,8 +898,10 @@ public class HashedPassword implements Serializable {
 	 * {@linkplain Algorithm#generateSalt() a random salt}, and
 	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
 	 * using the provided {@link Random} source.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
 	 */
-	public HashedPassword(String password, Random random) {
+	public HashedPassword(String password, Random random) throws IllegalArgumentException {
 		this(password, RECOMMENDED_ALGORITHM, random);
 	}
 
@@ -898,8 +911,10 @@ public class HashedPassword implements Serializable {
 	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
 	 * using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
 	 */
-	public HashedPassword(String password) {
+	public HashedPassword(String password) throws IllegalArgumentException {
 		this(password, Identifier.secureRandom);
 	}
 
@@ -1001,14 +1016,22 @@ public class HashedPassword implements Serializable {
 	/**
 	 * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
 	 * <p>
+	 * When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
+	 * {@link #isRehashRecommended()} then either set the same
+	 * password again or, ideally, generate a new password or prompt the user to reset their password.  This will allow
+	 * the stored passwords to keep up with encryption improvements.
+	 * </p>
+	 * <p>
 	 * Performs comparisons in length-constant time.
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 * </p>
+	 *
+	 * @see  #isRehashRecommended()
 	 */
 	public boolean matches(String password) {
-		if(algorithm == null) {
+		if(algorithm == null || password == null || password.isEmpty()) {
 			// Perform a hash with default settings, just to occupy the same amount of time as if had a password
-			RECOMMENDED_ALGORITHM.hash(password, DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
+			RECOMMENDED_ALGORITHM.hash("<<DUMMY>>", DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
 			return false;
 		} else {
 			// Hash again with the original salt, iterations, and hash size

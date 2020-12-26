@@ -66,7 +66,7 @@ public class HashedPasswordTest {
 	}
 
 	private static String generatePassword() {
-		int length = secureRandom.nextInt(20);
+		int length = 1 + secureRandom.nextInt(19);
 		StringBuilder sb = new StringBuilder(length);
 		for(int i = 0; i < length ; i++) {
 			sb.append((char)secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000));
