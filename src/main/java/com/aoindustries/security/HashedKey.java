@@ -170,7 +170,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			return keyBytes;
 		}
 
-		<E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
+		public <E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
 			int expected = getKeyBytes();
 			if(key.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": key length mismatch: expected " + expected + ", got " + key.length);
@@ -217,7 +217,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		// Matches src/main/sql/com/aoindustries/security/HashedKey.Algorithm.validateHash-function.sql
-		<E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
+		public <E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
 			int expected = getHashBytes();
 			if(hash.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": hash length mismatch: expected " + expected + ", got " + hash.length);

@@ -103,7 +103,7 @@ public class HashedPassword implements Serializable {
 		CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 			@Override
-			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
+			public <E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
 				super.validateSalt(newThrowable, salt);
 				if((salt[0] & 0xf0) != 0) throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
 				return salt;
@@ -243,7 +243,7 @@ public class HashedPassword implements Serializable {
 			 */
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 			@Override
-			<E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
+			public <E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
 				if(salt.length != SALT_BYTES) {
 					super.validateSalt(newThrowable, salt);
 				}
@@ -255,7 +255,7 @@ public class HashedPassword implements Serializable {
 			 */
 			@Override
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateHash-function.sql
-			<E extends Throwable> byte[] validateHash(Function<? super String, E> newThrowable, byte[] hash) throws E {
+			public <E extends Throwable> byte[] validateHash(Function<? super String, E> newThrowable, byte[] hash) throws E {
 				if(hash.length != HASH_BYTES) {
 					super.validateHash(newThrowable, hash);
 				}
@@ -268,7 +268,7 @@ public class HashedPassword implements Serializable {
 			 */
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validate-function.sql
 			@Override
-			<E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
+			public <E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
 				super.validate(newThrowable, salt, iterations, hash);
 				if((salt.length == SALT_BYTES) != (hash.length == HASH_BYTES)) {
 					throw newThrowable.apply(
@@ -352,7 +352,7 @@ public class HashedPassword implements Serializable {
 		}
 
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
-		<E extends Throwable> byte[] validateSalt(Function<? super String,E> newThrowable, byte[] salt) throws E {
+		public <E extends Throwable> byte[] validateSalt(Function<? super String,E> newThrowable, byte[] salt) throws E {
 			int expected = getSaltBytes();
 			if(salt.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": salt length mismatch: expected " + expected + ", got " + salt.length);
@@ -453,7 +453,7 @@ public class HashedPassword implements Serializable {
 		}
 
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateIterations-function.sql
-		<E extends Throwable> int validateIterations(Function<? super String,E> newThrowable, int iterations) throws E {
+		public <E extends Throwable> int validateIterations(Function<? super String,E> newThrowable, int iterations) throws E {
 			int _minimumIterations = getMinimumIterations();
 			if(iterations < _minimumIterations) {
 				throw newThrowable.apply(
@@ -479,7 +479,7 @@ public class HashedPassword implements Serializable {
 		}
 
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateHash-function.sql
-		<E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
+		public <E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
 			int expected = getHashBytes();
 			if(hash.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": hash length mismatch: expected " + expected + ", got " + hash.length);
@@ -488,7 +488,7 @@ public class HashedPassword implements Serializable {
 		}
 
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validate-function.sql
-		<E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
+		public <E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
 			if(salt == null) throw newThrowable.apply("salt required when have algorithm");
 			validateSalt(newThrowable, salt);
 			validateIterations(newThrowable, iterations);
