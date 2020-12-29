@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-28T06:14:00-06:00"
+		dateModified="2020-12-29T01:54:06-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,7 +46,17 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Created new SQL function <code>"com.aoindustries.security"."Identifier.validate"</code>.
+						Although it is very simple in that it merely ensures both values are non-null and could be
+						accomplished in per-table check "IS NOT NULL" check constraints, this follows the pattern of
+						other composite types.  Composite types are responsible for their own validation, and will
+						also become DOMAIN in PostgreSQL 11+, further solidifying this.
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release

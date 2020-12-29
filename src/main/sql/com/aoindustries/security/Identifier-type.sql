@@ -20,6 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
+-- PostgreSQL 11+: Change to domain using the validate function:
 CREATE TYPE "com.aoindustries.security"."Identifier" AS (
 	hi bigint,
 	lo bigint
