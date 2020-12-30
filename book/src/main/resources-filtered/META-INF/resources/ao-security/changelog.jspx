@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-30T07:24:47-06:00"
+		dateModified="2020-12-30T10:14:09-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -68,7 +68,7 @@ COMMENT ON TYPE "com.aoindustries.security"."&lt;HashedPassword&gt;" IS
 COMMENT ON TYPE "com.aoindustries.security"."&lt;Identifier&gt;" IS
 'Row definition for "com.aoindustries.security"."Identifier"';
 
-CREATE DOMAIN "com.aoindustries.security"."HashedKey" AS "com.aoindustries.security"."&lt;HashedKey&lt;" CHECK (
+CREATE DOMAIN "com.aoindustries.security"."HashedKey" AS "com.aoindustries.security"."&lt;HashedKey&gt;" CHECK (
 	"com.aoindustries.security"."HashedKey.validate"(VALUE) IS NULL
 );
 CREATE DOMAIN "com.aoindustries.security"."HashedPassword" AS "com.aoindustries.security"."&lt;HashedPassword&gt;" CHECK (
