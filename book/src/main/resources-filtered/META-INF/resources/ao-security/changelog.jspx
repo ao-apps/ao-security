@@ -46,7 +46,10 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<!-- TODO: Deprecate the String-based representations of passwords, in favor of char[] with zeroing. -->
+				<!-- TODO: Make a matches method for HashedKey, that would zero the parameter, too? -->
+			</changelog:release>
 		</c:if>
 
 		<changelog:release
