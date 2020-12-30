@@ -43,8 +43,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
--- PostgreSQL 9.6: PARALLEL SAFE
+PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.toString" ("com.aoindustries.security"."HashedKey") IS
+'Matches method com.aoindustries.security.HashedKey.toString';
+
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedKey.toString" (
+	this "com.aoindustries.security"."<HashedKey>"
+)
+RETURNS text AS $$
+DECLARE
+	"isValid" text;
+BEGIN
+	-- Validate before casting to DOMAIN to give meaningful error message
+	IF this IS DISTINCT FROM NULL
+	THEN
+		"isValid" := "com.aoindustries.security"."HashedKey.validate"(this.algorithm, this."hash");
+		IF "isValid" IS NOT NULL
+		THEN
+			RAISE EXCEPTION '%', "isValid";
+		END IF;
+	END IF;
+	RETURN "com.aoindustries.security"."HashedKey.toString"(this::"com.aoindustries.security"."HashedKey");
+END;
+$$ LANGUAGE plpgsql
+IMMUTABLE
+PARALLEL SAFE
+RETURNS NULL ON NULL INPUT;
+
+COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.toString" ("com.aoindustries.security"."<HashedKey>") IS
 'Matches method com.aoindustries.security.HashedKey.toString';

@@ -20,27 +20,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
--- TODO: Need newer PostgreSQL 11+ for this, 9.4 doesn't cut it.
--- TODO: For now, adding an explicit check constraint to tables that use the compound type directly
---CREATE TYPE "com.aoindustries.security"."<HashedKey>" AS (
---	algorithm text,
---	"hash" bytea
---);
-
---COMMENT ON TYPE "com.aoindustries.security"."<HashedKey>" IS
---'Row definition for "com.aoindustries.security"."HashedKey"';
-
---CREATE DOMAIN "com.aoindustries.security"."HashedKey" AS "com.aoindustries.security"."<HashedKey>" CHECK (
---	"com.aoindustries.security"."HashedKey.validate"(algorithm, "hash") IS NULL
---);
-
---COMMENT ON DOMAIN "com.aoindustries.security"."HashedKey" IS
---'Matches class com.aoindustries.security.HashedKey';
-
-CREATE TYPE "com.aoindustries.security"."HashedKey" AS (
+CREATE TYPE "com.aoindustries.security"."<HashedKey>" AS (
 	algorithm text,
 	"hash" bytea
 );
 
-COMMENT ON TYPE "com.aoindustries.security"."HashedKey" IS
+COMMENT ON TYPE "com.aoindustries.security"."<HashedKey>" IS
+'Row definition for "com.aoindustries.security"."HashedKey"';
+
+CREATE DOMAIN "com.aoindustries.security"."HashedKey" AS "com.aoindustries.security"."<HashedKey>" CHECK (
+	VALUE IS NOT DISTINCT FROM NULL
+	OR "com.aoindustries.security"."HashedKey.validate"(VALUE) IS NULL
+);
+
+COMMENT ON DOMAIN "com.aoindustries.security"."HashedKey" IS
 'Matches class com.aoindustries.security.HashedKey';

@@ -21,7 +21,7 @@
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedKey.valueOf" ("hashedKey" text)
-RETURNS "com.aoindustries.security"."HashedKey" AS $$
+RETURNS "com.aoindustries.security"."<HashedKey>" AS $$
 DECLARE
 	split text[];
 	splitlen integer;
@@ -29,7 +29,7 @@ DECLARE
 	"algorithm" text;
 	"hash" bytea;
 	hashlen integer;
-	"result" "com.aoindustries.security"."HashedKey";
+	"result" "com.aoindustries.security"."<HashedKey>";
 	"resultValid" text;
 BEGIN
 	IF "hashedKey" IS NULL THEN
@@ -70,7 +70,6 @@ BEGIN
 			RAISE EXCEPTION 'Unable to guess algorithm by hash length: %', hashlen;
 		END IF;
 	END IF;
-	-- TODO: Don't validate here once is a domain in PostgreSQL 11+
 	"resultValid" := "com.aoindustries.security"."HashedKey.validate"("result");
 	IF "resultValid" IS NOT NULL THEN
 		RAISE EXCEPTION '%', "resultValid";
@@ -79,7 +78,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
--- PostgreSQL 9.6: PARALLEL SAFE
+PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.valueOf" (text) IS

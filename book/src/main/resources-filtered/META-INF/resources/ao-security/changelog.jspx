@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-29T02:01:55-06:00"
+		dateModified="2020-12-30T07:24:47-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -47,6 +47,50 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
 			>
+				<ul>
+					<li>
+						Added domains over the composite types for self-validation.
+						This means tables may now use the type directly, without needing an explicit check constraint
+						calling the per-type <code>validate</code> functions.
+					</li>
+					<li>Now requires PostgreSQL 11 and above.</li>
+					<li>A database schema update is required:
+<pre><![CDATA[BEGIN;
+
+ALTER TYPE "com.aoindustries.security"."HashedKey"       RENAME TO "&lt;HashedKey&gt;";
+ALTER TYPE "com.aoindustries.security"."HashedPassword"  RENAME TO "&lt;HashedPassword&gt;";
+ALTER TYPE "com.aoindustries.security"."Identifier"      RENAME TO "&lt;Identifier&gt;";
+
+COMMENT ON TYPE "com.aoindustries.security"."&lt;HashedKey&gt;" IS
+'Row definition for "com.aoindustries.security"."HashedKey"';
+COMMENT ON TYPE "com.aoindustries.security"."&lt;HashedPassword&gt;" IS
+'Row definition for "com.aoindustries.security"."HashedPassword"';
+COMMENT ON TYPE "com.aoindustries.security"."&lt;Identifier&gt;" IS
+'Row definition for "com.aoindustries.security"."Identifier"';
+
+CREATE DOMAIN "com.aoindustries.security"."HashedKey" AS "com.aoindustries.security"."&lt;HashedKey&lt;" CHECK (
+	"com.aoindustries.security"."HashedKey.validate"(VALUE) IS NULL
+);
+CREATE DOMAIN "com.aoindustries.security"."HashedPassword" AS "com.aoindustries.security"."&lt;HashedPassword&gt;" CHECK (
+	"com.aoindustries.security"."HashedPassword.validate"(VALUE) IS NULL
+);
+CREATE DOMAIN "com.aoindustries.security"."Identifier" AS "com.aoindustries.security"."&lt;Identifier&gt;" CHECK (
+	"com.aoindustries.security"."Identifier.validate"(VALUE) IS NULL
+);
+
+COMMENT ON DOMAIN "com.aoindustries.security"."HashedKey" IS
+'Matches class com.aoindustries.security.HashedKey';
+COMMENT ON DOMAIN "com.aoindustries.security"."HashedPassword" IS
+'Matches class com.aoindustries.security.HashedPassword';
+COMMENT ON DOMAIN "com.aoindustries.security"."Identifier" IS
+'Matches class com.aoindustries.security.Identifier';
+
+COMMIT;]]></pre>
+					</li>
+					<li>Recreate all functions, for "PARALLEL SAFE" and type changes.</li>
+					<li>Update your column types</li>
+					<li>Drop the unnecessary column check constraints</li>
+				</ul>
 				<!-- TODO: Deprecate the String-based representations of passwords, in favor of char[] with zeroing. -->
 				<!-- TODO: Make a matches method for HashedKey, that would zero the parameter, too? -->
 			</changelog:release>

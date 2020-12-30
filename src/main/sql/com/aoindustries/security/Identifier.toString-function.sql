@@ -32,7 +32,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
--- PostgreSQL 9.6: PARALLEL SAFE
+PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.toString" (BIGINT, BIGINT) IS
@@ -47,8 +47,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
--- PostgreSQL 9.6: PARALLEL SAFE
+PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.toString" ("com.aoindustries.security"."Identifier") IS
+'Matches method com.aoindustries.security.Identifier.toString';
+
+CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.toString" (
+	this "com.aoindustries.security"."<Identifier>"
+)
+RETURNS text AS $$
+DECLARE
+	"isValid" text;
+BEGIN
+	-- Validate before casting to DOMAIN to give meaningful error message
+	IF this IS DISTINCT FROM NULL
+	THEN
+		"isValid" := "com.aoindustries.security"."Identifier.validate"(this.hi, this.lo);
+		IF "isValid" IS NOT NULL
+		THEN
+			RAISE EXCEPTION '%', "isValid";
+		END IF;
+	END IF;
+	RETURN "com.aoindustries.security"."Identifier.toString"(this::"com.aoindustries.security"."Identifier");
+END;
+$$ LANGUAGE plpgsql
+IMMUTABLE
+PARALLEL SAFE
+RETURNS NULL ON NULL INPUT;
+
+COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.toString" ("com.aoindustries.security"."<Identifier>") IS
 'Matches method com.aoindustries.security.Identifier.toString';

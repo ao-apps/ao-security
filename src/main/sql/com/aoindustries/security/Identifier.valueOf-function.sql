@@ -21,7 +21,7 @@
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.valueOf" (encoded character(22))
-RETURNS "com.aoindustries.security"."Identifier" AS $$
+RETURNS "com.aoindustries.security"."<Identifier>" AS $$
 BEGIN
 	IF encoded IS NULL THEN
 		RETURN NULL;
@@ -35,7 +35,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
--- PostgreSQL 9.6: PARALLEL SAFE
+PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.valueOf" (character(22)) IS

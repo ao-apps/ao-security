@@ -33,8 +33,8 @@ BEGIN
 	RETURN null;
 END;
 $$ LANGUAGE plpgsql
--- PostgreSQL 9.6: PARALLEL SAFE
-IMMUTABLE;
+IMMUTABLE
+PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.Algorithm.validateHash" (text, bytea) IS
 'Matches method com.aoindustries.security.HashedKey.Algorithm.validateHash';

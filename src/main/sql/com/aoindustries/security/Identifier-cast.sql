@@ -20,15 +20,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE CAST (text AS "com.aoindustries.security"."Identifier")
+CREATE CAST (text AS "com.aoindustries.security"."<Identifier>")
 WITH FUNCTION "com.aoindustries.security"."Identifier.valueOf" (character(22))
 AS ASSIGNMENT;
 
-COMMENT ON CAST (text AS "com.aoindustries.security"."Identifier") IS
+COMMENT ON CAST (text AS "com.aoindustries.security"."<Identifier>") IS
 'Matches method com.aoindustries.security.Identifier.valueOf';
 
-CREATE CAST ("com.aoindustries.security"."Identifier" AS text)
-WITH FUNCTION "com.aoindustries.security"."Identifier.toString" ("com.aoindustries.security"."Identifier");
+CREATE CAST ("com.aoindustries.security"."<Identifier>" AS text)
+WITH FUNCTION "com.aoindustries.security"."Identifier.toString" ("com.aoindustries.security"."<Identifier>");
 
-COMMENT ON CAST ("com.aoindustries.security"."Identifier" AS text) IS
+COMMENT ON CAST ("com.aoindustries.security"."<Identifier>" AS text) IS
 'Matches method com.aoindustries.security.Identifier.toString';

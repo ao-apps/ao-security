@@ -31,7 +31,7 @@ BEGIN
 	IF algorithm IS NULL THEN
 		IF salt IS NOT NULL THEN
 			RETURN 'salt must be null when algorithm is null';
-		ELSIF iterations != 0 THEN
+		ELSIF iterations IS DISTINCT FROM 0 THEN
 			RETURN 'iterations must be 0 when algorithm is null';
 		ELSIF "hash" IS NOT NULL THEN
 			RETURN 'hash must be null when algorithm is null';
@@ -43,15 +43,14 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql
-IMMUTABLE;
--- PostgreSQL 9.6: PARALLEL SAFE
+IMMUTABLE
+PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.validate" (text, bytea, integer, bytea) IS
 'Matches method com.aoindustries.security.HashedPassword.validate';
 
--- TODO: Remove once HashedPassword is a domain in PostgreSQL 11+:
 CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedPassword.validate" (
-	this "com.aoindustries.security"."HashedPassword"
+	this "com.aoindustries.security"."<HashedPassword>"
 )
 RETURNS text AS $$
 BEGIN
@@ -63,10 +62,10 @@ BEGIN
 	);
 END;
 $$ LANGUAGE plpgsql
-IMMUTABLE;
--- PostgreSQL 9.6: PARALLEL SAFE
+IMMUTABLE
+PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedPassword.validate" (
-	"com.aoindustries.security"."HashedPassword"
+	"com.aoindustries.security"."<HashedPassword>"
 ) IS
 'Matches method com.aoindustries.security.HashedPassword.validate';

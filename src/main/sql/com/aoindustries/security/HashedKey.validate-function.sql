@@ -36,23 +36,22 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql
--- PostgreSQL 9.6: PARALLEL SAFE
-IMMUTABLE;
+IMMUTABLE
+PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.validate" (text, bytea) IS
 'Matches method com.aoindustries.security.HashedKey.validate';
 
--- TODO: Remove once HashedKey is a domain in PostgreSQL 11+:
 CREATE OR REPLACE FUNCTION "com.aoindustries.security"."HashedKey.validate" (
-	this "com.aoindustries.security"."HashedKey"
+	this "com.aoindustries.security"."<HashedKey>"
 )
 RETURNS text AS $$
 BEGIN
 	RETURN "com.aoindustries.security"."HashedKey.validate"(this.algorithm, this."hash");
 END;
 $$ LANGUAGE plpgsql
--- PostgreSQL 9.6: PARALLEL SAFE
-IMMUTABLE;
+IMMUTABLE
+PARALLEL SAFE;
 
-COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.validate" ("com.aoindustries.security"."HashedKey") IS
+COMMENT ON FUNCTION "com.aoindustries.security"."HashedKey.validate" ("com.aoindustries.security"."<HashedKey>") IS
 'Matches method com.aoindustries.security.HashedKey.validate';

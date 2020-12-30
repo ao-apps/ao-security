@@ -20,15 +20,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
-CREATE CAST (text AS "com.aoindustries.security"."HashedPassword")
+CREATE CAST (text AS "com.aoindustries.security"."<HashedPassword>")
 WITH FUNCTION "com.aoindustries.security"."HashedPassword.valueOf" (text)
 AS ASSIGNMENT;
 
-COMMENT ON CAST (text AS "com.aoindustries.security"."HashedPassword") IS
+COMMENT ON CAST (text AS "com.aoindustries.security"."<HashedPassword>") IS
 'Matches method com.aoindustries.security.HashedPassword.valueOf';
 
-CREATE CAST ("com.aoindustries.security"."HashedPassword" AS text)
-WITH FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."HashedPassword");
+CREATE CAST ("com.aoindustries.security"."<HashedPassword>" AS text)
+WITH FUNCTION "com.aoindustries.security"."HashedPassword.toString" ("com.aoindustries.security"."<HashedPassword>");
 
-COMMENT ON CAST ("com.aoindustries.security"."HashedPassword" AS text) IS
+COMMENT ON CAST ("com.aoindustries.security"."<HashedPassword>" AS text) IS
 'Matches method com.aoindustries.security.HashedPassword.toString';

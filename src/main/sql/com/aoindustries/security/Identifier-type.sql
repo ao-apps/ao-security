@@ -20,11 +20,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
  */
--- PostgreSQL 11+: Change to domain using the validate function:
-CREATE TYPE "com.aoindustries.security"."Identifier" AS (
+CREATE TYPE "com.aoindustries.security"."<Identifier>" AS (
 	hi bigint,
 	lo bigint
 );
 
-COMMENT ON TYPE "com.aoindustries.security"."Identifier" IS
+COMMENT ON TYPE "com.aoindustries.security"."<Identifier>" IS
+'Row definition for "com.aoindustries.security"."Identifier"';
+
+CREATE DOMAIN "com.aoindustries.security"."Identifier" AS "com.aoindustries.security"."<Identifier>" CHECK (
+	VALUE IS NOT DISTINCT FROM NULL
+	OR "com.aoindustries.security"."Identifier.validate"(VALUE) IS NULL
+);
+
+COMMENT ON DOMAIN "com.aoindustries.security"."Identifier" IS
 'Matches class com.aoindustries.security.Identifier';

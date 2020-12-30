@@ -32,25 +32,24 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql
-IMMUTABLE;
--- PostgreSQL 9.6: PARALLEL SAFE
+IMMUTABLE
+PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.validate" (bigint, bigint) IS
 'Enforces neither hi nor lo may be null.';
 
--- TODO: Remove once Identifier is a domain in PostgreSQL 11+:
 CREATE OR REPLACE FUNCTION "com.aoindustries.security"."Identifier.validate" (
-	this "com.aoindustries.security"."Identifier"
+	this "com.aoindustries.security"."<Identifier>"
 )
 RETURNS text AS $$
 BEGIN
 	RETURN "com.aoindustries.security"."Identifier.validate"(this.hi, this.lo);
 END;
 $$ LANGUAGE plpgsql
-IMMUTABLE;
--- PostgreSQL 9.6: PARALLEL SAFE
+IMMUTABLE
+PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoindustries.security"."Identifier.validate" (
-	"com.aoindustries.security"."Identifier"
+	"com.aoindustries.security"."<Identifier>"
 ) IS
 'Enforces neither hi nor lo may be null.';
