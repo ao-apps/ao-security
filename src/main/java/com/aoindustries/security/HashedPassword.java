@@ -87,6 +87,7 @@ public class HashedPassword implements Serializable {
 	 * The number of milliseconds under which it will be suggested to recommend iterations from
 	 * main method with verbose enabled.
 	 */
+	// Note: If ever changed, search documentation and comments for "100 ms"
 	static final long SUGGEST_INCREASE_ITERATIONS_MILLIS = 100; // 1/10th of a second
 
 	/**
