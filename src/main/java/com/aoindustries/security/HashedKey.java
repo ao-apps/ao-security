@@ -170,9 +170,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			return keyBytes;
 		}
 
+		/**
+		 * @param  key  Is zeroed when invalid
+		 */
 		public <E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
 			int expected = getKeyBytes();
 			if(key.length != expected) {
+				Arrays.fill(key, (byte)0);
 				throw newThrowable.apply(getAlgorithmName() + ": key length mismatch: expected " + expected + ", got " + key.length);
 			}
 			return key;
@@ -228,18 +232,25 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		/**
 		 * Hashes the given key.
 		 *
+		 * @param  key  Is zeroed before this method returns.  If the original key is
+		 *              needed, pass a copy to this method.
+		 *
 		 * @see  #generateKey()
 		 */
 		public byte[] hash(byte[] key) {
 			try {
-				return validateHash(
-					AssertionError::new,
-					MessageDigest.getInstance(getAlgorithmName()).digest(
-						validateKey(IllegalArgumentException::new, key)
-					)
+				byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(
+					validateKey(IllegalArgumentException::new, key)
 				);
+				if(key != null) {
+					Arrays.fill(key, (byte)0);
+					key = null;
+				}
+				return validateHash(AssertionError::new, hash);
 			} catch(NoSuchAlgorithmException e) {
 				throw new WrappedException(e);
+			} finally {
+				if(key != null) Arrays.fill(key, (byte)0);
 			}
 		}
 	}
@@ -312,12 +323,12 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 *
 	 * @see  #generateKey()
 	 *
-	 * @deprecated  This generates a hash for {@linkplain Algorithm#SHA_256 the previous default algorithm},
-	 *              please use {@link Algorithm#hash(byte[])} instead.
+	 * @deprecated  This generates a hash for {@linkplain Algorithm#SHA_256 the previous default algorithm} and does
+	 *              not zero the key, please use {@link Algorithm#hash(byte[])} instead.
 	 */
 	@Deprecated
 	public static byte[] hash(byte[] key) {
-		return Algorithm.SHA_256.hash(key);
+		return Algorithm.SHA_256.hash(key == null ? null : Arrays.copyOf(key, key.length));
 	}
 
 	/**
@@ -564,8 +575,8 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 * </p>
 	 *
-	 * @param  key  When non-null, is zeroed before this method returns.  If the original key is needed, pass a copy to
-	 *              this method.
+	 * @param  key  Is zeroed before this method returns.  If the original key is
+	 *              needed, pass a copy to this method.
 	 *
 	 * @see  Algorithm#validateKey(java.util.function.Function, byte[])
 	 */
@@ -578,21 +589,33 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				}
 				// Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
 				byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(DUMMY_KEY);
-				boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
-				assert !dummiesEqual;
-				return false;
+				try {
+					boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+					assert !dummiesEqual;
+					return false;
+				} finally {
+					Arrays.fill(dummyHash, (byte)0);
+				}
 			} else if(key == null) {
 				// Perform a hash with current settings, just to occupy the same amount of time as if had a key
 				byte[] dummyHash = algorithm.hash(DUMMY_KEY);
-				boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
-				assert !dummiesEqual;
-				return false;
+				try {
+					boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+					assert !dummiesEqual;
+					return false;
+				} finally {
+					Arrays.fill(dummyHash, (byte)0);
+				}
 			} else {
 				// Hash again
 				byte[] newHash = algorithm.hash(key);
-				Arrays.fill(key, (byte)0);
-				key = null;
-				return slowEquals(hash, newHash);
+				try {
+					Arrays.fill(key, (byte)0);
+					key = null;
+					return slowEquals(hash, newHash);
+				} finally {
+					Arrays.fill(newHash, (byte)0);
+				}
 			}
 		} finally {
 			if(key != null) Arrays.fill(key, (byte)0);
@@ -625,15 +648,25 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 					for(Algorithm algorithm : Algorithm.values) {
 						try {
 							byte[] key = algorithm.generateKey();
-							long startNanos = output ? System.nanoTime() : 0;
-							HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
-							long endNanos = output ? System.nanoTime() : 0;
-							if(output) {
-								System.out.println(ENCODER.encodeToString(key));
-								System.out.println(hashedKey);
-								long nanos = endNanos - startNanos;
-								System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
-								System.out.println();
+							try {
+								long startNanos = output ? System.nanoTime() : 0;
+								HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
+								try {
+									long endNanos = output ? System.nanoTime() : 0;
+									if(output) {
+										String encodedKey = ENCODER.encodeToString(key);
+										Arrays.fill(key, (byte)0);
+										System.out.println(encodedKey);
+										System.out.println(hashedKey);
+										long nanos = endNanos - startNanos;
+										System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
+										System.out.println();
+									}
+								} finally {
+									Arrays.fill(hashedKey.getHash(), (byte)0);
+								}
+							} finally {
+								Arrays.fill(key, (byte)0);
 							}
 						} catch(Error | RuntimeException e) {
 							hasFailed = true;
@@ -648,10 +681,21 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			} else {
 				Algorithm algorithm = RECOMMENDED_ALGORITHM;
 				try {
-					byte[] key = algorithm.generateKey();
-					HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
-					System.out.println(ENCODER.encodeToString(key));
-					System.out.println(hashedKey);
+					HashedKey hashedKey = null;
+					String encodedKey;
+					try {
+						byte[] key = algorithm.generateKey();
+						try {
+							hashedKey = new HashedKey(algorithm, algorithm.hash(key));
+							encodedKey = ENCODER.encodeToString(key);
+						} finally {
+							Arrays.fill(key, (byte)0);
+						}
+						System.out.println(encodedKey);
+						System.out.println(hashedKey);
+					} finally {
+						if(hashedKey != null) Arrays.fill(hashedKey.getHash(), (byte)0);
+					}
 				} catch(Error | RuntimeException e) {
 					hasFailed = true;
 					System.out.flush();

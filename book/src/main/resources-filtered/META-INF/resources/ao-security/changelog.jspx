@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-30T23:58:08-06:00"
+		dateModified="2020-12-31T00:14:53-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -51,6 +51,14 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 					<li>
 						New method <code>HashedKey.matches(byte[])</code>, for consistency with
 						<code>HashedPassword.matches(char[])</code>.
+					</li>
+					<li>
+						Deprecated the <code>String</code>-based representations of passwords, in favor of
+						<code>char[]</code> with zeroing.
+					</li>
+					<li>
+						<code>HashedKey.hash(byte[])</code> now zeroes its parameter.  If the original key
+						is required, pass a copy.
 					</li>
 					<li>
 						Added domains over the composite types for self-validation.
@@ -102,7 +110,6 @@ COMMIT;]]></pre>
 						</ol>
 					</li>
 				</ul>
-				<!-- TODO: Deprecate the String-based representations of passwords, in favor of char[] with zeroing. -->
 			</changelog:release>
 		</c:if>
 

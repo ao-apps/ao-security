@@ -33,6 +33,7 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -125,21 +126,31 @@ public class HashedPassword implements Serializable {
 				return validateSalt(AssertionError::new, salt);
 			}
 
+			/**
+			 * @param  password  Is zeroed before this method returns.  If the original password is
+			 *                   needed, pass a copy to this method.
+			 */
 			@Override
-			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
-				if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
-				validateSalt(IllegalArgumentException::new, salt);
-				validateIterations(IllegalArgumentException::new, iterations);
-				if(hashBytes != Long.BYTES) throw new IllegalArgumentException();
-				byte[] hash = new byte[Long.BYTES];
-				long rsltblock = UnixCrypt.cryptImpl(
-					password,
-					  ((salt[0] << Byte.SIZE) & 0x0f00)
-					| ( salt[1] & 0xff                )
-				);
-				// System.out.println("rsltblock = " + rsltblock);
-				IoUtils.longToBuffer(rsltblock, hash);
-				return validateHash(AssertionError::new, hash);
+			byte[] hash(char[] password, byte[] salt, int iterations, int hashBytes) {
+				try {
+					if(password == null || password.length == 0) throw new IllegalArgumentException("Refusing to hash empty password");
+					validateSalt(IllegalArgumentException::new, salt);
+					validateIterations(IllegalArgumentException::new, iterations);
+					if(hashBytes != Long.BYTES) throw new IllegalArgumentException();
+					byte[] hash = new byte[Long.BYTES];
+					long rsltblock = UnixCrypt.cryptImpl(
+						new String(password), // TODO: Switch to commons-codec to avoid String wrapping
+						  ((salt[0] << Byte.SIZE) & 0x0f00)
+						| ( salt[1] & 0xff                )
+					);
+					Arrays.fill(password, (char)0);
+					password = null;
+					// System.out.println("rsltblock = " + rsltblock);
+					IoUtils.longToBuffer(rsltblock, hash);
+					return validateHash(AssertionError::new, hash);
+				} finally {
+					if(password != null) Arrays.fill(password, (char)0);
+				}
 			}
 
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.toString-function.sql
@@ -171,21 +182,34 @@ public class HashedPassword implements Serializable {
 		 */
 		@Deprecated
 		MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
+			/**
+			 * @param  password  Is zeroed before this method returns.  If the original password is
+			 *                   needed, pass a copy to this method.
+			 */
 			@Override
-			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
-				if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
-				validateSalt(IllegalArgumentException::new, salt);
-				validateIterations(IllegalArgumentException::new, iterations);
-				if(hashBytes != (128 / Byte.SIZE)) throw new IllegalArgumentException();
+			byte[] hash(char[] password, byte[] salt, int iterations, int hashBytes) {
 				try {
-					return validateHash(
-						AssertionError::new,
-						MessageDigest.getInstance(getAlgorithmName()).digest(
-							password.getBytes(StandardCharsets.UTF_8)
-						)
-					);
-				} catch(NoSuchAlgorithmException e) {
-					throw new WrappedException(e);
+					if(password == null || password.length == 0) throw new IllegalArgumentException("Refusing to hash empty password");
+					byte[] utf8 = StandardCharsets.UTF_8.encode(CharBuffer.wrap(password)).array();
+					try {
+						Arrays.fill(password, (char)0);
+						password = null;
+						validateSalt(IllegalArgumentException::new, salt);
+						validateIterations(IllegalArgumentException::new, iterations);
+						if(hashBytes != (128 / Byte.SIZE)) throw new IllegalArgumentException();
+						try {
+							byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(utf8);
+							Arrays.fill(utf8, (byte)0);
+							utf8 = null;
+							return validateHash(AssertionError::new, hash);
+						} catch(NoSuchAlgorithmException e) {
+							throw new WrappedException(e);
+						}
+					} finally {
+						if(utf8 != null) Arrays.fill(utf8, (byte)0);
+					}
+				} finally {
+					if(password != null) Arrays.fill(password, (char)0);
 				}
 			}
 
@@ -204,21 +228,34 @@ public class HashedPassword implements Serializable {
 		 */
 		@Deprecated
 		SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
+			/**
+			 * @param  password  Is zeroed before this method returns.  If the original password is
+			 *                   needed, pass a copy to this method.
+			 */
 			@Override
-			byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
-				if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
-				validateSalt(IllegalArgumentException::new, salt);
-				validateIterations(IllegalArgumentException::new, iterations);
-				if(hashBytes != (160 / Byte.SIZE)) throw new IllegalArgumentException();
+			byte[] hash(char[] password, byte[] salt, int iterations, int hashBytes) {
 				try {
-					return validateHash(
-						AssertionError::new,
-						MessageDigest.getInstance(getAlgorithmName()).digest(
-							password.getBytes(StandardCharsets.UTF_8)
-						)
-					);
-				} catch(NoSuchAlgorithmException e) {
-					throw new WrappedException(e);
+					if(password == null || password.length == 0) throw new IllegalArgumentException("Refusing to hash empty password");
+					byte[] utf8 = StandardCharsets.UTF_8.encode(CharBuffer.wrap(password)).array();
+					try {
+						Arrays.fill(password, (char)0);
+						password = null;
+						validateSalt(IllegalArgumentException::new, salt);
+						validateIterations(IllegalArgumentException::new, iterations);
+						if(hashBytes != (160 / Byte.SIZE)) throw new IllegalArgumentException();
+						try {
+							byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(utf8);
+							Arrays.fill(utf8, (byte)0);
+							utf8 = null;
+							return validateHash(AssertionError::new, hash);
+						} catch(NoSuchAlgorithmException e) {
+							throw new WrappedException(e);
+						}
+					} finally {
+						if(utf8 != null) Arrays.fill(utf8, (byte)0);
+					}
+				} finally {
+					if(password != null) Arrays.fill(password, (char)0);
 				}
 			}
 
@@ -380,9 +417,9 @@ public class HashedPassword implements Serializable {
 		 * Generates a random salt of {@link #getSaltBytes()} bytes in length
 		 * using the provided {@link Random} source.
 		 *
-		 * @see  HashedPassword#HashedPassword(java.lang.String, java.util.Random)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int, java.util.Random)
+		 * @see  HashedPassword#HashedPassword(char[], java.util.Random)
+		 * @see  HashedPassword#HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)
+		 * @see  HashedPassword#HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int, java.util.Random)
 		 */
 		public byte[] generateSalt(Random random) {
 			return generateSalt(getSaltBytes(), random);
@@ -393,9 +430,9 @@ public class HashedPassword implements Serializable {
 		 * using a default {@link SecureRandom} instance, which is not a
 		 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 		 *
-		 * @see  HashedPassword#HashedPassword(java.lang.String)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)
+		 * @see  HashedPassword#HashedPassword(char[])
+		 * @see  HashedPassword#HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm)
+		 * @see  HashedPassword#HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int)
 		 */
 		public byte[] generateSalt() {
 			return generateSalt(Identifier.secureRandom);
@@ -444,10 +481,10 @@ public class HashedPassword implements Serializable {
 		 * </p>
 		 *
 		 * @see  #hash(java.lang.String, byte[], int)
-		 * @see  HashedPassword#HashedPassword(java.lang.String)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, java.util.Random)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)
-		 * @see  HashedPassword#HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)
+		 * @see  HashedPassword#HashedPassword(char[])
+		 * @see  HashedPassword#HashedPassword(char[], java.util.Random)
+		 * @see  HashedPassword#HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm)
+		 * @see  HashedPassword#HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)
 		 */
 		public int getRecommendedIterations() {
 			return recommendedIterations;
@@ -499,30 +536,45 @@ public class HashedPassword implements Serializable {
 
 		/**
 		 * Hash the given password to the given number of bytes.
+		 *
+		 * @param  password  Is zeroed before this method returns.  If the original password is
+		 *                   needed, pass a copy to this method.
 		 */
-		byte[] hash(String password, byte[] salt, int iterations, int hashBytes) {
-			if(password == null || password.isEmpty()) throw new IllegalArgumentException("Refusing to hash empty password");
+		byte[] hash(char[] password, byte[] salt, int iterations, int hashBytes) {
 			try {
-				char[] chars = password.toCharArray();
+				if(password == null || password.length == 0) throw new IllegalArgumentException("Refusing to hash empty password");
 				try {
 					// See https://crackstation.net/hashing-security.htm
-					return validateHash(
-						AssertionError::new,
-						SecretKeyFactory.getInstance(getAlgorithmName()).generateSecret(
-							new PBEKeySpec(
-								chars,
-								validateSalt(IllegalArgumentException::new, salt),
-								validateIterations(IllegalArgumentException::new, iterations),
-								hashBytes * Byte.SIZE
-							)
-						).getEncoded()
-					);
-				} finally {
-					Arrays.fill(chars, (char)0);
+					byte[] hash = SecretKeyFactory.getInstance(getAlgorithmName()).generateSecret(
+						new PBEKeySpec(
+							password,
+							validateSalt(IllegalArgumentException::new, salt),
+							validateIterations(IllegalArgumentException::new, iterations),
+							hashBytes * Byte.SIZE
+						)
+					).getEncoded();
+					Arrays.fill(password, (char)0);
+					password = null;
+					return validateHash(AssertionError::new, hash);
+				} catch(InvalidKeySpecException | NoSuchAlgorithmException e) {
+					throw new WrappedException(e);
 				}
-			} catch(InvalidKeySpecException | NoSuchAlgorithmException e) {
-				throw new WrappedException(e);
+			} finally {
+				if(password != null) Arrays.fill(password, (char)0);
 			}
+		}
+
+		/**
+		 * Hash the given password to {@link #getHashBytes()} bytes.
+		 *
+		 * @param  password  Is zeroed before this method returns.  If the original password is
+		 *                   needed, pass a copy to this method.
+		 *
+		 * @see  #generateSalt()
+		 * @see  #getRecommendedIterations()
+		 */
+		public byte[] hash(char[] password, byte[] salt, int iterations) {
+			return hash(password, salt, iterations, getHashBytes());
 		}
 
 		/**
@@ -530,9 +582,12 @@ public class HashedPassword implements Serializable {
 		 *
 		 * @see  #generateSalt()
 		 * @see  #getRecommendedIterations()
+		 *
+		 * @deprecated  Please use {@link #hash(char[], byte[], int)} so the password may be zeroed.
 		 */
+		@Deprecated
 		public byte[] hash(String password, byte[] salt, int iterations) {
-			return hash(password, salt, iterations, getHashBytes());
+			return hash(password == null ? null : password.toCharArray(), salt, iterations);
 		}
 
 		static {
@@ -615,9 +670,9 @@ public class HashedPassword implements Serializable {
 	 * @see  #hash(java.lang.String, byte[], int)
 	 *
 	 * @deprecated  This generates a salt for {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
-	 *              please use {@link Algorithm#generateSalt()}, {@link #HashedPassword(java.lang.String)},
-	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)},
-	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)}
+	 *              please use {@link Algorithm#generateSalt()}, {@link #HashedPassword(char[])},
+	 *              {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm)},
+	 *              {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int)}
 	 *              instead.
 	 */
 	@Deprecated
@@ -631,16 +686,16 @@ public class HashedPassword implements Serializable {
 	 * @see  #generateSalt()
 	 * @see  #RECOMMENDED_ITERATIONS
 	 *
-	 * @deprecated  This generates a hash for {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
-	 *              please use {@link Algorithm#hash(java.lang.String, byte[], int)},
-	 *              {@link #HashedPassword(java.lang.String)},
-	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)},
-	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)}
+	 * @deprecated  This generates a hash for {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm}
+	 *              and does not allow the password to be zeroed, please use {@link Algorithm#hash(char[], byte[], int)},
+	 *              {@link #HashedPassword(char[])},
+	 *              {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm)},
+	 *              {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int)}
 	 *              instead.
 	 */
 	@Deprecated
 	public static byte[] hash(String password, byte[] salt, int iterations) {
-		return Algorithm.PBKDF2WITHHMACSHA1.hash(password, salt, iterations, HASH_BYTES);
+		return Algorithm.PBKDF2WITHHMACSHA1.hash(password == null ? null : password.toCharArray(), salt, iterations, HASH_BYTES);
 	}
 
 	private static final byte[] EMPTY_BYTE_ARRAY = {};
@@ -807,9 +862,9 @@ public class HashedPassword implements Serializable {
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 *
 	 * @deprecated  This represents a hash using {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
-	 *              please use {@link #HashedPassword(java.lang.String)},
-	 *              {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm)},
-	 *              or {@link #HashedPassword(java.lang.String, com.aoindustries.security.HashedPassword.Algorithm, int)}
+	 *              please use {@link #HashedPassword(char[])},
+	 *              {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm)},
+	 *              or {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int)}
 	 *              instead.
 	 */
 	@Deprecated
@@ -826,6 +881,8 @@ public class HashedPassword implements Serializable {
 	/**
 	 * Creates a new hashed password using the given algorithm, salt, and iterations.
 	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
 	 * @param algorithm   The algorithm previously used to hash the password
 	 * @param iterations  The number of has iterations
 	 *
@@ -834,8 +891,26 @@ public class HashedPassword implements Serializable {
 	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
-	public HashedPassword(String password, Algorithm algorithm, byte[] salt, int iterations) throws IllegalArgumentException {
+	public HashedPassword(char[] password, Algorithm algorithm, byte[] salt, int iterations) throws IllegalArgumentException {
 		this(algorithm, salt, iterations, algorithm.hash(password, salt, iterations));
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, salt, and iterations.
+	 *
+	 * @param algorithm   The algorithm previously used to hash the password
+	 * @param iterations  The number of has iterations
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *                                    on {@code salt.length != algorithm.getSaltBytes()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, byte[], int)} so the password may be zeroed.
+	 */
+	@Deprecated
+	public HashedPassword(String password, Algorithm algorithm, byte[] salt, int iterations) throws IllegalArgumentException {
+		this(password == null ? null : password.toCharArray(), algorithm, salt, iterations);
 	}
 
 	/**
@@ -843,6 +918,8 @@ public class HashedPassword implements Serializable {
 	 * and the given iterations
 	 * using the provided {@link Random} source.
 	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
 	 * @param algorithm   The algorithm previously used to hash the password
 	 * @param iterations  The number of has iterations
 	 *
@@ -850,13 +927,51 @@ public class HashedPassword implements Serializable {
 	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
 	 */
-	public HashedPassword(String password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
+	public HashedPassword(char[] password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
 		this(password, algorithm, algorithm.generateSalt(random), iterations);
 	}
 
 	/**
 	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
 	 * and the given iterations
+	 * using the provided {@link Random} source.
+	 *
+	 * @param algorithm   The algorithm previously used to hash the password
+	 * @param iterations  The number of has iterations
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int, java.util.Random)} so the password may be zeroed.
+	 */
+	@Deprecated
+	public HashedPassword(String password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
+		this(password == null ? null : password.toCharArray(), algorithm, iterations, random);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
+	 * and the given iterations
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
+	 * @param algorithm   The algorithm previously used to hash the password
+	 * @param iterations  The number of has iterations
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 */
+	public HashedPassword(char[] password, Algorithm algorithm, int iterations) throws IllegalArgumentException {
+		this(password, algorithm, iterations, Identifier.secureRandom);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
+	 * and the given iterations
 	 * using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
@@ -866,9 +981,26 @@ public class HashedPassword implements Serializable {
 	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
 	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
 	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, int)} so the password may be zeroed.
 	 */
+	@Deprecated
 	public HashedPassword(String password, Algorithm algorithm, int iterations) throws IllegalArgumentException {
-		this(password, algorithm, iterations, Identifier.secureRandom);
+		this(password == null ? null : password.toCharArray(), algorithm, iterations);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
+	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using the provided {@link Random} source.
+	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 */
+	public HashedPassword(char[] password, Algorithm algorithm, Random random) throws IllegalArgumentException {
+		this(password, algorithm, algorithm.getRecommendedIterations(), random);
 	}
 
 	/**
@@ -877,9 +1009,27 @@ public class HashedPassword implements Serializable {
 	 * using the provided {@link Random} source.
 	 *
 	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm, java.util.Random)} so the password may be zeroed.
 	 */
+	@Deprecated
 	public HashedPassword(String password, Algorithm algorithm, Random random) throws IllegalArgumentException {
-		this(password, algorithm, algorithm.getRecommendedIterations(), random);
+		this(password == null ? null : password.toCharArray(), algorithm, random);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, {@linkplain Algorithm#generateSalt() a random salt},
+	 * and {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 */
+	public HashedPassword(char[] password, Algorithm algorithm) throws IllegalArgumentException {
+		this(password, algorithm, Identifier.secureRandom);
 	}
 
 	/**
@@ -889,9 +1039,12 @@ public class HashedPassword implements Serializable {
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
 	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[], com.aoindustries.security.HashedPassword.Algorithm)} so the password may be zeroed.
 	 */
+	@Deprecated
 	public HashedPassword(String password, Algorithm algorithm) throws IllegalArgumentException {
-		this(password, algorithm, Identifier.secureRandom);
+		this(password == null ? null : password.toCharArray(), algorithm);
 	}
 
 	/**
@@ -900,9 +1053,12 @@ public class HashedPassword implements Serializable {
 	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
 	 * using the provided {@link Random} source.
 	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
+	 *
 	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
 	 */
-	public HashedPassword(String password, Random random) throws IllegalArgumentException {
+	public HashedPassword(char[] password, Random random) throws IllegalArgumentException {
 		this(password, RECOMMENDED_ALGORITHM, random);
 	}
 
@@ -910,13 +1066,47 @@ public class HashedPassword implements Serializable {
 	 * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
 	 * {@linkplain Algorithm#generateSalt() a random salt}, and
 	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using the provided {@link Random} source.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[], java.util.Random)} so the password may be zeroed.
+	 */
+	@Deprecated
+	public HashedPassword(String password, Random random) throws IllegalArgumentException {
+		this(password == null ? null : password.toCharArray(), random);
+	}
+
+	/**
+	 * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+	 * {@linkplain Algorithm#generateSalt() a random salt}, and
+	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
+	 * using a default {@link SecureRandom} instance, which is not a
+	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 */
+	public HashedPassword(char[] password) throws IllegalArgumentException {
+		this(password, Identifier.secureRandom);
+	}
+
+	/**
+	 * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+	 * {@linkplain Algorithm#generateSalt() a random salt}, and
+	 * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
 	 * using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
 	 * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
+	 *
+	 * @deprecated  Please use {@link #HashedPassword(char[])} so the password may be zeroed.
 	 */
+	@Deprecated
 	public HashedPassword(String password) throws IllegalArgumentException {
-		this(password, Identifier.secureRandom);
+		this(password == null ? null : password.toCharArray());
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
@@ -1027,26 +1217,58 @@ public class HashedPassword implements Serializable {
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 * </p>
 	 *
+	 * @param password    Is zeroed before this method returns.  If the original password is
+	 *                    needed, pass a copy to this method.
+	 *
 	 * @see  #isRehashRecommended()
 	 */
-	public boolean matches(String password) {
-		if(algorithm == null) {
-			// Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
-			byte[] dummyHash = RECOMMENDED_ALGORITHM.hash("<<DUMMY>>", DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
-			boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
-			assert !dummiesEqual;
-			return false;
-		} else if(password == null || password.isEmpty()) {
-			// Perform a hash with current settings, just to occupy the same amount of time as if had a password
-			byte[] dummyHash = algorithm.hash("<<DUMMY>>", salt, iterations, hash.length);
-			boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
-			assert !dummiesEqual;
-			return false;
-		} else {
-			// Hash again with the original salt, iterations, and hash size
-			byte[] newHash = algorithm.hash(password, salt, iterations, hash.length);
-			return slowEquals(hash, newHash);
+	public boolean matches(char[] password) {
+		try {
+			if(algorithm == null) {
+				// Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
+				byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(
+					password == null || password.length == 0 ? "<<DUMMY>>".toCharArray() : password,
+					DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations()
+				);
+				boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+				assert !dummiesEqual;
+				return false;
+			} else if(password == null || password.length == 0) {
+				// Perform a hash with current settings, just to occupy the same amount of time as if had a password
+				byte[] dummyHash = algorithm.hash("<<DUMMY>>".toCharArray(), salt, iterations, hash.length);
+				boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+				assert !dummiesEqual;
+				return false;
+			} else {
+				// Hash again with the original salt, iterations, and hash size
+				byte[] newHash = algorithm.hash(password, salt, iterations, hash.length);
+				return slowEquals(hash, newHash);
+			}
+		} finally {
+			if(password != null) Arrays.fill(password, (char)0);
 		}
+	}
+
+	/**
+	 * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
+	 * <p>
+	 * When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
+	 * {@link #isRehashRecommended()} then either set the same
+	 * password again or, ideally, generate a new password or prompt the user to reset their password.  This will allow
+	 * the stored passwords to keep up with encryption improvements.
+	 * </p>
+	 * <p>
+	 * Performs comparisons in length-constant time.
+	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
+	 * </p>
+	 *
+	 * @see  #isRehashRecommended()
+	 *
+	 * @deprecated  Please use {@link #matches(char[])} so the password may be zeroed.
+	 */
+	@Deprecated
+	public boolean matches(String password) {
+		return matches(password == null ? null : password.toCharArray());
 	}
 
 	/**
@@ -1099,16 +1321,16 @@ public class HashedPassword implements Serializable {
 			System.err.println("\tReads from standard input when no password arguments");
 			System.exit(SysExits.EX_USAGE);
 		} else {
-			Stream<String> lines;
+			Stream<String> stream;
 			if(passwords.isEmpty()) {
-				lines = new BufferedReader(new InputStreamReader(System.in)).lines();
+				stream = new BufferedReader(new InputStreamReader(System.in)).lines();
 			} else {
-				lines = passwords.stream();
+				stream = passwords.stream();
 			}
 			final boolean benchmarkFinal = benchmark;
 			final boolean[] warmedUp = {false};
 			final boolean[] hasFailed = {false};
-			lines.forEachOrdered(
+			stream.forEachOrdered(
 				password -> {
 					if(password.isEmpty()) {
 						System.out.println(NO_PASSWORD);
@@ -1121,7 +1343,7 @@ public class HashedPassword implements Serializable {
 									int recommendedIterations = algorithm.getRecommendedIterations();
 									byte[] salt = algorithm.generateSalt();
 									long startNanos = output ? System.nanoTime() : 0;
-									HashedPassword hashedPassword = new HashedPassword(password, algorithm, salt, recommendedIterations);
+									HashedPassword hashedPassword = new HashedPassword(password.toCharArray(), algorithm, salt, recommendedIterations);
 									long endNanos = output ? System.nanoTime() : 0;
 									if(output) {
 										System.out.println(hashedPassword);
@@ -1144,8 +1366,8 @@ public class HashedPassword implements Serializable {
 											System.err.flush();
 										}
 									}
-									assert hashedPassword.matches(password);
-									assert valueOf(hashedPassword.toString()).matches(password);
+									assert hashedPassword.matches(password.toCharArray());
+									assert valueOf(hashedPassword.toString()).matches(password.toCharArray());
 								} catch(Error | RuntimeException e) {
 									hasFailed[0] = true;
 									if(output) {
@@ -1163,14 +1385,14 @@ public class HashedPassword implements Serializable {
 							int recommendedIterations = algorithm.getRecommendedIterations();
 							byte[] salt = algorithm.generateSalt();
 							HashedPassword hashedPassword = new HashedPassword(
-								password,
+								password.toCharArray(),
 								algorithm,
 								salt,
 								recommendedIterations
 							);
 							System.out.println(hashedPassword);
-							assert hashedPassword.matches(password);
-							assert valueOf(hashedPassword.toString()).matches(password);
+							assert hashedPassword.matches(password.toCharArray());
+							assert valueOf(hashedPassword.toString()).matches(password.toCharArray());
 						} catch(Error | RuntimeException e) {
 							hasFailed[0] = true;
 							System.out.flush();

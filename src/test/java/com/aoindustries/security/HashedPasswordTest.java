@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -65,17 +66,17 @@ public class HashedPasswordTest {
 		assertNull(HashedPassword.NO_PASSWORD.getHash());
 	}
 
-	private static String generatePassword() {
+	private static char[] generatePassword() {
 		int length = 1 + secureRandom.nextInt(19);
-		StringBuilder sb = new StringBuilder(length);
+		char[] password = new char[length];
 		for(int i = 0; i < length ; i++) {
-			sb.append((char)secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000));
+			password[i] = (char)secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000);
 		}
-		return sb.toString();
+		return password;
 	}
 
 	private static void testAlgorithm(HashedPassword.Algorithm algorithm, int saltBytes, int iterations, int hashBytes) throws Exception {
-		final String password = generatePassword();
+		final char[] password = generatePassword();
 		assertEquals(-1, algorithm.getAlgorithmName().indexOf(HashedPassword.SEPARATOR));
 		assertTrue(algorithm.getSaltBytes() >= 0);
 		byte[] salt = algorithm.generateSalt(saltBytes, Identifier.secureRandom);
@@ -93,7 +94,7 @@ public class HashedPasswordTest {
 		assertEquals(iterations, algorithm.validateIterations(AssertionError::new, iterations));
 		assertTrue(algorithm.getHashBytes() >= 0);
 		long startNanos = System.nanoTime();
-		byte[] algHash = algorithm.hash(password, salt, iterations, hashBytes);
+		byte[] algHash = algorithm.hash(Arrays.copyOf(password, password.length), salt, iterations, hashBytes);
 		long endNanos = System.nanoTime();
 		assertSame(algHash, algorithm.validateHash(AssertionError::new, algHash));
 		HashedPassword hashedPassword = new HashedPassword(algorithm, salt, iterations, algHash);
@@ -136,7 +137,7 @@ public class HashedPasswordTest {
 			assertNotSame(hashedPassword, serialized);
 		}
 		// Compare to other hash of same password
-		HashedPassword otherHashedPassword = new HashedPassword(password, algorithm);
+		HashedPassword otherHashedPassword = new HashedPassword(Arrays.copyOf(password, password.length), algorithm);
 		if(saltBytes != 0) {
 			assertFalse("Salted should have unequal instances", hashedPassword.equals(otherHashedPassword));
 		} else {
@@ -144,7 +145,7 @@ public class HashedPasswordTest {
 		}
 		assertSame(algorithm, hashedPassword.getAlgorithm());
 		assertNotSame(algHash, hashedPassword.getHash());
-		assertTrue(otherHashedPassword.matches(password));
+		assertTrue(otherHashedPassword.matches(Arrays.copyOf(password, password.length)));
 	}
 
 	private static void testAlgorithm(HashedPassword.Algorithm algorithm) throws Exception {
@@ -203,7 +204,7 @@ public class HashedPasswordTest {
 	@Test
 	@SuppressWarnings("ThrowableResultIgnored")
 	public void testDeprecatedCompatibility() {
-		final String password = generatePassword();
+		final String password = new String(generatePassword());
 		assertEquals(256 / Byte.SIZE, HashedPassword.SALT_BYTES);
 		assertEquals(256 / Byte.SIZE, HashedPassword.HASH_BYTES);
 		assertEquals(
