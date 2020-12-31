@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2020-12-30T19:14:17-06:00"
+		dateModified="2020-12-30T23:58:08-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -48,6 +48,10 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				scmUrl="@{project.scm.url}"
 			>
 				<ul>
+					<li>
+						New method <code>HashedKey.matches(byte[])</code>, for consistency with
+						<code>HashedPassword.matches(char[])</code>.
+					</li>
 					<li>
 						Added domains over the composite types for self-validation.
 						This means tables may now use the type directly, without needing an explicit check constraint
@@ -99,7 +103,6 @@ COMMIT;]]></pre>
 					</li>
 				</ul>
 				<!-- TODO: Deprecate the String-based representations of passwords, in favor of char[] with zeroing. -->
-				<!-- TODO: Make a matches method for HashedKey, that would zero the parameter, too? -->
 			</changelog:release>
 		</c:if>
 

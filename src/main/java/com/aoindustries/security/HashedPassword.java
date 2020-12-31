@@ -575,7 +575,7 @@ public class HashedPassword implements Serializable {
 	public static final int SALT_BYTES = 256 / Byte.SIZE;
 
 	/**
-	 * Private dummy hash array, used to keep constant time when no salt available.
+	 * Private dummy hash array, used to keep constant time when no hash available.
 	 * <p>
 	 * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
 	 * not have any password set?  Would it matter if it did?
@@ -1029,9 +1029,15 @@ public class HashedPassword implements Serializable {
 	 * @see  #isRehashRecommended()
 	 */
 	public boolean matches(String password) {
-		if(algorithm == null || password == null || password.isEmpty()) {
-			// Perform a hash with default settings, just to occupy the same amount of time as if had a password
+		if(algorithm == null) {
+			// Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
 			byte[] dummyHash = RECOMMENDED_ALGORITHM.hash("<<DUMMY>>", DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations());
+			boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+			assert !dummiesEqual;
+			return false;
+		} else if(password == null || password.isEmpty()) {
+			// Perform a hash with current settings, just to occupy the same amount of time as if had a password
+			byte[] dummyHash = algorithm.hash("<<DUMMY>>", salt, iterations, hash.length);
 			boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
 			assert !dummiesEqual;
 			return false;

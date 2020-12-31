@@ -268,6 +268,15 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	private static final byte[] DUMMY_KEY = new byte[RECOMMENDED_ALGORITHM.getKeyBytes()];
 
 	/**
+	 * Private dummy hash array, used to keep constant time when no hash available.
+	 * <p>
+	 * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
+	 * not have any password set?  Would it matter if it did?
+	 * </p>
+	 */
+	private static final byte[] DUMMY_HASH = new byte[RECOMMENDED_ALGORITHM.getHashBytes()];
+
+	/**
 	 * The number of bytes in the SHA-256 hash.
 	 *
 	 * @deprecated  This is the value matching {@linkplain Algorithm#SHA_256 the previous default algorithm},
@@ -540,6 +549,54 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	public byte[] getHash() {
 		return hash;
+	}
+
+	/**
+	 * Checks if this matches the provided key, always {@code false} when is {@link #NO_KEY}.
+	 * <p>
+	 * This is most direct when the specific hash to verify against is already known.
+	 * However, when searching for a hashed value by original key, such as in a mapping or database table, one would
+	 * {@linkplain #valueOf(com.aoindustries.security.HashedKey.Algorithm, byte[]) create a new instance} to act as the
+	 * look-up value.
+	 * </p>
+	 * <p>
+	 * Performs comparisons in length-constant time.
+	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
+	 * </p>
+	 *
+	 * @param  key  When non-null, is zeroed before this method returns.  If the original key is needed, pass a copy to
+	 *              this method.
+	 *
+	 * @see  Algorithm#validateKey(java.util.function.Function, byte[])
+	 */
+	public boolean matches(byte[] key) {
+		try {
+			if(algorithm == null) {
+				if(key != null) {
+					Arrays.fill(key, (byte)0);
+					key = null;
+				}
+				// Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
+				byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(DUMMY_KEY);
+				boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+				assert !dummiesEqual;
+				return false;
+			} else if(key == null) {
+				// Perform a hash with current settings, just to occupy the same amount of time as if had a key
+				byte[] dummyHash = algorithm.hash(DUMMY_KEY);
+				boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
+				assert !dummiesEqual;
+				return false;
+			} else {
+				// Hash again
+				byte[] newHash = algorithm.hash(key);
+				Arrays.fill(key, (byte)0);
+				key = null;
+				return slowEquals(hash, newHash);
+			}
+		} finally {
+			if(key != null) Arrays.fill(key, (byte)0);
+		}
 	}
 
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
