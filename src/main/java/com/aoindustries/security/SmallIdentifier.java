@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2014, 2016, 2017, 2020  AO Industries, Inc.
+ * Copyright (C) 2014, 2016, 2017, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -103,25 +103,35 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	/**
 	 * The external representation is a string of characters encoded in base 57, with
 	 * 11 characters for "value".
+	 *
+	 * @see  #toString()
+	 */
+	public char[] toCharArray() {
+		return new char[] {
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE * BASE)),
+			Identifier.getCharacter(divide(value, BASE)),
+			Identifier.getCharacter(value)
+		};
+	}
+
+	/**
+	 * The external representation is a string of characters encoded in base 57, with
+	 * 11 characters for "value".
+	 *
+	 * @see  #toCharArray()
 	 */
 	// Matches src/main/sql/com/aoindustries/security/SmallIdentifier.toString-function.sql
 	@Override
 	public String toString() {
-		return new String(
-			new char[] {
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE * BASE)),
-				Identifier.getCharacter(divide(value, BASE)),
-				Identifier.getCharacter(value)
-			}
-		);
+		return new String(toCharArray());
 	}
 
 	/**

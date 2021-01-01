@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020  AO Industries, Inc.
+ * Copyright (C) 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -28,7 +28,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.logging.Logger;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -66,86 +65,97 @@ public class HashedPasswordTest {
 		assertNull(HashedPassword.NO_PASSWORD.getHash());
 	}
 
-	private static char[] generatePassword() {
-		int length = 1 + secureRandom.nextInt(19);
-		char[] password = new char[length];
-		for(int i = 0; i < length ; i++) {
-			password[i] = (char)secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000);
+	private static GeneratedPassword generatePassword() {
+		if(secureRandom.nextBoolean()) {
+			return new GeneratedPassword();
+		} else {
+			return new GeneratedPassword(() -> {
+				int length = 1 + secureRandom.nextInt(19);
+				char[] password = new char[length];
+				for(int i = 0; i < length ; i++) {
+					password[i] = (char)secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000);
+				}
+				return password;
+			});
 		}
-		return password;
 	}
 
 	private static void testAlgorithm(HashedPassword.Algorithm algorithm, int saltBytes, int iterations, int hashBytes) throws Exception {
-		final char[] password = generatePassword();
-		assertEquals(-1, algorithm.getAlgorithmName().indexOf(HashedPassword.SEPARATOR));
-		assertTrue(algorithm.getSaltBytes() >= 0);
-		byte[] salt = algorithm.generateSalt(saltBytes, Identifier.secureRandom);
-		assertSame(salt, algorithm.validateSalt(AssertionError::new, salt));
-		assertTrue(algorithm.getMinimumIterations() >= 0);
-		assertTrue(algorithm.getMaximumIterations() >= 0);
-		assertTrue(algorithm.getMaximumIterations() >= algorithm.getMinimumIterations());
-		assertEquals(
-			"Both min and max 0 when iteration not supported",
-			(algorithm.getMinimumIterations() == 0),
-			(algorithm.getMaximumIterations() == 0)
-		);
-		assertTrue(algorithm.getRecommendedIterations() >= algorithm.getMinimumIterations());
-		assertTrue(algorithm.getRecommendedIterations() <= algorithm.getMaximumIterations());
-		assertEquals(iterations, algorithm.validateIterations(AssertionError::new, iterations));
-		assertTrue(algorithm.getHashBytes() >= 0);
-		long startNanos = System.nanoTime();
-		byte[] algHash = algorithm.hash(Arrays.copyOf(password, password.length), salt, iterations, hashBytes);
-		long endNanos = System.nanoTime();
-		assertSame(algHash, algorithm.validateHash(AssertionError::new, algHash));
-		HashedPassword hashedPassword = new HashedPassword(algorithm, salt, iterations, algHash);
-		// Warn if too fast
-		long nanos = endNanos - startNanos;
-		LOGGER.info(
-			algorithm.getAlgorithmName() + ": Completed in "
-			+ BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
-		);
-		long millis = nanos / 1_000_000;
-		if(millis < HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS && iterations != 0) {
-			LOGGER.warning(
-				algorithm.getAlgorithmName() + ": Password was hashed in under "
-				+ HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS
-				+ " ms, recommend increasing the value of recommendedIterations (currently "
-				+ iterations + ")"
+		try (GeneratedPassword password = generatePassword()) {
+			assertNotSame(password.getPassword(), password.getPassword());
+			assertEquals(-1, algorithm.getAlgorithmName().indexOf(HashedPassword.SEPARATOR));
+			assertTrue(algorithm.getSaltBytes() >= 0);
+			byte[] salt = algorithm.generateSalt(saltBytes, Identifier.secureRandom);
+			assertSame(salt, algorithm.validateSalt(AssertionError::new, salt));
+			assertTrue(algorithm.getMinimumIterations() >= 0);
+			assertTrue(algorithm.getMaximumIterations() >= 0);
+			assertTrue(algorithm.getMaximumIterations() >= algorithm.getMinimumIterations());
+			assertEquals(
+				"Both min and max 0 when iteration not supported",
+				(algorithm.getMinimumIterations() == 0),
+				(algorithm.getMaximumIterations() == 0)
 			);
+			assertTrue(algorithm.getRecommendedIterations() >= algorithm.getMinimumIterations());
+			assertTrue(algorithm.getRecommendedIterations() <= algorithm.getMaximumIterations());
+			assertEquals(iterations, algorithm.validateIterations(AssertionError::new, iterations));
+			assertTrue(algorithm.getHashBytes() >= 0);
+			long startNanos = System.nanoTime();
+			byte[] algHash = algorithm.hash(password.clone(), salt, iterations, hashBytes);
+			long endNanos = System.nanoTime();
+			assertSame(algHash, algorithm.validateHash(AssertionError::new, algHash));
+			HashedPassword hashedPassword = new HashedPassword(algorithm, salt, iterations, algHash);
+			// Warn if too fast
+			long nanos = endNanos - startNanos;
+			LOGGER.info(
+				algorithm.getAlgorithmName() + ": Completed in "
+				+ BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
+			);
+			long millis = nanos / 1_000_000;
+			if(millis < HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS && iterations != 0) {
+				LOGGER.warning(
+					algorithm.getAlgorithmName() + ": Password was hashed in under "
+					+ HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS
+					+ " ms, recommend increasing the value of recommendedIterations (currently "
+					+ iterations + ")"
+				);
+			}
+			// toString -> valueOf
+			String toString = hashedPassword.toString();
+			HashedPassword valueOf = HashedPassword.valueOf(toString);
+			assertSame(hashedPassword.getAlgorithm(), valueOf.getAlgorithm());
+			assertArrayEquals(hashedPassword.getSalt(), valueOf.getSalt());
+			assertEquals(hashedPassword.getIterations(), valueOf.getIterations());
+			assertArrayEquals(hashedPassword.getHash(), valueOf.getHash());
+			assertEquals(hashedPassword, valueOf);
+			assertNotSame(hashedPassword, valueOf);
+			// Serializable
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			try (ObjectOutputStream out = new ObjectOutputStream(bout)) {
+				out.writeObject(hashedPassword);
+			}
+			try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
+				HashedPassword serialized = (HashedPassword)in.readObject();
+				assertSame(hashedPassword.getAlgorithm(), serialized.getAlgorithm());
+				assertArrayEquals(hashedPassword.getSalt(), serialized.getSalt());
+				assertEquals(hashedPassword.getIterations(), serialized.getIterations());
+				assertArrayEquals(hashedPassword.getHash(), serialized.getHash());
+				assertEquals(hashedPassword, serialized);
+				assertNotSame(hashedPassword, serialized);
+			}
+			// Compare to other hash of same password
+			HashedPassword otherHashedPassword = new HashedPassword(password.clone(), algorithm);
+			if(saltBytes != 0) {
+				assertFalse("Salted should have unequal instances", hashedPassword.equals(otherHashedPassword));
+			} else {
+				assertTrue("Not salted should have equal instances", hashedPassword.equals(otherHashedPassword));
+			}
+			assertSame(algorithm, hashedPassword.getAlgorithm());
+			assertNotSame(algHash, hashedPassword.getHash());
+			assertTrue(otherHashedPassword.matches(password.clone()));
+			assertFalse(password.isDestroyed());
+			password.destroy();
+			assertTrue(password.isDestroyed());
 		}
-		// toString -> valueOf
-		String toString = hashedPassword.toString();
-		HashedPassword valueOf = HashedPassword.valueOf(toString);
-		assertSame(hashedPassword.getAlgorithm(), valueOf.getAlgorithm());
-		assertArrayEquals(hashedPassword.getSalt(), valueOf.getSalt());
-		assertEquals(hashedPassword.getIterations(), valueOf.getIterations());
-		assertArrayEquals(hashedPassword.getHash(), valueOf.getHash());
-		assertEquals(hashedPassword, valueOf);
-		assertNotSame(hashedPassword, valueOf);
-		// Serializable
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		try (ObjectOutputStream out = new ObjectOutputStream(bout)) {
-			out.writeObject(hashedPassword);
-		}
-		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
-			HashedPassword serialized = (HashedPassword)in.readObject();
-			assertSame(hashedPassword.getAlgorithm(), serialized.getAlgorithm());
-			assertArrayEquals(hashedPassword.getSalt(), serialized.getSalt());
-			assertEquals(hashedPassword.getIterations(), serialized.getIterations());
-			assertArrayEquals(hashedPassword.getHash(), serialized.getHash());
-			assertEquals(hashedPassword, serialized);
-			assertNotSame(hashedPassword, serialized);
-		}
-		// Compare to other hash of same password
-		HashedPassword otherHashedPassword = new HashedPassword(Arrays.copyOf(password, password.length), algorithm);
-		if(saltBytes != 0) {
-			assertFalse("Salted should have unequal instances", hashedPassword.equals(otherHashedPassword));
-		} else {
-			assertTrue("Not salted should have equal instances", hashedPassword.equals(otherHashedPassword));
-		}
-		assertSame(algorithm, hashedPassword.getAlgorithm());
-		assertNotSame(algHash, hashedPassword.getHash());
-		assertTrue(otherHashedPassword.matches(Arrays.copyOf(password, password.length)));
 	}
 
 	private static void testAlgorithm(HashedPassword.Algorithm algorithm) throws Exception {
@@ -204,7 +214,7 @@ public class HashedPasswordTest {
 	@Test
 	@SuppressWarnings("ThrowableResultIgnored")
 	public void testDeprecatedCompatibility() {
-		final String password = new String(generatePassword());
+		final String password = new String(generatePassword().getPassword());
 		assertEquals(256 / Byte.SIZE, HashedPassword.SALT_BYTES);
 		assertEquals(256 / Byte.SIZE, HashedPassword.HASH_BYTES);
 		assertEquals(

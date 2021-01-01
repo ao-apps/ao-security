@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020  AO Industries, Inc.
+ * Copyright (C) 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -60,39 +60,45 @@ public class HashedKeyTest {
 
 	private static void testAlgorithm(HashedKey.Algorithm algorithm, int keyBytes) throws Exception {
 		assertTrue(algorithm.getKeyBytes() >= 0);
-		byte[] key = algorithm.generateKey(keyBytes, Identifier.secureRandom);
-		assertSame(key, algorithm.validateKey(AssertionError::new, key));
-		assertTrue(algorithm.getHashBytes() >= 0);
-		byte[] algHash = algorithm.hash(key);
-		assertSame(algHash, algorithm.validateHash(AssertionError::new, algHash));
-		HashedKey hashedKey = new HashedKey(algorithm, algHash);
-		// toString -> valueOf
-		String toString = hashedKey.toString();
-		HashedKey valueOf = HashedKey.valueOf(toString);
-		assertSame(hashedKey.getAlgorithm(), valueOf.getAlgorithm());
-		assertArrayEquals(hashedKey.getHash(), valueOf.getHash());
-		assertEquals(hashedKey, valueOf);
-		assertNotSame(hashedKey, valueOf);
-		// Serializable
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		try (ObjectOutputStream out = new ObjectOutputStream(bout)) {
-			out.writeObject(hashedKey);
+		try (GeneratedKey key = algorithm.generateKey(keyBytes, Identifier.secureRandom)) {
+			assertSame(key, algorithm.validateKey(AssertionError::new, key));
+			assertTrue(algorithm.getHashBytes() >= 0);
+			byte[] algHash = algorithm.hash(key);
+			assertSame(algHash, algorithm.validateHash(AssertionError::new, algHash));
+			HashedKey hashedKey = new HashedKey(algorithm, algHash);
+			// toString -> valueOf
+			String toString = hashedKey.toString();
+			HashedKey valueOf = HashedKey.valueOf(toString);
+			assertSame(hashedKey.getAlgorithm(), valueOf.getAlgorithm());
+			assertArrayEquals(hashedKey.getHash(), valueOf.getHash());
+			assertEquals(hashedKey, valueOf);
+			assertFalse(hashedKey.equals(HashedKey.NO_KEY));
+			assertFalse(HashedKey.NO_KEY.equals(hashedKey));
+			assertFalse(hashedKey.matches(algorithm.generateKey(keyBytes, Identifier.secureRandom)));
+			assertFalse(HashedKey.NO_KEY.matches(algorithm.generateKey(keyBytes, Identifier.secureRandom)));
+			assertNotSame(hashedKey, valueOf);
+			// Serializable
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			try (ObjectOutputStream out = new ObjectOutputStream(bout)) {
+				out.writeObject(hashedKey);
+			}
+			try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
+				HashedKey serialized = (HashedKey)in.readObject();
+				assertSame(hashedKey.getAlgorithm(), serialized.getAlgorithm());
+				assertArrayEquals(hashedKey.getHash(), serialized.getHash());
+				assertEquals(hashedKey, serialized);
+				assertNotSame(hashedKey, serialized);
+			}
+			// Compare to other instance with different key
+			try (GeneratedKey otherKey = algorithm.generateKey()) {
+				byte[] otherHash = algorithm.hash(otherKey);
+				HashedKey otherHashedKey = new HashedKey(algorithm, otherHash);
+				assertFalse(hashedKey.equals(otherHashedKey));
+				assertSame(algorithm, hashedKey.getAlgorithm());
+				assertNotSame(algHash, hashedKey.getHash());
+				assertEquals("hash size same, regardless of key size", algorithm.getHashBytes(), hashedKey.getHash().length);
+			}
 		}
-		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
-			HashedKey serialized = (HashedKey)in.readObject();
-			assertSame(hashedKey.getAlgorithm(), serialized.getAlgorithm());
-			assertArrayEquals(hashedKey.getHash(), serialized.getHash());
-			assertEquals(hashedKey, serialized);
-			assertNotSame(hashedKey, serialized);
-		}
-		// Compare to other instance with different key
-		byte[] otherKey = algorithm.generateKey();
-		byte[] otherHash = algorithm.hash(otherKey);
-		HashedKey otherHashedKey = new HashedKey(algorithm, otherHash);
-		assertFalse(hashedKey.equals(otherHashedKey));
-		assertSame(algorithm, hashedKey.getAlgorithm());
-		assertNotSame(algHash, hashedKey.getHash());
-		assertEquals("hash size same, regardless of key size", algorithm.getHashBytes(), hashedKey.getHash().length);
 	}
 
 	private static void testAlgorithm(HashedKey.Algorithm algorithm) throws Exception {

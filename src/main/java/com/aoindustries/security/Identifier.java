@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020  AO Industries, Inc.
+ * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -197,34 +197,41 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	 * the first 11 characters for "hi" and the last 11 characters for "lo".
 	 */
 	// Matches src/main/sql/com/aoindustries/security/Identifier.toString-function.sql
+	public char[] toCharArray() {
+		return new char[] {
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE * BASE)),
+			getCharacter(divide(hi, BASE * BASE)),
+			getCharacter(divide(hi, BASE)),
+			getCharacter(hi),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE * BASE)),
+			getCharacter(divide(lo, BASE * BASE)),
+			getCharacter(divide(lo, BASE)),
+			getCharacter(lo)
+		};
+	}
+
+	/**
+	 * The external representation is a string of characters encoded in base 57, with
+	 * the first 11 characters for "hi" and the last 11 characters for "lo".
+	 */
+	// Matches src/main/sql/com/aoindustries/security/Identifier.toString-function.sql
 	@Override
 	public String toString() {
-		return new String(
-			new char[] {
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE * BASE)),
-				getCharacter(divide(hi, BASE * BASE)),
-				getCharacter(divide(hi, BASE)),
-				getCharacter(hi),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE * BASE)),
-				getCharacter(divide(lo, BASE * BASE)),
-				getCharacter(divide(lo, BASE)),
-				getCharacter(lo)
-			}
-		);
+		return new String(toCharArray());
 	}
 
 	/**

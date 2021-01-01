@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,7 +29,7 @@ import com.aoindustries.lang.SysExits;
 import static com.aoindustries.security.HashedPassword.DECODER;
 import static com.aoindustries.security.HashedPassword.ENCODER;
 import static com.aoindustries.security.HashedPassword.SEPARATOR;
-import static com.aoindustries.security.HashedPassword.slowEquals;
+import static com.aoindustries.security.SecurityUtil.slowEquals;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -171,12 +171,32 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
-		 * @param  key  Is zeroed when invalid
+		 * @param  key  Is destroyed when invalid
 		 */
+		public <E extends Throwable> Key validateKey(Function<? super String,E> newThrowable, Key key) throws E {
+			int expected = getKeyBytes();
+			synchronized(key.key) {
+				if(key.isDestroyed()) {
+					throw newThrowable.apply("Key is already destroyed");
+				} else if(key.key.length != expected) {
+					key.destroy();
+					throw newThrowable.apply(getAlgorithmName() + ": key length mismatch: expected " + expected + ", got " + key.key.length);
+				}
+			}
+			return key;
+		}
+
+		/**
+		 * @param  key  Is not zeroed
+		 *
+		 * @deprecated  Please use {@link #validateKey(java.util.function.Function, com.aoindustries.security.Key)} instead.
+		 */
+		@Deprecated
 		public <E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
 			int expected = getKeyBytes();
-			if(key.length != expected) {
-				Arrays.fill(key, (byte)0);
+			if(SecurityUtil.slowAllZero(key)) {
+				throw newThrowable.apply("Key is already destroyed");
+			} else if(key.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": key length mismatch: expected " + expected + ", got " + key.length);
 			}
 			return key;
@@ -186,19 +206,19 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * Generates a random plaintext key of the given number of bytes
 		 * using the provided {@link Random} source.
 		 */
-		byte[] generateKey(int keyBytes, Random random) {
-			byte[] key = new byte[keyBytes];
-			random.nextBytes(key);
-			return validateKey(AssertionError::new, key);
+		GeneratedKey generateKey(int keyBytes, Random random) {
+			GeneratedKey key = new GeneratedKey(keyBytes, random);
+			validateKey(AssertionError::new, key);
+			return key;
 		}
 
 		/**
 		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length
 		 * using the provided {@link Random} source.
 		 *
-		 * @see  #hash(byte[])
+		 * @see  #hash(com.aoindustries.security.Key)
 		 */
-		public byte[] generateKey(Random random) {
+		public GeneratedKey generateKey(Random random) {
 			return generateKey(getKeyBytes(), random);
 		}
 
@@ -207,9 +227,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * using a default {@link SecureRandom} instance, which is not a
 		 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 		 *
-		 * @see  #hash(byte[])
+		 * @see  #hash(com.aoindustries.security.Key)
 		 */
-		public byte[] generateKey() {
+		public GeneratedKey generateKey() {
 			return generateKey(Identifier.secureRandom);
 		}
 
@@ -232,25 +252,47 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		/**
 		 * Hashes the given key.
 		 *
-		 * @param  key  Is zeroed before this method returns.  If the original key is
-		 *              needed, pass a copy to this method.
+		 * @param  key  Is destroyed before this method returns.  If the original key is
+		 *              needed, pass a clone to this method.
 		 *
 		 * @see  #generateKey()
 		 */
-		public byte[] hash(byte[] key) {
+		public byte[] hash(Key key) {
 			try {
-				byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(
-					validateKey(IllegalArgumentException::new, key)
-				);
-				if(key != null) {
-					Arrays.fill(key, (byte)0);
+				byte[] hash;
+				synchronized(key.key) {
+					hash = MessageDigest.getInstance(getAlgorithmName()).digest(
+						validateKey(IllegalArgumentException::new, key).key
+					);
+					key.destroy();
 					key = null;
 				}
 				return validateHash(AssertionError::new, hash);
 			} catch(NoSuchAlgorithmException e) {
 				throw new WrappedException(e);
 			} finally {
-				if(key != null) Arrays.fill(key, (byte)0);
+				if(key != null) key.destroy();
+			}
+		}
+
+		/**
+		 * Hashes the given key.
+		 *
+		 * @param  key  Is not zeroed
+		 *
+		 * @see  #generateKey()
+		 *
+		 * @deprecated  Please use {@link #hash(com.aoindustries.security.Key)} instead.
+		 */
+		@Deprecated
+		public byte[] hash(byte[] key) {
+			try {
+				byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(
+					validateKey(IllegalArgumentException::new, key)
+				);
+				return validateHash(AssertionError::new, hash);
+			} catch(NoSuchAlgorithmException e) {
+				throw new WrappedException(e);
 			}
 		}
 	}
@@ -306,6 +348,8 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 *
+	 * @return  The caller must zero this array once no longer needed.
+	 *
 	 * @see  #hash(byte[])
 	 *
 	 * @deprecated  This generates a key for {@linkplain Algorithm#SHA_256 the previous default algorithm},
@@ -315,11 +359,15 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static byte[] generateKey() {
 		int keyBytes = Algorithm.SHA_256.getKeyBytes();
 		assert keyBytes == HASH_BYTES;
-		return Algorithm.SHA_256.generateKey(keyBytes, Identifier.secureRandom);
+		try (GeneratedKey key = Algorithm.SHA_256.generateKey(keyBytes, Identifier.secureRandom)) {
+			return key.getKey();
+		}
 	}
 
 	/**
 	 * Hashes the given key.
+	 *
+	 * @param  key  Is not zeroed
 	 *
 	 * @see  #generateKey()
 	 *
@@ -328,7 +376,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 */
 	@Deprecated
 	public static byte[] hash(byte[] key) {
-		return Algorithm.SHA_256.hash(key == null ? null : Arrays.copyOf(key, key.length));
+		return Algorithm.SHA_256.hash(key);
 	}
 
 	/**
@@ -575,20 +623,22 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 * </p>
 	 *
-	 * @param  key  Is zeroed before this method returns.  If the original key is
-	 *              needed, pass a copy to this method.
+	 * @param  key  Is destroyed before this method returns.  If the original key is
+	 *              needed, pass a clone to this method.
 	 *
-	 * @see  Algorithm#validateKey(java.util.function.Function, byte[])
+	 * @see  Algorithm#validateKey(java.util.function.Function, com.aoindustries.security.Key)
 	 */
-	public boolean matches(byte[] key) {
+	public boolean matches(Key key) {
 		try {
 			if(algorithm == null) {
 				if(key != null) {
-					Arrays.fill(key, (byte)0);
+					key.destroy();
 					key = null;
 				}
 				// Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
-				byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(DUMMY_KEY);
+				byte[] dummyKey = new byte[RECOMMENDED_ALGORITHM.getKeyBytes()];
+				dummyKey[0] = -1;
+				byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(dummyKey);
 				try {
 					boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
 					assert !dummiesEqual;
@@ -598,7 +648,9 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				}
 			} else if(key == null) {
 				// Perform a hash with current settings, just to occupy the same amount of time as if had a key
-				byte[] dummyHash = algorithm.hash(DUMMY_KEY);
+				byte[] dummyKey = new byte[RECOMMENDED_ALGORITHM.getKeyBytes()];
+				dummyKey[0] = -1;
+				byte[] dummyHash = algorithm.hash(dummyKey);
 				try {
 					boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
 					assert !dummiesEqual;
@@ -610,7 +662,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				// Hash again
 				byte[] newHash = algorithm.hash(key);
 				try {
-					Arrays.fill(key, (byte)0);
+					assert key.isDestroyed() : "Already destroyed by algorithm.hash";
 					key = null;
 					return slowEquals(hash, newHash);
 				} finally {
@@ -618,7 +670,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 				}
 			}
 		} finally {
-			if(key != null) Arrays.fill(key, (byte)0);
+			if(key != null) key.destroy();
 		}
 	}
 
@@ -647,15 +699,17 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 					boolean output = (i == 1);
 					for(Algorithm algorithm : Algorithm.values) {
 						try {
-							byte[] key = algorithm.generateKey();
-							try {
+							try (GeneratedKey key = algorithm.generateKey()) {
 								long startNanos = output ? System.nanoTime() : 0;
-								HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key));
+								HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
 								try {
 									long endNanos = output ? System.nanoTime() : 0;
 									if(output) {
-										String encodedKey = ENCODER.encodeToString(key);
-										Arrays.fill(key, (byte)0);
+										String encodedKey;
+										synchronized(key.key) {
+											encodedKey = ENCODER.encodeToString(key.key);
+											key.destroy();
+										}
 										System.out.println(encodedKey);
 										System.out.println(hashedKey);
 										long nanos = endNanos - startNanos;
@@ -665,8 +719,6 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 								} finally {
 									Arrays.fill(hashedKey.getHash(), (byte)0);
 								}
-							} finally {
-								Arrays.fill(key, (byte)0);
 							}
 						} catch(Error | RuntimeException e) {
 							hasFailed = true;
@@ -684,12 +736,11 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 					HashedKey hashedKey = null;
 					String encodedKey;
 					try {
-						byte[] key = algorithm.generateKey();
-						try {
-							hashedKey = new HashedKey(algorithm, algorithm.hash(key));
-							encodedKey = ENCODER.encodeToString(key);
-						} finally {
-							Arrays.fill(key, (byte)0);
+						try (GeneratedKey key = algorithm.generateKey()) {
+							hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
+							synchronized(key.key) {
+								encodedKey = ENCODER.encodeToString(key.key);
+							}
 						}
 						System.out.println(encodedKey);
 						System.out.println(hashedKey);

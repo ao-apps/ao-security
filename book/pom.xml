@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2020  AO Industries, Inc.
+Copyright (C) 2020, 2021  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -29,7 +29,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		<relativePath>../../ao-oss-parent/pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.aoindustries</groupId><artifactId>ao-security-book</artifactId><version>1.1.0-SNAPSHOT</version>
+	<groupId>com.aoindustries</groupId><artifactId>ao-security-book</artifactId><version>2.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<properties>
