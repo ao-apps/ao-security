@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class UnprotectedPassword extends Password {
 
-	private final static Logger LOGGER = Logger.getLogger(UnprotectedPassword.class.getName());
+	private final static Logger logger = Logger.getLogger(UnprotectedPassword.class.getName());
 
 	/**
 	 * @see  #UnprotectedPassword(java.util.function.Supplier)
@@ -54,7 +54,7 @@ public class UnprotectedPassword extends Password {
 			if(!SecurityUtil.slowAllZero(password)) {
 				return password;
 			}
-			LOGGER.warning("Generator created all-zero password, discarding and trying again");
+			logger.warning("Generator created all-zero password, discarding and trying again");
 		}
 		// Generator is broken; don't loop forever
 		throw new IllegalArgumentException("Generator is only creating all-zero passwords, tried " + TRIES + " times");

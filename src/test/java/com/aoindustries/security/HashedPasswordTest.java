@@ -47,7 +47,7 @@ import org.junit.Test;
 @SuppressWarnings("deprecation")
 public class HashedPasswordTest {
 
-	private static final Logger LOGGER = Logger.getLogger(HashedPasswordTest.class.getName());
+	private static final Logger logger = Logger.getLogger(HashedPasswordTest.class.getName());
 
 	public HashedPasswordTest() {
 	}
@@ -106,13 +106,13 @@ public class HashedPasswordTest {
 			HashedPassword hashedPassword = new HashedPassword(algorithm, salt, iterations, algHash);
 			// Warn if too fast
 			long nanos = endNanos - startNanos;
-			LOGGER.info(
+			logger.info(
 				algorithm.getAlgorithmName() + ": Completed in "
 				+ BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
 			);
 			long millis = nanos / 1_000_000;
 			if(millis < HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS && iterations != 0) {
-				LOGGER.warning(
+				logger.warning(
 					algorithm.getAlgorithmName() + ": Password was hashed in under "
 					+ HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS
 					+ " ms, recommend increasing the value of recommendedIterations (currently "

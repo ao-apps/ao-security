@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class UnprotectedKey extends Key {
 
-	private final static Logger LOGGER = Logger.getLogger(UnprotectedKey.class.getName());
+	private final static Logger logger = Logger.getLogger(UnprotectedKey.class.getName());
 
 	/**
 	 * @see  #UnprotectedKey(java.util.function.Supplier)
@@ -54,7 +54,7 @@ public class UnprotectedKey extends Key {
 			if(!SecurityUtil.slowAllZero(key)) {
 				return key;
 			}
-			LOGGER.warning("Generator created all-zero key, discarding and trying again");
+			logger.warning("Generator created all-zero key, discarding and trying again");
 		}
 		// Generator is broken; don't loop forever
 		throw new IllegalArgumentException("Generator is only creating all-zero keys, tried " + TRIES + " times");
