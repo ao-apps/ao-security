@@ -60,7 +60,7 @@ public class HashedKeyTest {
 
 	private static void testAlgorithm(HashedKey.Algorithm algorithm, int keyBytes) throws Exception {
 		assertTrue(algorithm.getKeyBytes() >= 0);
-		try (GeneratedKey key = algorithm.generateKey(keyBytes, Identifier.secureRandom)) {
+		try (UnprotectedKey key = algorithm.generateKey(keyBytes, Identifier.secureRandom)) {
 			assertSame(key, algorithm.validateKey(AssertionError::new, key));
 			assertTrue(algorithm.getHashBytes() >= 0);
 			byte[] algHash = algorithm.hash(key);
@@ -90,7 +90,7 @@ public class HashedKeyTest {
 				assertNotSame(hashedKey, serialized);
 			}
 			// Compare to other instance with different key
-			try (GeneratedKey otherKey = algorithm.generateKey()) {
+			try (UnprotectedKey otherKey = algorithm.generateKey()) {
 				byte[] otherHash = algorithm.hash(otherKey);
 				HashedKey otherHashedKey = new HashedKey(algorithm, otherHash);
 				assertFalse(hashedKey.equals(otherHashedKey));

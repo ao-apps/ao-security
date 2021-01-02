@@ -34,7 +34,7 @@ import javax.security.auth.Destroyable;
  * <p>
  * This does not provide any access to the given key.  It is a key black hole:
  * gone forever from outside observers.  The only way a key is available is through
- * {@linkplain GeneratedKey a newly generated key}.
+ * {@linkplain UnprotectedKey a newly generated key}.
  * </p>
  * <p>
  * Instances of this class are thread-safe.

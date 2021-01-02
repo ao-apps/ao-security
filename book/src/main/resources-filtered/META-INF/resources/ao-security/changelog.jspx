@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-01-01T06:34:15-06:00"
+		dateModified="2021-01-02T00:08:27-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -53,7 +53,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 					</li>
 					<li>
 						<p>
-							Created a new pair of classes <code>Password</code> and <code>GeneratedPassword</code> that should be
+							Created a new pair of classes <code>Password</code> and <code>UnprotectedPassword</code> that should be
 							used to encapsulate plaintext passwords instead of using <code>char[]</code> or <code>String</code>.
 							Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
 						</p>
@@ -69,7 +69,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 					</li>
 					<li>
 						<p>
-							Created a new pair of classes <code>Key</code> and <code>GeneratedKey</code> that should be
+							Created a new pair of classes <code>Key</code> and <code>UnprotectedKey</code> that should be
 							used to encapsulate keys instead of working directly with <code>byte[]</code>.
 							Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
 						</p>
@@ -83,7 +83,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 							aggressively destroyed <code>Key</code>.
 						</p>
 						<p>
-							<code>generateKey(…)</code> now returns <code>GeneratedKey</code> instead of <code>byte[]</code>,
+							<code>generateKey(…)</code> now returns <code>UnprotectedKey</code> instead of <code>byte[]</code>,
 							which is a breaking change.  This is major version increment.
 						</p>
 					</li>

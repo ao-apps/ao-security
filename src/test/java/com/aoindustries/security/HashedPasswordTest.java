@@ -65,11 +65,11 @@ public class HashedPasswordTest {
 		assertNull(HashedPassword.NO_PASSWORD.getHash());
 	}
 
-	private static GeneratedPassword generatePassword() {
+	private static UnprotectedPassword generatePassword() {
 		if(secureRandom.nextBoolean()) {
-			return new GeneratedPassword();
+			return new UnprotectedPassword();
 		} else {
-			return new GeneratedPassword(() -> {
+			return new UnprotectedPassword(() -> {
 				int length = 1 + secureRandom.nextInt(19);
 				char[] password = new char[length];
 				for(int i = 0; i < length ; i++) {
@@ -81,7 +81,7 @@ public class HashedPasswordTest {
 	}
 
 	private static void testAlgorithm(HashedPassword.Algorithm algorithm, int saltBytes, int iterations, int hashBytes) throws Exception {
-		try (GeneratedPassword password = generatePassword()) {
+		try (UnprotectedPassword password = generatePassword()) {
 			assertNotSame(password.getPassword(), password.getPassword());
 			assertEquals(-1, algorithm.getAlgorithmName().indexOf(HashedPassword.SEPARATOR));
 			assertTrue(algorithm.getSaltBytes() >= 0);

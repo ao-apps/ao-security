@@ -206,8 +206,8 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * Generates a random plaintext key of the given number of bytes
 		 * using the provided {@link Random} source.
 		 */
-		GeneratedKey generateKey(int keyBytes, Random random) {
-			GeneratedKey key = new GeneratedKey(keyBytes, random);
+		UnprotectedKey generateKey(int keyBytes, Random random) {
+			UnprotectedKey key = new UnprotectedKey(keyBytes, random);
 			validateKey(AssertionError::new, key);
 			return key;
 		}
@@ -218,7 +218,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 *
 		 * @see  #hash(com.aoindustries.security.Key)
 		 */
-		public GeneratedKey generateKey(Random random) {
+		public UnprotectedKey generateKey(Random random) {
 			return generateKey(getKeyBytes(), random);
 		}
 
@@ -229,7 +229,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 *
 		 * @see  #hash(com.aoindustries.security.Key)
 		 */
-		public GeneratedKey generateKey() {
+		public UnprotectedKey generateKey() {
 			return generateKey(Identifier.secureRandom);
 		}
 
@@ -359,7 +359,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	public static byte[] generateKey() {
 		int keyBytes = Algorithm.SHA_256.getKeyBytes();
 		assert keyBytes == HASH_BYTES;
-		try (GeneratedKey key = Algorithm.SHA_256.generateKey(keyBytes, Identifier.secureRandom)) {
+		try (UnprotectedKey key = Algorithm.SHA_256.generateKey(keyBytes, Identifier.secureRandom)) {
 			return key.getKey();
 		}
 	}
@@ -699,7 +699,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 					boolean output = (i == 1);
 					for(Algorithm algorithm : Algorithm.values) {
 						try {
-							try (GeneratedKey key = algorithm.generateKey()) {
+							try (UnprotectedKey key = algorithm.generateKey()) {
 								long startNanos = output ? System.nanoTime() : 0;
 								HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
 								try {
@@ -736,7 +736,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 					HashedKey hashedKey = null;
 					String encodedKey;
 					try {
-						try (GeneratedKey key = algorithm.generateKey()) {
+						try (UnprotectedKey key = algorithm.generateKey()) {
 							hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
 							synchronized(key.key) {
 								encodedKey = ENCODER.encodeToString(key.key);
