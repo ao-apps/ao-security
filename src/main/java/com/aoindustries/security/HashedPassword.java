@@ -49,6 +49,7 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.PBEKeySpec;
 
 /**
@@ -60,6 +61,8 @@ import javax.crypto.spec.PBEKeySpec;
 // TODO: ResultSet constructor, that takes multiple columns?  Constant for number of columns
 //       Same for prepared statement
 //       Implement SQLData, too? (With ServiceLoader?)
+// TODO: zero salt, hash, ... in all parameters
+// TODO: HashedKey and HashedPassword Destroyable, too?
 // Matches src/main/sql/com/aoindustries/security/HashedPassword-type.sql
 public class HashedPassword implements Serializable {
 
@@ -924,6 +927,27 @@ public class HashedPassword implements Serializable {
 	@Deprecated
 	public HashedPassword(String password, Algorithm algorithm, byte[] salt, int iterations) throws IllegalArgumentException {
 		this(new Password(password == null ? null : password.toCharArray()), algorithm, salt, iterations);
+	}
+
+	/**
+	 * Creates a new hashed password using the given algorithm, salt, and iterations.
+	 *
+	 * @param pbeKey  Is not destroyed, the caller should destroy the {@link PBEKey} if not longer required.
+	 *
+	 * @throws  IllegalArgumentException  when {@code password == null || password.isDestroyed()}
+	 *                                    on {@code salt.length != algorithm.getSaltBytes()}
+	 *                                    or {@code iterations < algorithm.getMinimumIterations()}
+	 *                                    or {@code iterations > algorithm.getMaximumIterations()}
+	 */
+	public HashedPassword(PBEKey pbeKey) throws IllegalArgumentException {
+		this(
+			Password.valueOf(pbeKey.getPassword()).orElse(null),
+			Algorithm.findAlgorithm(pbeKey.getAlgorithm()),
+			pbeKey.getSalt(),
+			pbeKey.getIterationCount() == 0
+				? Algorithm.findAlgorithm(pbeKey.getAlgorithm()).getRecommendedIterations()
+				: pbeKey.getIterationCount()
+		);
 	}
 
 	/**
