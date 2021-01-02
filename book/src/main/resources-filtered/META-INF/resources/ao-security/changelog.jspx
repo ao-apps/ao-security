@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-01-02T00:08:27-06:00"
+		dateModified="2021-01-02T04:51:20-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,60 +46,70 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			>
-				<ul>
-					<li>
-						Exposed some static implementation utilities as <code>SecurityUtil</code>.
-					</li>
-					<li>
-						<p>
-							Created a new pair of classes <code>Password</code> and <code>UnprotectedPassword</code> that should be
-							used to encapsulate plaintext passwords instead of using <code>char[]</code> or <code>String</code>.
-							Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
-						</p>
-						<p>
-							All uses are aggressively destroyed, thus requiring the caller to actively clone when the
-							password is still required.  Thus, programmer errors should be in the direction of safety:
-							no action means password is destroyed.
-						</p>
-						<p>
-							Deprecated the <code>String</code>-based representations of passwords, in favor of the
-							aggressively destroyed <code>Password</code>.
-						</p>
-					</li>
-					<li>
-						<p>
-							Created a new pair of classes <code>Key</code> and <code>UnprotectedKey</code> that should be
-							used to encapsulate keys instead of working directly with <code>byte[]</code>.
-							Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
-						</p>
-						<p>
-							All uses are aggressively destroyed, thus requiring the caller to actively clone when the
-							key is still required.  Thus, programmer errors should be in the direction of safety:
-							no action means key is destroyed.
-						</p>
-						<p>
-							Deprecated the <code>byte[]</code>-based representations of keys, in favor of the
-							aggressively destroyed <code>Key</code>.
-						</p>
-						<p>
-							<code>generateKey(…)</code> now returns <code>UnprotectedKey</code> instead of <code>byte[]</code>,
-							which is a breaking change.  This is major version increment.
-						</p>
-					</li>
-					<li>
-						New method <code>HashedKey.matches(Key)</code>, for consistency with
-						<code>HashedPassword.matches(Password)</code>.
-					</li>
-					<li>
-						Added domains over the composite types for self-validation.
-						This means tables may now use the type directly, without needing an explicit check constraint
-						calling the per-type <code>validate</code> functions.
-					</li>
-					<li>Now requires PostgreSQL 11 and above.</li>
-					<li>A database schema update is required:
-						<ol>
-							<li>
+			/>
+		</c:if>
+
+		<changelog:release
+			projectName="@{documented.name}"
+			version="2.0.0"
+			datePublished="2021-01-02T04:51:20-06:00"
+			groupId="@{project.groupId}"
+			artifactId="@{documented.artifactId}"
+			scmUrl="@{project.scm.url}"
+		>
+			<ul>
+				<li>
+					Exposed some static implementation utilities as <code>SecurityUtil</code>.
+				</li>
+				<li>
+					<p>
+						Created a new pair of classes <code>Password</code> and <code>UnprotectedPassword</code> that should be
+						used to encapsulate plaintext passwords instead of using <code>char[]</code> or <code>String</code>.
+						Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
+					</p>
+					<p>
+						All uses are aggressively destroyed, thus requiring the caller to actively clone when the
+						password is still required.  Thus, programmer errors should be in the direction of safety:
+						no action means password is destroyed.
+					</p>
+					<p>
+						Deprecated the <code>String</code>-based representations of passwords, in favor of the
+						aggressively destroyed <code>Password</code>.
+					</p>
+				</li>
+				<li>
+					<p>
+						Created a new pair of classes <code>Key</code> and <code>UnprotectedKey</code> that should be
+						used to encapsulate keys instead of working directly with <code>byte[]</code>.
+						Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
+					</p>
+					<p>
+						All uses are aggressively destroyed, thus requiring the caller to actively clone when the
+						key is still required.  Thus, programmer errors should be in the direction of safety:
+						no action means key is destroyed.
+					</p>
+					<p>
+						Deprecated the <code>byte[]</code>-based representations of keys, in favor of the
+						aggressively destroyed <code>Key</code>.
+					</p>
+					<p>
+						<code>generateKey(…)</code> now returns <code>UnprotectedKey</code> instead of <code>byte[]</code>,
+						which is a breaking change.  This is major version increment.
+					</p>
+				</li>
+				<li>
+					New method <code>HashedKey.matches(Key)</code>, for consistency with
+					<code>HashedPassword.matches(Password)</code>.
+				</li>
+				<li>
+					Added domains over the composite types for self-validation.
+					This means tables may now use the type directly, without needing an explicit check constraint
+					calling the per-type <code>validate</code> functions.
+				</li>
+				<li>Now requires PostgreSQL 11 and above.</li>
+				<li>A database schema update is required:
+					<ol>
+						<li>
 <pre><![CDATA[BEGIN;
 
 ALTER TYPE "com.aoindustries.security"."HashedKey"       RENAME TO "&lt;HashedKey&gt;";
@@ -134,15 +144,14 @@ COMMENT ON DOMAIN "com.aoindustries.security"."Identifier" IS
 'Matches class com.aoindustries.security.Identifier';
 
 COMMIT;]]></pre>
-							</li>
-							<li>Recreate all functions, for "PARALLEL SAFE" and type changes.</li>
-							<li>Update your column types</li>
-							<li>Drop the unnecessary column check constraints</li>
-						</ol>
-					</li>
-				</ul>
-			</changelog:release>
-		</c:if>
+						</li>
+						<li>Recreate all functions, for "PARALLEL SAFE" and type changes.</li>
+						<li>Update your column types</li>
+						<li>Drop the unnecessary column check constraints</li>
+					</ol>
+				</li>
+			</ul>
+		</changelog:release>
 
 		<changelog:release
 			projectName="@{documented.name}"
