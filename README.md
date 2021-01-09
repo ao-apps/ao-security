@@ -55,7 +55,7 @@ Best-practices security made usable.
       validation even when default settings upgraded.
     * Algorithm support going back the full twenty years of AO application support, including the likes of
       `crypt`, `MD5`, `SHA-1`, … (don't use these for new passwords, but they are still supported for
-      compatibility with ancient password databases.
+      compatibility with ancient password databases).
 * Robust, bi-directional, future-proof textual representations of `HashedPassword` and `HashedKey`:
     * To and from `String` in Java allows storage and transmission as simple text.
     * SQL `CAST` are declared for easy conversion of legacy databases to the new composite types,

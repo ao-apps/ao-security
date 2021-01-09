@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2020  AO Industries, Inc.
+Copyright (C) 2020, 2021  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -34,7 +34,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		title="@{documented.name}"
 		description="@{documented.description}"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-01-02T04:04:22-06:00"
+		dateModified="2021-01-09T15:38:48-06:00"
 	>
 		<core:child page="changelog.jspx" />
 		<core:child page="apidocs/index.jspx" />
@@ -111,7 +111,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						<li>
 							Algorithm support going back the full twenty years of AO application support, including the likes of
 							<code>crypt</code>, <code>MD5</code>, <code>SHA-1</code>, … (don't use these for new passwords, but they are still supported for
-							compatibility with ancient password databases.
+							compatibility with ancient password databases).
 						</li>
 					</ul>
 				</li>
