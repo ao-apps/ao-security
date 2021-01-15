@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020  AO Industries, Inc.
+ * Copyright (C) 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -25,6 +25,10 @@ RETURNS text AS $$
 DECLARE
 	expected integer;
 BEGIN
+	IF user = 'postgres' THEN
+		-- Do not check while performing database dump/restore, since other table might not be populated
+		RETURN NULL;
+	END IF;
 	expected := (SELECT "hashBytes" FROM "com.aoindustries.security"."HashedKey.Algorithm" WHERE "name" = algorithm);
 	IF octet_length("hash") != expected THEN
 		RETURN algorithm || ': hash length mismatch: expected ' || expected || ', got ' || octet_length("hash");

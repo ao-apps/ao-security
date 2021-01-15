@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020  AO Industries, Inc.
+ * Copyright (C) 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,7 +32,10 @@ DECLARE
 	"iterationsValid" text;
 	"hashValid" text;
 BEGIN
-	IF (SELECT "name" FROM "com.aoindustries.security"."HashedPassword.Algorithm" WHERE "name" = algorithm) IS NULL THEN
+	IF user = 'postgres' THEN
+		-- Do not check while performing database dump/restore, since other table might not be populated
+		RETURN NULL;
+	ELSIF (SELECT "name" FROM "com.aoindustries.security"."HashedPassword.Algorithm" WHERE "name" = algorithm) IS NULL THEN
 		RETURN 'Unknown algorithm: ' || algorithm;
 	ELSIF salt IS NULL THEN
 		RETURN 'salt required when have algorithm';
