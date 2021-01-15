@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-01-14T21:07:41-06:00"
+		dateModified="2021-01-14T21:15:02-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,19 +46,28 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			>
-				<ul>
-					<li>
-						Fixed database dump/restore data ordering problems by skipping some validation steps when the
-						user is <code>postgres</code>.  Please replace the following functions:
-						<ol type="1">
-							<li><code>HashedKey.Algorithm.validateHash-function.sql</code></li>
-							<li><code>HashedPassword.Algorithm.validate-function.sql</code></li>
-						</ol>
-					</li>
-				</ul>
-			</changelog:release>
+			/>
 		</c:if>
+
+		<changelog:release
+			projectName="@{documented.name}"
+			version="2.0.1"
+			datePublished="2021-01-14T21:15:02-06:00"
+			groupId="@{project.groupId}"
+			artifactId="@{documented.artifactId}"
+			scmUrl="@{project.scm.url}"
+		>
+			<ul>
+				<li>
+					Fixed database dump/restore data ordering problems by skipping some validation steps when the
+					user is <code>postgres</code>.  Please replace the following functions:
+					<ol type="1">
+						<li><code>HashedKey.Algorithm.validateHash-function.sql</code></li>
+						<li><code>HashedPassword.Algorithm.validate-function.sql</code></li>
+					</ol>
+				</li>
+			</ul>
+		</changelog:release>
 
 		<changelog:release
 			projectName="@{documented.name}"
