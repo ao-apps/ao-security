@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-01-14T21:15:02-06:00"
+		dateModified="2021-02-03T13:19:51-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,7 +46,14 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Added <code>SecurityStreamables</code> for <code>HashedKey</code> and <code>HashedPassword</code>.
+						This allows optimized network protocol versus converting to/from string.
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release
