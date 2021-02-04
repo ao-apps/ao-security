@@ -385,7 +385,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @param hashedKey  when {@code null}, returns {@code null}
 	 */
 	// Matches src/main/sql/com/aoindustries/security/HashedKey.valueOf-function.sql
-	public static HashedKey valueOf(String hashedKey) {
+	public static HashedKey valueOf(String hashedKey) throws IllegalArgumentException {
 		if(hashedKey == null) {
 			return null;
 		} else if(NO_KEY_VALUE.equals(hashedKey)) {

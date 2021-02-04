@@ -721,7 +721,7 @@ public class HashedPassword implements Serializable {
 	 * @param hashedPassword  when {@code null}, returns {@code null}
 	 */
 	// Matches src/main/sql/com/aoindustries/security/HashedPassword.valueOf-function.sql
-	public static HashedPassword valueOf(String hashedPassword) {
+	public static HashedPassword valueOf(String hashedPassword) throws IllegalArgumentException {
 		if(hashedPassword == null) {
 			return null;
 		} else if(NO_PASSWORD_VALUE.equals(hashedPassword)) {
