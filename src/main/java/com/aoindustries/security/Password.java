@@ -51,6 +51,7 @@ import javax.security.auth.Destroyable;
  *
  * @author  AO Industries, Inc.
  */
+@SuppressWarnings({"EqualsAndHashcode", "overrides"})
 public class Password implements Destroyable, AutoCloseable, Cloneable {
 
 	/**
@@ -130,6 +131,28 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
 	@Override
 	public String toString() {
 		return MASKED_PASSWORD;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Password)) return false;
+		Password other = (Password)obj;
+		// Create a copy to avoid potential deadlock of locking on both
+		char[] copy2;
+		synchronized(other.password) {
+			copy2 = Arrays.copyOf(other.password, other.password.length);
+		}
+		try {
+			synchronized(password) {
+				// length-constant time
+				return
+					  !SecurityUtil.slowAllZero(password)
+					& !SecurityUtil.slowAllZero(copy2)
+					&  SecurityUtil.slowEquals(password, copy2);
+			}
+		} finally {
+			Arrays.fill(copy2, (char)0);
+		}
 	}
 
 	@Override

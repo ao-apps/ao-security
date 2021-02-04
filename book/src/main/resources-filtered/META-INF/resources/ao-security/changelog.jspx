@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-02-03T14:52:32-06:00"
+		dateModified="2021-02-04T17:54:22-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -46,7 +46,15 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Implemented <code>Key.equals(…)</code> and <code>Password.equals(…)</code>.  Both are
+						length-constant time implementations, and will always return <code>false</code> when either is
+						destroyed (including when both are destroyed).
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release

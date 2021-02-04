@@ -53,6 +53,7 @@ import javax.security.auth.Destroyable;
  * @author  AO Industries, Inc.
  */
 // TODO: Should the key contain the algorithm, too?
+@SuppressWarnings({"EqualsAndHashcode", "overrides"})
 public class Key implements Destroyable, AutoCloseable, Cloneable {
 
 	/**
@@ -125,6 +126,28 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
 		return isDestroyed()
 			? "\uD83D\uDC7B"  // Ghost emoji
 			: "\uD83D\uDE4A"; // Speak-no-evil monkey emoji
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Key)) return false;
+		Key other = (Key)obj;
+		// Create a copy to avoid potential deadlock of locking on both
+		byte[] copy2;
+		synchronized(other.key) {
+			copy2 = Arrays.copyOf(other.key, other.key.length);
+		}
+		try {
+			synchronized(key) {
+				// length-constant time
+				return
+					  !SecurityUtil.slowAllZero(key)
+					& !SecurityUtil.slowAllZero(copy2)
+					&  SecurityUtil.slowEquals(key, copy2);
+			}
+		} finally {
+			Arrays.fill(copy2, (byte)0);
+		}
 	}
 
 	@Override
