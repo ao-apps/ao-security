@@ -34,7 +34,9 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -197,7 +199,8 @@ public class HashedPassword implements Serializable {
 				synchronized(password.password) {
 					try {
 						if(password.isDestroyed()) throw new IllegalArgumentException("Refusing to hash destroyed password");
-						byte[] utf8 = StandardCharsets.UTF_8.encode(CharBuffer.wrap(password.password)).array();
+						ByteBuffer utf8Buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(password.password));
+						byte[] utf8 = utf8Buffer.array();
 						try {
 							password.destroy();
 							password = null;
@@ -205,7 +208,9 @@ public class HashedPassword implements Serializable {
 							validateIterations(IllegalArgumentException::new, iterations);
 							if(hashBytes != (128 / Byte.SIZE)) throw new IllegalArgumentException();
 							try {
-								byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(utf8);
+								MessageDigest md = MessageDigest.getInstance(getAlgorithmName());
+								md.update(utf8, 0, utf8Buffer.limit());
+								byte[] hash = md.digest();
 								Arrays.fill(utf8, (byte)0);
 								utf8 = null;
 								return validateHash(AssertionError::new, hash);
@@ -245,7 +250,8 @@ public class HashedPassword implements Serializable {
 				synchronized(password.password) {
 					try {
 						if(password.isDestroyed()) throw new IllegalArgumentException("Refusing to hash destroyed password");
-						byte[] utf8 = StandardCharsets.UTF_8.encode(CharBuffer.wrap(password.password)).array();
+						ByteBuffer utf8Buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(password.password));
+						byte[] utf8 = utf8Buffer.array();
 						try {
 							password.destroy();
 							password = null;
@@ -253,7 +259,9 @@ public class HashedPassword implements Serializable {
 							validateIterations(IllegalArgumentException::new, iterations);
 							if(hashBytes != (160 / Byte.SIZE)) throw new IllegalArgumentException();
 							try {
-								byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(utf8);
+								MessageDigest md = MessageDigest.getInstance(getAlgorithmName());
+								md.update(utf8, 0, utf8Buffer.limit());
+								byte[] hash = md.digest();
 								Arrays.fill(utf8, (byte)0);
 								utf8 = null;
 								return validateHash(AssertionError::new, hash);
