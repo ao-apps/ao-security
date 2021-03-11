@@ -171,9 +171,10 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
 		 * @param  key  Is destroyed when invalid
 		 */
-		public <E extends Throwable> Key validateKey(Function<? super String,E> newThrowable, Key key) throws E {
+		public <Ex extends Throwable> Key validateKey(Function<? super String, Ex> newThrowable, Key key) throws Ex {
 			int expected = getKeyBytes();
 			synchronized(key.key) {
 				if(key.isDestroyed()) {
@@ -187,12 +188,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
 		 * @param  key  Is not zeroed
 		 *
 		 * @deprecated  Please use {@link #validateKey(java.util.function.Function, com.aoindustries.security.Key)} instead.
 		 */
 		@Deprecated
-		public <E extends Throwable> byte[] validateKey(Function<? super String,E> newThrowable, byte[] key) throws E {
+		public <Ex extends Throwable> byte[] validateKey(Function<? super String, Ex> newThrowable, byte[] key) throws Ex {
 			int expected = getKeyBytes();
 			if(SecurityUtil.slowAllZero(key)) {
 				throw newThrowable.apply("Key is already destroyed");
@@ -240,8 +242,11 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			return hashBytes;
 		}
 
+		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
+		 */
 		// Matches src/main/sql/com/aoindustries/security/HashedKey.Algorithm.validateHash-function.sql
-		public <E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
+		public <Ex extends Throwable> byte[] validateHash(Function<? super String, Ex> newThrowable, byte[] hash) throws Ex {
 			int expected = getHashBytes();
 			if(hash.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": hash length mismatch: expected " + expected + ", got " + hash.length);
@@ -442,8 +447,11 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	private final Algorithm algorithm;
 	private final byte[] hash;
 
+	/**
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 */
 	// Matches src/main/sql/com/aoindustries/security/HashedKey.validate-function.sql
-	private <E extends Throwable> void validate(Function<? super String,E> newThrowable) throws E {
+	private <Ex extends Throwable> void validate(Function<? super String, Ex> newThrowable) throws Ex {
 		if(algorithm == null) {
 			if(hash != null) throw newThrowable.apply("hash must be null when algorithm is null");
 		} else {

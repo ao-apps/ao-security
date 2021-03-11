@@ -109,9 +109,12 @@ public class HashedPassword implements Serializable {
 		 */
 		@Deprecated
 		CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
+			/**
+			 * @param  <Ex>  An arbitrary exception type that may be thrown
+			 */
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 			@Override
-			public <E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
+			public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
 				super.validateSalt(newThrowable, salt);
 				if((salt[0] & 0xf0) != 0) throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
 				return salt;
@@ -296,10 +299,12 @@ public class HashedPassword implements Serializable {
 		PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
 			/**
 			 * Also allows the 256-bit salt for compatibility with previous versions.
+			 *
+			 * @param  <Ex>  An arbitrary exception type that may be thrown
 			 */
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
 			@Override
-			public <E extends Throwable> byte[] validateSalt(Function<? super String, E> newThrowable, byte[] salt) throws E {
+			public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
 				if(salt.length != SALT_BYTES) {
 					super.validateSalt(newThrowable, salt);
 				}
@@ -308,10 +313,12 @@ public class HashedPassword implements Serializable {
 
 			/**
 			 * Also allows the 256-bit hash for compatibility with previous versions.
+			 *
+			 * @param  <Ex>  An arbitrary exception type that may be thrown
 			 */
 			@Override
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateHash-function.sql
-			public <E extends Throwable> byte[] validateHash(Function<? super String, E> newThrowable, byte[] hash) throws E {
+			public <Ex extends Throwable> byte[] validateHash(Function<? super String, Ex> newThrowable, byte[] hash) throws Ex {
 				if(hash.length != HASH_BYTES) {
 					super.validateHash(newThrowable, hash);
 				}
@@ -321,10 +328,12 @@ public class HashedPassword implements Serializable {
 			/**
 			 * Performs an additional check that (salt, hash) are either the old sizes or the new, but not a mismatched
 			 * combination between them.
+			 *
+			 * @param  <Ex>  An arbitrary exception type that may be thrown
 			 */
 			// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validate-function.sql
 			@Override
-			public <E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
+			public <Ex extends Throwable> void validate(Function<? super String, Ex> newThrowable, byte[] salt, int iterations, byte[] hash) throws Ex {
 				super.validate(newThrowable, salt, iterations, hash);
 				if((salt.length == SALT_BYTES) != (hash.length == HASH_BYTES)) {
 					throw newThrowable.apply(
@@ -407,8 +416,11 @@ public class HashedPassword implements Serializable {
 			return saltBytes;
 		}
 
+		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
+		 */
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateSalt-function.sql
-		public <E extends Throwable> byte[] validateSalt(Function<? super String,E> newThrowable, byte[] salt) throws E {
+		public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
 			int expected = getSaltBytes();
 			if(salt.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": salt length mismatch: expected " + expected + ", got " + salt.length);
@@ -508,8 +520,11 @@ public class HashedPassword implements Serializable {
 			return recommendedIterations;
 		}
 
+		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
+		 */
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateIterations-function.sql
-		public <E extends Throwable> int validateIterations(Function<? super String,E> newThrowable, int iterations) throws E {
+		public <Ex extends Throwable> int validateIterations(Function<? super String, Ex> newThrowable, int iterations) throws Ex {
 			int _minimumIterations = getMinimumIterations();
 			if(iterations < _minimumIterations) {
 				throw newThrowable.apply(
@@ -534,8 +549,11 @@ public class HashedPassword implements Serializable {
 			return hashBytes;
 		}
 
+		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
+		 */
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validateHash-function.sql
-		public <E extends Throwable> byte[] validateHash(Function<? super String,E> newThrowable, byte[] hash) throws E {
+		public <Ex extends Throwable> byte[] validateHash(Function<? super String, Ex> newThrowable, byte[] hash) throws Ex {
 			int expected = getHashBytes();
 			if(hash.length != expected) {
 				throw newThrowable.apply(getAlgorithmName() + ": hash length mismatch: expected " + expected + ", got " + hash.length);
@@ -543,8 +561,11 @@ public class HashedPassword implements Serializable {
 			return hash;
 		}
 
+		/**
+		 * @param  <Ex>  An arbitrary exception type that may be thrown
+		 */
 		// Matches src/main/sql/com/aoindustries/security/HashedPassword.Algorithm.validate-function.sql
-		public <E extends Throwable> void validate(Function<? super String,E> newThrowable, byte[] salt, int iterations, byte[] hash) throws E {
+		public <Ex extends Throwable> void validate(Function<? super String, Ex> newThrowable, byte[] salt, int iterations, byte[] hash) throws Ex {
 			if(salt == null) throw newThrowable.apply("salt required when have algorithm");
 			validateSalt(newThrowable, salt);
 			validateIterations(newThrowable, iterations);
@@ -833,8 +854,11 @@ public class HashedPassword implements Serializable {
 	private final int iterations;
 	private final byte[] hash;
 
+	/**
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 */
 	// Matches src/main/sql/com/aoindustries/security/HashedPassword.validate-function.sql
-	private <E extends Throwable> void validate(Function<? super String,E> newThrowable) throws E {
+	private <Ex extends Throwable> void validate(Function<? super String, Ex> newThrowable) throws Ex {
 		if(algorithm == null) {
 			if(salt != null) throw newThrowable.apply("salt must be null when algorithm is null");
 			if(iterations != 0) throw newThrowable.apply("iterations must be 0 when algorithm is null");

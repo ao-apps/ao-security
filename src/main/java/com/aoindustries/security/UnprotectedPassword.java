@@ -42,9 +42,11 @@ public class UnprotectedPassword extends Password {
 	private final static Logger logger = Logger.getLogger(UnprotectedPassword.class.getName());
 
 	/**
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @see  #UnprotectedPassword(java.util.function.Supplier)
 	 */
-	private static <E extends Throwable> char[] generatePassword(SupplierE<? extends char[],E> generator) throws E {
+	private static <Ex extends Throwable> char[] generatePassword(SupplierE<? extends char[],Ex> generator) throws Ex {
 		// Discard any passwords that are generated as all-zero (in the small chance)
 		final int TRIES = 100;
 		for(int i = 0; i < TRIES; i++) {
@@ -80,8 +82,10 @@ public class UnprotectedPassword extends Password {
 	 * disallowing certain values from the password space may provide an advantage to attackers
 	 * (i.e. Enigma), losing the all-zero password is probably a good choice anyway.
 	 * </p>
+	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
 	 */
-	public <E extends Throwable> UnprotectedPassword(SupplierE<? extends char[],E> generator) throws E {
+	public <Ex extends Throwable> UnprotectedPassword(SupplierE<? extends char[],Ex> generator) throws Ex {
 		this(generatePassword(generator));
 	}
 
@@ -135,9 +139,11 @@ public class UnprotectedPassword extends Password {
 	 * Calls a function, providing a copy of the password.
 	 * The copy of the password is zeroed once the function returns.
 	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <R,E extends Throwable> R invoke(FunctionE<? super char[],R,E> function) throws IllegalStateException, E {
+	public <R, Ex extends Throwable> R invoke(FunctionE<? super char[],R, Ex> function) throws IllegalStateException, Ex {
 		char[] copy = getPassword();
 		try {
 			return function.apply(copy);
@@ -150,9 +156,11 @@ public class UnprotectedPassword extends Password {
 	 * Calls a consumer, providing a copy of the password.
 	 * The copy of the password is zeroed once the consumer returns.
 	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <E extends Throwable> void accept(ConsumerE<? super char[],E> consumer) throws IllegalStateException, E {
+	public <Ex extends Throwable> void accept(ConsumerE<? super char[],Ex> consumer) throws IllegalStateException, Ex {
 		char[] copy = getPassword();
 		try {
 			consumer.accept(copy);
@@ -165,9 +173,11 @@ public class UnprotectedPassword extends Password {
 	 * Calls a predicate, providing a copy of the password.
 	 * The copy of the password is zeroed once the predicate returns.
 	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <E extends Throwable> boolean test(PredicateE<? super char[],E> predicate) throws IllegalStateException, E {
+	public <Ex extends Throwable> boolean test(PredicateE<? super char[],Ex> predicate) throws IllegalStateException, Ex {
 		char[] copy = getPassword();
 		try {
 			return predicate.test(copy);

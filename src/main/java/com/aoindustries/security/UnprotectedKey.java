@@ -42,9 +42,11 @@ public class UnprotectedKey extends Key {
 	private final static Logger logger = Logger.getLogger(UnprotectedKey.class.getName());
 
 	/**
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @see  #UnprotectedKey(java.util.function.Supplier)
 	 */
-	private static <E extends Throwable> byte[] generateKey(SupplierE<? extends byte[],E> generator) throws E {
+	private static <Ex extends Throwable> byte[] generateKey(SupplierE<? extends byte[],Ex> generator) throws Ex {
 		// Discard any keys that are generated as all-zero (in the small chance)
 		final int TRIES = 100;
 		for(int i = 0; i < TRIES; i++) {
@@ -80,8 +82,10 @@ public class UnprotectedKey extends Key {
 	 * disallowing certain values from the key space may provide an advantage to attackers
 	 * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.
 	 * </p>
+	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
 	 */
-	public <E extends Throwable> UnprotectedKey(SupplierE<? extends byte[],E> generator) throws E {
+	public <Ex extends Throwable> UnprotectedKey(SupplierE<? extends byte[],Ex> generator) throws Ex {
 		this(generateKey(generator));
 	}
 
@@ -157,9 +161,11 @@ public class UnprotectedKey extends Key {
 	 * Calls a function, providing a copy of the key.
 	 * The copy of the key is zeroed once the function returns.
 	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <R,E extends Throwable> R invoke(FunctionE<? super byte[],R,E> function) throws IllegalStateException, E {
+	public <R, Ex extends Throwable> R invoke(FunctionE<? super byte[],R, Ex> function) throws IllegalStateException, Ex {
 		byte[] copy = getKey();
 		try {
 			return function.apply(copy);
@@ -172,9 +178,11 @@ public class UnprotectedKey extends Key {
 	 * Calls a consumer, providing a copy of the key.
 	 * The copy of the key is zeroed once the consumer returns.
 	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <E extends Throwable> void accept(ConsumerE<? super byte[],E> consumer) throws IllegalStateException, E {
+	public <Ex extends Throwable> void accept(ConsumerE<? super byte[],Ex> consumer) throws IllegalStateException, Ex {
 		byte[] copy = getKey();
 		try {
 			consumer.accept(copy);
@@ -187,9 +195,11 @@ public class UnprotectedKey extends Key {
 	 * Calls a predicate, providing a copy of the key.
 	 * The copy of the key is zeroed once the predicate returns.
 	 *
+	 * @param  <Ex>  An arbitrary exception type that may be thrown
+	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <E extends Throwable> boolean test(PredicateE<? super byte[],E> predicate) throws IllegalStateException, E {
+	public <Ex extends Throwable> boolean test(PredicateE<? super byte[],Ex> predicate) throws IllegalStateException, Ex {
 		byte[] copy = getKey();
 		try {
 			return predicate.test(copy);
