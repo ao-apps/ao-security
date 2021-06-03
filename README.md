@@ -1,33 +1,33 @@
-# [<img src="ao-logo.png" alt="AO Logo" width="35" height="40">](https://github.com/aoindustries) [AO Security](https://github.com/aoindustries/ao-security)
+# [<img src="ao-logo.png" alt="AO Logo" width="35" height="40">](https://github.com/aoindustries) [AO OSS](https://github.com/aoindustries/ao-oss) / [Security](https://github.com/aoindustries/ao-security)
 <p>
 	<a href="https://aoindustries.com/life-cycle#project-current-stable">
-		<img src="https://aoindustries.com/ao-badges/project-current-stable.svg" alt="project: current stable" />
+		<img src="https://oss.aoapps.com/ao-badges/project-current-stable.svg" alt="project: current stable" />
 	</a>
 	<a href="https://aoindustries.com/life-cycle#management-production">
-		<img src="https://aoindustries.com/ao-badges/management-production.svg" alt="management: production" />
+		<img src="https://oss.aoapps.com/ao-badges/management-production.svg" alt="management: production" />
 	</a>
 	<a href="https://aoindustries.com/life-cycle#packaging-active">
-		<img src="https://aoindustries.com/ao-badges/packaging-active.svg" alt="packaging: active" />
+		<img src="https://oss.aoapps.com/ao-badges/packaging-active.svg" alt="packaging: active" />
 	</a>
 	<br />
 	<a href="https://docs.oracle.com/javase/8/docs/api/">
-		<img src="https://aoindustries.com/ao-badges/java-8.svg" alt="java: &gt;= 8" />
+		<img src="https://oss.aoapps.com/ao-badges/java-8.svg" alt="java: &gt;= 8" />
 	</a>
 	<a href="http://semver.org/spec/v2.0.0.html">
-		<img src="https://aoindustries.com/ao-badges/semver-2.0.0.svg" alt="semantic versioning: 2.0.0" />
+		<img src="https://oss.aoapps.com/ao-badges/semver-2.0.0.svg" alt="semantic versioning: 2.0.0" />
 	</a>
 	<a href="https://www.gnu.org/licenses/lgpl-3.0">
-		<img src="https://aoindustries.com/ao-badges/license-lgpl-3.0.svg" alt="license: LGPL v3" />
+		<img src="https://oss.aoapps.com/ao-badges/license-lgpl-3.0.svg" alt="license: LGPL v3" />
 	</a>
 </p>
 
 Best-practices security made usable.
 
 ## Project Links
-* [Project Home](https://aoindustries.com/ao-security/)
-* [Changelog](https://aoindustries.com/ao-security/changelog)
-* [API Docs](https://aoindustries.com/ao-security/apidocs/)
-* [Maven Central Repository](https://search.maven.org/artifact/com.aoindustries/ao-security)
+* [Project Home](https://oss.aoapps.com/security/)
+* [Changelog](https://oss.aoapps.com/security/changelog)
+* [API Docs](https://oss.aoapps.com/security/apidocs/)
+* [Maven Central Repository](https://search.maven.org/artifact/com.aoapps/ao-security)
 * [GitHub](https://github.com/aoindustries/ao-security)
 
 ## Features

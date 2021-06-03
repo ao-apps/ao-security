@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 -->
 <jsp:root
-	xmlns:ao="https://aoindustries.com/ao-taglib/"
+	xmlns:ao="https://oss.aoapps.com/taglib/"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:changelog="https://semanticcms.com/changelog/taglib/"
 	xmlns:core="https://semanticcms.com/core/taglib/"
@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-05-25T18:54:28-05:00"
+		dateModified="2021-05-31T01:04:26-05:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -45,10 +45,11 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				version="@{project.version}"
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
+				repository="https://s01.oss.sonatype.org/content/repositories/snapshots/"
 				scmUrl="@{project.scm.url}"
 			>
 				<ul>
-					<li>Updated dependencies.</li>
+					<li>Maven artifact relocated from <code>com.aoindustries:ao-security</code> to <code>com.aoapps:ao-security</code>.</li>
 				</ul>
 			</changelog:release>
 		</c:if>
@@ -57,7 +58,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 			projectName="@{documented.name}"
 			version="2.3.0"
 			datePublished="2021-02-05T05:15:07-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -73,7 +74,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 			projectName="@{documented.name}"
 			version="2.2.0"
 			datePublished="2021-02-04T18:08:17-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -90,7 +91,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 			projectName="@{documented.name}"
 			version="2.1.0"
 			datePublished="2021-02-03T14:52:32-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -106,7 +107,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 			projectName="@{documented.name}"
 			version="2.0.1"
 			datePublished="2021-01-14T21:15:02-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -126,7 +127,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 			projectName="@{documented.name}"
 			version="2.0.0"
 			datePublished="2021-01-02T04:51:20-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -230,7 +231,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.7"
 			datePublished="2020-12-29T02:01:55-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -249,7 +250,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.6"
 			datePublished="2020-12-28T06:14:00-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -265,7 +266,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.5"
 			datePublished="2020-12-25T21:04:22-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -292,7 +293,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.4"
 			datePublished="2020-12-25T11:47:45-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -309,7 +310,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.3"
 			datePublished="2020-12-25T11:11:21-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -326,7 +327,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.2"
 			datePublished="2020-12-25T02:01:00-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -361,7 +362,7 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.1"
 			datePublished="2020-12-24T23:51:29-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
@@ -378,13 +379,13 @@ COMMIT;]]></pre>
 			projectName="@{documented.name}"
 			version="1.0.0"
 			datePublished="2020-12-24T23:32:56-06:00"
-			groupId="@{project.groupId}"
+			groupId="com.aoindustries"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
 		>
 			<ul>
 				<li>
-					Pulled existing security utilities out of <core:link book="/ao-lang" page="/index.jspx" /> into
+					Pulled existing security utilities out of <core:link book="/lang" page="/index.jspx" /> into
 					this new <core:link page="index.jspx" /> project.
 				</li>
 				<li>Added SQL implementation in alternate "sql" classifier.</li>
@@ -436,7 +437,7 @@ COMMIT;]]></pre>
 							</p>
 							<p>
 								This may be used to insert the password into a database, and it is compatible with
-								<ao:a href="https://aoindustries.com/ao-dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
 								However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
 								This type is more compact and enforces much more integrity than just stuffing the
 								value in as a string.
@@ -469,7 +470,7 @@ COMMIT;]]></pre>
 							</p>
 							<p>
 								This may be used to insert the password into a database, and it is compatible with
-								<ao:a href="https://aoindustries.com/ao-dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com/aoindustries/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
 								However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
 								This type is more compact and enforces much more integrity than just stuffing the
 								value in as a string.
