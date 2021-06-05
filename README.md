@@ -77,7 +77,7 @@ Best-practices security made usable.
       of the salt for `crypt` are verified to be zero, since `crypt` only uses a 12-bit salt.
     * Full set of bi-directional `TEXT` conversions, including `CAST` definitions, which makes for very simple
       legacy password database upgrades.  All it will typically take is:<br>
-      `ALTER TABLE … ALTER COLUMN … TYPE "com.aoindustries.security"."HashedPassword";`
+      `ALTER TABLE … ALTER COLUMN … TYPE "com.aoapps.security"."HashedPassword";`
 
 ## Contact Us
 For questions or support, please [contact us](https://aoindustries.com/contact):

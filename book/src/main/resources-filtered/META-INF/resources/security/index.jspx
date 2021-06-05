@@ -34,7 +34,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		title="@{documented.name}"
 		description="@{documented.description}"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-01-09T15:38:48-06:00"
+		dateModified="2021-06-03T22:53:21-05:00"
 	>
 		<core:child page="changelog.jspx" />
 		<core:child page="apidocs/index.jspx" />
@@ -153,7 +153,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						<li>
 							Full set of bi-directional <code>TEXT</code> conversions, including <code>CAST</code> definitions, which makes for very simple
 							legacy password database upgrades.  All it will typically take is:<ao:br />
-							<code>ALTER TABLE … ALTER COLUMN … TYPE "com.aoindustries.security"."HashedPassword";</code>
+							<code>ALTER TABLE … ALTER COLUMN … TYPE "com.aoapps.security"."HashedPassword";</code>
 						</li>
 					</ul>
 				</li>
