@@ -81,7 +81,7 @@ public class HashedPassword implements Serializable {
 	 * </p>
 	 * <p>
 	 * This is also used as the value used for
-	 * <a href="https://aoindustries.com/aoserv/client/apidocs/com/aoindustries/aoserv/client/schema/AoservProtocol.html#FILTERED">filtered data in the AOServ Protocol</a>.
+	 * <a href="https://aoindustries.com/aoserv/client/apidocs/com.aoindustries.aoserv.client/com/aoindustries/aoserv/client/schema/AoservProtocol.html#FILTERED">filtered data in the AOServ Protocol</a>.
 	 * </p>
 	 */
 	public static final String NO_PASSWORD_VALUE = "*";

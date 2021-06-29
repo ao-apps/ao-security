@@ -37,7 +37,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-06-03T22:53:21-05:00"
+		dateModified="2021-06-27T16:13:41-05:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -49,6 +49,7 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 				scmUrl="@{project.scm.url}"
 			>
 				<ul>
+					<li>Now supports Java 9+ modules with included <code>module-info.class</code>.</li>
 					<li>Maven artifact relocated from <code>com.aoindustries:ao-security</code> to <code>com.aoapps:ao-security</code>.</li>
 					<li>Package renamed from <code>com.aoindustries.security</code> to <code>com.aoapps.security</code>.</li>
 					<li>SQL schema renamed from <code>com.aoindustries.security</code> to <code>com.aoapps.security</code>.</li>
@@ -439,7 +440,7 @@ COMMIT;]]></pre>
 							</p>
 							<p>
 								This may be used to insert the password into a database, and it is compatible with
-								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com.aoapps.dbc/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
 								However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
 								This type is more compact and enforces much more integrity than just stuffing the
 								value in as a string.
@@ -472,7 +473,7 @@ COMMIT;]]></pre>
 							</p>
 							<p>
 								This may be used to insert the password into a database, and it is compatible with
-								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com.aoapps.dbc/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
 								However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
 								This type is more compact and enforces much more integrity than just stuffing the
 								value in as a string.
