@@ -191,17 +191,16 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 								<id>unpack.offlineLinks</id><phase>generate-sources</phase><goals><goal>unpack</goal></goals>
 								<configuration>
 									<artifactItems>
-										<!-- Javadoc-only -->
-										<artifactItem>
-											<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><classifier>javadoc</classifier>
-											<includes>element-list, package-list</includes>
-											<outputDirectory>${project.build.directory}/offlineLinks/commons-codec/commons-codec</outputDirectory>
-										</artifactItem>
 										<!-- Direct -->
 										<artifactItem>
 											<groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId><classifier>javadoc</classifier>
 											<includes>element-list, package-list</includes>
 											<outputDirectory>${project.build.directory}/offlineLinks/com.aoapps/ao-lang</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><classifier>javadoc</classifier>
+											<includes>element-list, package-list</includes>
+											<outputDirectory>${project.build.directory}/offlineLinks/commons-codec/commons-codec</outputDirectory>
 										</artifactItem>
 										<!-- Test Direct -->
 										<artifactItem>
@@ -218,15 +217,14 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 						<groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
 							<offlineLinks>
-								<!-- Javadoc-only -->
-								<offlineLink>
-									<url>https://commons.apache.org/proper/commons-codec/archives/${commons-codec.version}/apidocs/</url>
-									<location>${project.build.directory}/offlineLinks/commons-codec/commons-codec</location>
-								</offlineLink>
 								<!-- Direct -->
 								<offlineLink>
 									<url>https://oss.aoapps.com/lang/apidocs/</url>
 									<location>${project.build.directory}/offlineLinks/com.aoapps/ao-lang</location>
+								</offlineLink>
+								<offlineLink>
+									<url>https://commons.apache.org/proper/commons-codec/archives/${commons-codec.version}/apidocs/</url>
+									<location>${project.build.directory}/offlineLinks/commons-codec/commons-codec</location>
 								</offlineLink>
 								<!-- Test Direct -->
 								<offlineLink>
@@ -248,14 +246,14 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Javadoc-only -->
-			<dependency>
-				<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
-				<exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
-			</dependency>
 			<!-- Direct -->
 			<dependency>
 				<groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId><version>5.0.0${POST-SNAPSHOT}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
+				<!-- Javadoc-only -->
+				<exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
 			</dependency>
 			<!-- Test Direct -->
 			<dependency>
@@ -273,14 +271,14 @@ along with ao-security.  If not, see <http://www.gnu.org/licenses />.
 	</dependencyManagement>
 
 	<dependencies>
-		<!-- Javadoc-only -->
-		<dependency>
-			<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
-			<optional>true</optional>
-		</dependency>
 		<!-- Direct -->
 		<dependency>
 			<groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
+			<!-- Javadoc-only -->
+			<optional>true</optional>
 		</dependency>
 		<!-- Test Direct -->
 		<dependency>

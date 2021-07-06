@@ -22,10 +22,9 @@
  */
 module com.aoapps.security {
 	exports com.aoapps.security;
-	// Javadoc-only
-	requires static org.apache.commons.codec; // <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
 	// Direct
 	requires com.aoapps.lang; // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
+	requires static org.apache.commons.codec; // <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
 	// Java SE
 	requires java.logging;
 }
