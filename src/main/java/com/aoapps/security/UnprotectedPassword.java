@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class UnprotectedPassword extends Password {
 
-	private final static Logger logger = Logger.getLogger(UnprotectedPassword.class.getName());
+	private static final Logger logger = Logger.getLogger(UnprotectedPassword.class.getName());
 
 	/**
 	 * @param  <Ex>  An arbitrary exception type that may be thrown

@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class UnprotectedKey extends Key {
 
-	private final static Logger logger = Logger.getLogger(UnprotectedKey.class.getName());
+	private static final Logger logger = Logger.getLogger(UnprotectedKey.class.getName());
 
 	/**
 	 * @param  <Ex>  An arbitrary exception type that may be thrown
