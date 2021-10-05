@@ -46,7 +46,7 @@ public class UnprotectedKey extends Key {
 	 *
 	 * @see  #UnprotectedKey(java.util.function.Supplier)
 	 */
-	private static <Ex extends Throwable> byte[] generateKey(SupplierE<? extends byte[],Ex> generator) throws Ex {
+	private static <Ex extends Throwable> byte[] generateKey(SupplierE<? extends byte[], Ex> generator) throws Ex {
 		// Discard any keys that are generated as all-zero (in the small chance)
 		final int TRIES = 100;
 		for(int i = 0; i < TRIES; i++) {
@@ -85,7 +85,7 @@ public class UnprotectedKey extends Key {
 	 *
 	 * @param  <Ex>  An arbitrary exception type that may be thrown
 	 */
-	public <Ex extends Throwable> UnprotectedKey(SupplierE<? extends byte[],Ex> generator) throws Ex {
+	public <Ex extends Throwable> UnprotectedKey(SupplierE<? extends byte[], Ex> generator) throws Ex {
 		this(generateKey(generator));
 	}
 
@@ -165,7 +165,7 @@ public class UnprotectedKey extends Key {
 	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <R, Ex extends Throwable> R invoke(FunctionE<? super byte[],R, Ex> function) throws IllegalStateException, Ex {
+	public <R, Ex extends Throwable> R invoke(FunctionE<? super byte[], R, Ex> function) throws IllegalStateException, Ex {
 		byte[] copy = getKey();
 		try {
 			return function.apply(copy);
@@ -182,7 +182,7 @@ public class UnprotectedKey extends Key {
 	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <Ex extends Throwable> void accept(ConsumerE<? super byte[],Ex> consumer) throws IllegalStateException, Ex {
+	public <Ex extends Throwable> void accept(ConsumerE<? super byte[], Ex> consumer) throws IllegalStateException, Ex {
 		byte[] copy = getKey();
 		try {
 			consumer.accept(copy);
@@ -199,7 +199,7 @@ public class UnprotectedKey extends Key {
 	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <Ex extends Throwable> boolean test(PredicateE<? super byte[],Ex> predicate) throws IllegalStateException, Ex {
+	public <Ex extends Throwable> boolean test(PredicateE<? super byte[], Ex> predicate) throws IllegalStateException, Ex {
 		byte[] copy = getKey();
 		try {
 			return predicate.test(copy);

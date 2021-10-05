@@ -46,7 +46,7 @@ public class UnprotectedPassword extends Password {
 	 *
 	 * @see  #UnprotectedPassword(java.util.function.Supplier)
 	 */
-	private static <Ex extends Throwable> char[] generatePassword(SupplierE<? extends char[],Ex> generator) throws Ex {
+	private static <Ex extends Throwable> char[] generatePassword(SupplierE<? extends char[], Ex> generator) throws Ex {
 		// Discard any passwords that are generated as all-zero (in the small chance)
 		final int TRIES = 100;
 		for(int i = 0; i < TRIES; i++) {
@@ -85,7 +85,7 @@ public class UnprotectedPassword extends Password {
 	 *
 	 * @param  <Ex>  An arbitrary exception type that may be thrown
 	 */
-	public <Ex extends Throwable> UnprotectedPassword(SupplierE<? extends char[],Ex> generator) throws Ex {
+	public <Ex extends Throwable> UnprotectedPassword(SupplierE<? extends char[], Ex> generator) throws Ex {
 		this(generatePassword(generator));
 	}
 
@@ -143,7 +143,7 @@ public class UnprotectedPassword extends Password {
 	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <R, Ex extends Throwable> R invoke(FunctionE<? super char[],R, Ex> function) throws IllegalStateException, Ex {
+	public <R, Ex extends Throwable> R invoke(FunctionE<? super char[], R, Ex> function) throws IllegalStateException, Ex {
 		char[] copy = getPassword();
 		try {
 			return function.apply(copy);
@@ -160,7 +160,7 @@ public class UnprotectedPassword extends Password {
 	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <Ex extends Throwable> void accept(ConsumerE<? super char[],Ex> consumer) throws IllegalStateException, Ex {
+	public <Ex extends Throwable> void accept(ConsumerE<? super char[], Ex> consumer) throws IllegalStateException, Ex {
 		char[] copy = getPassword();
 		try {
 			consumer.accept(copy);
@@ -177,7 +177,7 @@ public class UnprotectedPassword extends Password {
 	 *
 	 * @throws IllegalStateException when {@link #isDestroyed()}
 	 */
-	public <Ex extends Throwable> boolean test(PredicateE<? super char[],Ex> predicate) throws IllegalStateException, Ex {
+	public <Ex extends Throwable> boolean test(PredicateE<? super char[], Ex> predicate) throws IllegalStateException, Ex {
 		char[] copy = getPassword();
 		try {
 			return predicate.test(copy);
