@@ -338,7 +338,7 @@ public class UnixCrypt {
 			keyword = (keyword << 8) | ((i < keylen)? 2*key.charAt(i): 0);
 		}
 
-		long[] KS = des_setkey(keyword);
+		long[] ks = des_setkey(keyword);
 
 		int salt = 0;
 		for (int i=2; --i>=0;) {
@@ -347,7 +347,7 @@ public class UnixCrypt {
 			salt = (salt << 6) | a64toi(c);
 		}
 
-		long rsltblock = des_cipher(constdatablock, salt, 25, KS);
+		long rsltblock = des_cipher(constdatablock, salt, 25, ks);
 
 		cryptresult[12] = itoa64(rsltblock << 2);
 		rsltblock >>= 4;
@@ -372,81 +372,81 @@ public class UnixCrypt {
 			keyword = (keyword << 8) | ((i < keylen)? 2*key.charAt(i): 0);
 		}
 
-		long[] KS = des_setkey(keyword);
+		long[] ks = des_setkey(keyword);
 
-		return des_cipher(constdatablock, salt, 25, KS);
+		return des_cipher(constdatablock, salt, 25, ks);
 	}
 
 	/**
-	 * Returns the DES encrypted code of the given word with the specified 
+	 * Returns the DES encrypted code of the given word with the specified
 	 * environment.
 	 */
 	private static long des_cipher(long in, int salt, int num_iter, long[] KS) {
 		salt = to_six_bit(salt);
-		long L = in;
-		long R = L;
-		L &= 0x5555555555555555L;
-		R = (R & 0xaaaaaaaa00000000L) | ((R >> 1) & 0x0000000055555555L);
-		L = ((((L << 1) | (L << 32)) & 0xffffffff00000000L) | 
-			((R | (R >> 32)) & 0x00000000ffffffffL));
+		long l = in;
+		long r = l;
+		l &= 0x5555555555555555L;
+		r = (r & 0xaaaaaaaa00000000L) | ((r >> 1) & 0x0000000055555555L);
+		l = ((((l << 1) | (l << 32)) & 0xffffffff00000000L) |
+			((r | (r >> 32)) & 0x00000000ffffffffL));
 
-		L = perm3264((int)(L>>32), IE3264);
-		R = perm3264((int)(L&0xffffffff), IE3264);
+		l = perm3264((int)(l>>32), IE3264);
+		r = perm3264((int)(l&0xffffffff), IE3264);
 
 		while (--num_iter >= 0) {
 			for (int loop_count=0; loop_count<8; loop_count++) {
 				long kp;
-				long B;
+				long b;
 				long k;
 
 				kp = KS[(loop_count<<1)];
-				k = ((R>>32) ^ R) & salt & 0xffffffffL;
+				k = ((r>>32) ^ r) & salt & 0xffffffffL;
 				k |= (k<<32);
-				B = (k ^ R ^ kp);
+				b = (k ^ r ^ kp);
 
-				L ^= (SPE[0][(int)((B>>58)&0x3f)] ^ SPE[1][(int)((B>>50)&0x3f)] ^
-					SPE[2][(int)((B>>42)&0x3f)] ^ SPE[3][(int)((B>>34)&0x3f)] ^
-					SPE[4][(int)((B>>26)&0x3f)] ^ SPE[5][(int)((B>>18)&0x3f)] ^
-					SPE[6][(int)((B>>10)&0x3f)] ^ SPE[7][(int)((B>>2)&0x3f)]);
+				l ^= (SPE[0][(int)((b>>58)&0x3f)] ^ SPE[1][(int)((b>>50)&0x3f)] ^
+					SPE[2][(int)((b>>42)&0x3f)] ^ SPE[3][(int)((b>>34)&0x3f)] ^
+					SPE[4][(int)((b>>26)&0x3f)] ^ SPE[5][(int)((b>>18)&0x3f)] ^
+					SPE[6][(int)((b>>10)&0x3f)] ^ SPE[7][(int)((b>>2)&0x3f)]);
 
 				kp = KS[(loop_count<<1)+1];
-				k = ((L>>32) ^ L) & salt & 0xffffffffL;
+				k = ((l>>32) ^ l) & salt & 0xffffffffL;
 				k |= (k<<32);
-				B = (k ^ L ^ kp);
+				b = (k ^ l ^ kp);
 
-				R ^= (SPE[0][(int)((B>>58)&0x3f)] ^ SPE[1][(int)((B>>50)&0x3f)] ^
-					SPE[2][(int)((B>>42)&0x3f)] ^ SPE[3][(int)((B>>34)&0x3f)] ^
-					SPE[4][(int)((B>>26)&0x3f)] ^ SPE[5][(int)((B>>18)&0x3f)] ^
-					SPE[6][(int)((B>>10)&0x3f)] ^ SPE[7][(int)((B>>2)&0x3f)]);
+				r ^= (SPE[0][(int)((b>>58)&0x3f)] ^ SPE[1][(int)((b>>50)&0x3f)] ^
+					SPE[2][(int)((b>>42)&0x3f)] ^ SPE[3][(int)((b>>34)&0x3f)] ^
+					SPE[4][(int)((b>>26)&0x3f)] ^ SPE[5][(int)((b>>18)&0x3f)] ^
+					SPE[6][(int)((b>>10)&0x3f)] ^ SPE[7][(int)((b>>2)&0x3f)]);
 			}
 			// swap L and R
-			L ^= R;
-			R ^= L;
-			L ^= R;
+			l ^= r;
+			r ^= l;
+			l ^= r;
 		}
-		L = ((((L>>35) & 0x0f0f0f0fL) | (((L&0xffffffff)<<1) & 0xf0f0f0f0L))<<32 |
-			(((R>>35) & 0x0f0f0f0fL) | (((R&0xffffffff)<<1) & 0xf0f0f0f0L)));
+		l = ((((l>>35) & 0x0f0f0f0fL) | (((l&0xffffffff)<<1) & 0xf0f0f0f0L))<<32 |
+			(((r>>35) & 0x0f0f0f0fL) | (((r&0xffffffff)<<1) & 0xf0f0f0f0L)));
 
-		L = perm6464(L, CF6464);
+		l = perm6464(l, CF6464);
 
-		return L;
+		return l;
 	}
 
 	/**
 	 * Returns the key schedule for the given key.
 	 */
 	private static long[] des_setkey(long keyword) {
-		long K = perm6464(keyword, PC1ROT);
-		long[] KS = new long[16];
-		KS[0] = K&~0x0303030300000000L;
+		long k = perm6464(keyword, PC1ROT);
+		long[] ks = new long[16];
+		ks[0] = k&~0x0303030300000000L;
 
 		for (int i=1; i<16; i++) {
-			KS[i] = K;
-			K = perm6464(K, PC2ROT[Rotates[i]-1]);
+			ks[i] = k;
+			k = perm6464(k, PC2ROT[Rotates[i]-1]);
 
-			KS[i] = K&~0x0303030300000000L;
+			ks[i] = k&~0x0303030300000000L;
 		}
-		return KS;
+		return ks;
 	}
 
 	/**
@@ -504,16 +504,16 @@ public class UnixCrypt {
 	 * into a 4-byte code, each having 6 bits.
 	 */
 	private static int to_six_bit(int num) {
-		return (((num << 26) & 0xfc000000) | ((num << 12) & 0xfc0000) | 
+		return (((num << 26) & 0xfc000000) | ((num << 12) & 0xfc0000) |
 			((num >> 2) & 0xfc00) | ((num >> 16) & 0xfc));
 	}
 
 	/**
-	 * Returns the transposed and split code of two 24-bit code 
+	 * Returns the transposed and split code of two 24-bit code
 	 * into two 4-byte code, each having 6 bits.
 	 */
 	private static long to_six_bit(long num) {
-		return (((num << 26) & 0xfc000000fc000000L) | ((num << 12) & 0xfc000000fc0000L) | 
+		return (((num << 26) & 0xfc000000fc000000L) | ((num << 12) & 0xfc000000fc0000L) |
 			((num >> 2) & 0xfc000000fc00L) | ((num >> 16) & 0xfc000000fcL));
 	}
 

@@ -82,9 +82,9 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	}
 
 	@Override
-	public boolean equals(Object O) {
-		if(!(O instanceof SmallIdentifier)) return false;
-		return equals((SmallIdentifier)O);
+	public boolean equals(Object obj) {
+		if(!(obj instanceof SmallIdentifier)) return false;
+		return equals((SmallIdentifier)obj);
 	}
 
 	public boolean equals(SmallIdentifier other) {

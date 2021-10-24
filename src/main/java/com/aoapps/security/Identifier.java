@@ -169,9 +169,9 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	}
 
 	@Override
-	public boolean equals(Object O) {
-		if(!(O instanceof Identifier)) return false;
-		return equals((Identifier)O);
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Identifier)) return false;
+		return equals((Identifier)obj);
 	}
 
 	/**
