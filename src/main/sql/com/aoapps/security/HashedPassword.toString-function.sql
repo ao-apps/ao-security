@@ -18,7 +18,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
+ * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.toString" (
 	this "com.aoapps.security"."HashedPassword"

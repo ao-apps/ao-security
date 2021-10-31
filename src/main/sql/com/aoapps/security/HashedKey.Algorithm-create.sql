@@ -18,7 +18,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
+ * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE TABLE "com.aoapps.security"."HashedKey.Algorithm" (
 	"name" text PRIMARY KEY CHECK ("name" NOT LIKE '%$%'),

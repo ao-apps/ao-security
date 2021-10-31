@@ -18,7 +18,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with ao-security.  If not, see <http://www.gnu.org/licenses/>.
+ * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE CAST (text AS "com.aoapps.security"."<HashedPassword>")
 WITH FUNCTION "com.aoapps.security"."HashedPassword.valueOf" (text)
