@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-07-20T03:02:07-05:00"
+		dateModified="2021-11-01T23:24:57-05:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -47,7 +47,15 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 				artifactId="@{documented.artifactId}"
 				repository="@{nexusUrl}content/repositories/snapshots/"
 				scmUrl="@{project.scm.url}"
-			/>
+			>
+				<ul>
+					<li>
+						Deprecated methods that accept a provided <code>Random</code> in favor of
+						<code>SecureRandom</code>.  This is to help avoid accidentally using a cryptographically weak
+						random number generator.
+					</li>
+				</ul>
+			</changelog:release>
 		</c:if>
 
 		<changelog:release

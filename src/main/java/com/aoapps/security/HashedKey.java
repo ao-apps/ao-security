@@ -69,7 +69,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		/**
 		 * @deprecated  MD5 should not be used for any cryptographic purpose.
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = false)
 		MD5("MD5", 128 / Byte.SIZE),
 		/**
 		 * SHA-1 is now considered to have at best 65-bits of collision resistance, if using SHA-1 (which you
@@ -81,12 +81,12 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 *
 		 * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = false)
 		SHA_1("SHA-1", 128 / Byte.SIZE, 160 / Byte.SIZE),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = false)
 		SHA_224("SHA-224", 224 / Byte.SIZE),
 		SHA_256("SHA-256", 256 / Byte.SIZE),
 		SHA_384("SHA-384", 384 / Byte.SIZE),
@@ -94,13 +94,13 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = false)
 		SHA_512_224("SHA-512/224", 224 / Byte.SIZE),
 		SHA_512_256("SHA-512/256", 256 / Byte.SIZE),
 		/**
 		 * @deprecated  Collision resistance of at least 128 bits is required
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = false)
 		SHA3_224("SHA3-224", 224 / Byte.SIZE),
 		SHA3_256("SHA3-256", 256 / Byte.SIZE),
 		SHA3_384("SHA3-384", 384 / Byte.SIZE),
@@ -193,7 +193,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 *
 		 * @deprecated  Please use {@link #validateKey(java.util.function.Function, com.aoapps.security.Key)} instead.
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = true)
 		public <Ex extends Throwable> byte[] validateKey(Function<? super String, Ex> newThrowable, byte[] key) throws Ex {
 			int expected = getKeyBytes();
 			if(SecurityUtil.slowAllZero(key)) {
@@ -205,23 +205,37 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		}
 
 		/**
-		 * Generates a random plaintext key of the given number of bytes
-		 * using the provided {@link Random} source.
+		 * Generates a random plaintext key of the given number of bytes using the provided {@link Random} source.
 		 */
 		UnprotectedKey generateKey(int keyBytes, Random random) {
+			@SuppressWarnings("deprecation")
 			UnprotectedKey key = new UnprotectedKey(keyBytes, random);
 			validateKey(AssertionError::new, key);
 			return key;
 		}
 
 		/**
-		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length
-		 * using the provided {@link Random} source.
+		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length using the provided
+		 * {@link Random} source.
+		 *
+		 * @see  #hash(com.aoapps.security.Key)
+		 *
+		 * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
+		 *              only be used after careful consideration.
+		 */
+		@Deprecated // Java 9: (forRemoval = false)
+		public UnprotectedKey generateKey(Random random) {
+			return generateKey(getKeyBytes(), random);
+		}
+
+		/**
+		 * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length using the provided
+		 * {@link SecureRandom} source.
 		 *
 		 * @see  #hash(com.aoapps.security.Key)
 		 */
-		public UnprotectedKey generateKey(Random random) {
-			return generateKey(getKeyBytes(), random);
+		public UnprotectedKey generateKey(SecureRandom secureRandom) {
+			return generateKey(getKeyBytes(), secureRandom);
 		}
 
 		/**
@@ -232,7 +246,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 * @see  #hash(com.aoapps.security.Key)
 		 */
 		public UnprotectedKey generateKey() {
-			return generateKey(Identifier.secureRandom);
+			return generateKey(getKeyBytes(), Identifier.secureRandom);
 		}
 
 		/**
@@ -289,7 +303,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 		 *
 		 * @deprecated  Please use {@link #hash(com.aoapps.security.Key)} instead.
 		 */
-		@Deprecated
+		@Deprecated // Java 9: (forRemoval = true)
 		public byte[] hash(byte[] key) {
 			try {
 				byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(
@@ -306,7 +320,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @deprecated  This is the value matching {@linkplain Algorithm#SHA_256 the previous default algorithm},
 	 *              please use {@link Algorithm#getAlgorithmName()} instead.
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public static final String ALGORITHM = Algorithm.SHA_256.getAlgorithmName();
 
 	/**
@@ -340,7 +354,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @deprecated  This is the value matching {@linkplain Algorithm#SHA_256 the previous default algorithm},
 	 *              please use {@link Algorithm#getHashBytes()} instead.
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public static final int HASH_BYTES = Algorithm.SHA_256.getHashBytes();
 
 	/**
@@ -360,7 +374,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @deprecated  This generates a key for {@linkplain Algorithm#SHA_256 the previous default algorithm},
 	 *              using the previous default of 256-bit length, please use {@link Algorithm#generateKey()} instead.
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public static byte[] generateKey() {
 		int keyBytes = Algorithm.SHA_256.getKeyBytes();
 		assert keyBytes == HASH_BYTES;
@@ -379,7 +393,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @deprecated  This generates a hash for {@linkplain Algorithm#SHA_256 the previous default algorithm} and does
 	 *              not zero the key, please use {@link Algorithm#hash(byte[])} instead.
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public static byte[] hash(byte[] key) {
 		return Algorithm.SHA_256.hash(key);
 	}
@@ -476,7 +490,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @deprecated  Please use {@link #valueOf(com.aoapps.security.HashedKey.Algorithm, byte[])},
 	 *              which is able to automatically return the {@link #NO_KEY} singleton.
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = false)
 	public HashedKey(Algorithm algorithm, byte[] hash) throws IllegalArgumentException {
 		this.algorithm = Objects.requireNonNull(algorithm);
 		this.hash = Arrays.copyOf(hash, hash.length);
@@ -489,7 +503,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 	 * @deprecated  This represents a hash using {@linkplain Algorithm#SHA_256 the previous default algorithm},
 	 *              please use {@link #HashedKey(com.aoapps.security.HashedKey.Algorithm, byte[])} instead.
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public HashedKey(byte[] hash) throws IllegalArgumentException {
 		this(Algorithm.SHA_256, hash);
 	}

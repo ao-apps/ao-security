@@ -4,7 +4,7 @@ package com.aoapps.security;
  * @deprecated  This is not secure anymore.  We will be removing in a future major version update.  If you still require
  *              this type of encryption, please use {@link org.apache.commons.codec.digest.UnixCrypt}.
  */
-@Deprecated
+@Deprecated // Java 9: (forRemoval = true)
 public class UnixCrypt {
 
 	/* (mostly) Standard DES Tables from Tom Truscott */
@@ -308,7 +308,7 @@ public class UnixCrypt {
 	 * @deprecated  This is not secure anymore.
 	 *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String)}
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public static String crypt(String plaintext) {
 		return crypt(
 			plaintext,
@@ -327,7 +327,7 @@ public class UnixCrypt {
 	 * @deprecated  This is not secure anymore.
 	 *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String, java.lang.String)}
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	public static String crypt(String key, String setting) {
 		long constdatablock = 0L;		/* encryption constant */
 		char[] cryptresult = new char[13];	/* encrypted result */
@@ -362,7 +362,7 @@ public class UnixCrypt {
 	/**
 	 * Performs the crypt, returning the long representation
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	static long cryptImpl(String key, int salt) {
 		long constdatablock = 0L;		/* encryption constant */
 		long keyword = 0L;
@@ -521,7 +521,7 @@ public class UnixCrypt {
 	 * @deprecated  This is not secure anymore.
 	 *              Please use {@link org.apache.commons.codec.digest.UnixCrypt}
 	 */
-	@Deprecated
+	@Deprecated // Java 9: (forRemoval = true)
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String[] args) {
 		if(args.length == 1) {

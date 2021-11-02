@@ -50,22 +50,31 @@ public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier
 	private final long value;
 
 	/**
-	 * Creates a new, random {@link SmallIdentifier}
-	 * using a default {@link SecureRandom} instance, which is not a
+	 * Creates a new, random {@link SmallIdentifier} using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	public SmallIdentifier() {
-		this(Identifier.secureRandom);
+		this((Random)Identifier.secureRandom);
 	}
 
 	/**
-	 * Creates a new, random {@link SmallIdentifier}
-	 * using the provided {@link Random} source.
+	 * Creates a new, random {@link SmallIdentifier} using the provided {@link Random} source.
+	 *
+	 * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
+	 *              only be used after careful consideration.
 	 */
+	@Deprecated // Java 9: (forRemoval = false)
 	public SmallIdentifier(Random random) {
 		byte[] bytes = new byte[Long.BYTES];
 		random.nextBytes(bytes);
 		value = IoUtils.bufferToLong(bytes);
+	}
+
+	/**
+	 * Creates a new, random {@link SmallIdentifier} using the provided {@link SecureRandom} source.
+	 */
+	public SmallIdentifier(SecureRandom secureRandom) {
+		this((Random)secureRandom);
 	}
 
 	public SmallIdentifier(long value) {

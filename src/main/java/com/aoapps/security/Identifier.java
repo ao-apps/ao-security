@@ -116,9 +116,9 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 			+ getValue(encoded.charAt(10))
 		;
 	}
+
 	/**
-	 * Note: This is not a
-	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
+	 * Note: This is not a {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	static final SecureRandom secureRandom = new SecureRandom();
 
@@ -126,31 +126,32 @@ public class Identifier implements Serializable, Comparable<Identifier> {
 	private final long lo;
 
 	/**
-	 * Creates a new, random {@link Identifier}
-	 * using a default {@link SecureRandom} instance, which is not a
+	 * Creates a new, random {@link Identifier} using a default {@link SecureRandom} instance, which is not a
 	 * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	public Identifier() {
-		this(secureRandom);
+		this((Random)secureRandom);
 	}
 
 	/**
-	 * Creates a new, random {@link Identifier}
-	 * using the provided {@link Random} source.
+	 * Creates a new, random {@link Identifier} using the provided {@link Random} source.
+	 *
+	 * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
+	 *              only be used after careful consideration.
 	 */
+	@Deprecated // Java 9: (forRemoval = false)
 	public Identifier(Random random) {
 		byte[] bytes = new byte[Long.BYTES * 2];
-		/*
-		for(int i = 0; i < (Long.BYTES * 2); i += 2) {
-			int val = random.nextInt();
-			bytes[i] = (byte)(val >>> Byte.SIZE);
-			bytes[i+1] = (byte)(val);
-		}
-		 */
-		// This seems to never give non-zero in the high range:
 		random.nextBytes(bytes);
 		hi = IoUtils.bufferToLong(bytes);
 		lo = IoUtils.bufferToLong(bytes, Long.BYTES);
+	}
+
+	/**
+	 * Creates a new, random {@link Identifier} using the provided {@link SecureRandom} source.
+	 */
+	public Identifier(SecureRandom secureRandom) {
+		this((Random)secureRandom);
 	}
 
 	public Identifier(long hi, long lo) {

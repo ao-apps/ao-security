@@ -26,6 +26,7 @@ import com.aoapps.lang.function.ConsumerE;
 import com.aoapps.lang.function.FunctionE;
 import com.aoapps.lang.function.PredicateE;
 import com.aoapps.lang.function.SupplierE;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -90,8 +91,31 @@ public class UnprotectedKey extends Key {
 	}
 
 	/**
-	 * Generates a new key of the given number of bytes
-	 * using the provided {@link Random} source.
+	 * Generates a new key of the given number of bytes using the provided {@link Random} source.
+	 * <p>
+	 * The key will never be all-zeroes, since this would conflict with the representation
+	 * of already destroyed.  In the unlikely event the random source generates an all-zero
+	 * key, the key will be discarded and another will be generated.  We do recognize that
+	 * disallowing certain values from the key space may provide an advantage to attackers
+	 * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.
+	 * </p>
+	 *
+	 * @throws IllegalArgumentException when {@code keyBytes == 0}
+	 *
+	 * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
+	 *              only be used after careful consideration.
+	 */
+	@Deprecated // Java 9: (forRemoval = false)
+	public UnprotectedKey(int keyBytes, Random random) throws IllegalArgumentException {
+		this(() -> {
+			byte[] newKey = new byte[keyBytes];
+			random.nextBytes(newKey);
+			return newKey;
+		});
+	}
+
+	/**
+	 * Generates a new key of the given number of bytes using the provided {@link SecureRandom} source.
 	 * <p>
 	 * The key will never be all-zeroes, since this would conflict with the representation
 	 * of already destroyed.  In the unlikely event the random source generates an all-zero
@@ -102,12 +126,8 @@ public class UnprotectedKey extends Key {
 	 *
 	 * @throws IllegalArgumentException when {@code keyBytes == 0}
 	 */
-	public UnprotectedKey(int keyBytes, Random random) throws IllegalArgumentException {
-		this(() -> {
-			byte[] newKey = new byte[keyBytes];
-			random.nextBytes(newKey);
-			return newKey;
-		});
+	public UnprotectedKey(int keyBytes, SecureRandom secureRandom) throws IllegalArgumentException {
+		this(keyBytes, (Random)secureRandom);
 	}
 
 	/**
@@ -123,7 +143,7 @@ public class UnprotectedKey extends Key {
 	 * @throws IllegalArgumentException when {@code keyBytes == 0}
 	 */
 	public UnprotectedKey(int keyBytes) throws IllegalArgumentException {
-		this(keyBytes, Identifier.secureRandom);
+		this(keyBytes, (Random)Identifier.secureRandom);
 	}
 
 	/**

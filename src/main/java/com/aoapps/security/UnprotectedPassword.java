@@ -26,6 +26,7 @@ import com.aoapps.lang.function.ConsumerE;
 import com.aoapps.lang.function.FunctionE;
 import com.aoapps.lang.function.PredicateE;
 import com.aoapps.lang.function.SupplierE;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -90,18 +91,29 @@ public class UnprotectedPassword extends Password {
 	}
 
 	/**
-	 * Generates a new password using the default password generator
-	 * and the provided {@link Random} source.
+	 * Generates a new password using the default password generator and the provided {@link Random} source.
+	 *
+	 * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
+	 *              only be used after careful consideration.
 	 */
+	@Deprecated // Java 9: (forRemoval = false)
 	public UnprotectedPassword(Random random) {
 		this(() -> new SmallIdentifier(random).toCharArray());
 	}
 
 	/**
-	 * Generates a new password using the default password generator.
+	 * Generates a new password using the default password generator and the provided {@link SecureRandom} source.
+	 */
+	public UnprotectedPassword(SecureRandom secureRandom) {
+		this((Random)secureRandom);
+	}
+
+	/**
+	 * Generates a new password using the default password generator and a default {@link SecureRandom} instance,
+	 * which is not a {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
 	 */
 	public UnprotectedPassword() {
-		this(Identifier.secureRandom);
+		this((Random)Identifier.secureRandom);
 	}
 
 	/**
