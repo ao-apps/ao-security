@@ -132,7 +132,7 @@ public class SecurityStreamables {
 			out.writeUTF(algorithm.getAlgorithmName());
 			byte[] hash = hashedKey.getHash();
 			int hashBytes = hash.length;
-			if(hashBytes > 0xFFFF) throw new IOException("length too long for unsigned short: " + hashBytes);
+			if(hashBytes >= (1 << Short.SIZE)) throw new IOException("length too long for unsigned short: " + hashBytes);
 			out.writeShort(hashBytes);
 			out.write(hash);
 		}
@@ -156,13 +156,13 @@ public class SecurityStreamables {
 			out.writeUTF(algorithm.getAlgorithmName());
 			byte[] salt = hashedPassword.getSalt();
 			int saltBytes = salt.length;
-			if(saltBytes > 0xFFFF) throw new IOException("length too long for unsigned short: " + saltBytes);
+			if(saltBytes >= (1 << Short.SIZE)) throw new IOException("length too long for unsigned short: " + saltBytes);
 			out.writeShort(saltBytes);
 			out.write(salt);
 			out.writeInt(hashedPassword.getIterations());
 			byte[] hash = hashedPassword.getHash();
 			int hashBytes = hash.length;
-			if(hashBytes > 0xFFFF) throw new IOException("length too long for unsigned short: " + hashBytes);
+			if(hashBytes >= (1 << Short.SIZE)) throw new IOException("length too long for unsigned short: " + hashBytes);
 			out.writeShort(hashBytes);
 			out.write(hash);
 		}
