@@ -35,7 +35,7 @@ import java.util.Random;
  * @author  AO Industries, Inc.
  */
 // Matches src/main/sql/com/aoapps/security/SmallIdentifier-type.sql
-public class SmallIdentifier implements Serializable, Comparable<SmallIdentifier> {
+public final class SmallIdentifier implements Serializable, Comparable<SmallIdentifier> {
 
 	private static final long serialVersionUID = 1L;
 

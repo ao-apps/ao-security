@@ -52,7 +52,7 @@ import java.util.function.Function;
 //       Same for prepared statement
 //       Implement SQLData, too? (With ServiceLoader?)
 // Matches src/main/sql/com/aoapps/security/HashedKey-type.sql
-public class HashedKey implements Comparable<HashedKey>, Serializable {
+public final class HashedKey implements Comparable<HashedKey>, Serializable {
 
 	/**
 	 * Indicates that no key is set.

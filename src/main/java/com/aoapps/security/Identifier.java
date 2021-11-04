@@ -36,7 +36,7 @@ import java.util.Random;
  * @author  AO Industries, Inc.
  */
 // Matches src/main/sql/com/aoapps/security/Identifier-type.sql
-public class Identifier implements Serializable, Comparable<Identifier> {
+public final class Identifier implements Serializable, Comparable<Identifier> {
 
 	private static final long serialVersionUID = 1L;
 

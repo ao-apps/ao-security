@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  *
  * @author  AO Industries, Inc.
  */
-public class UnprotectedKey extends Key {
+public final class UnprotectedKey extends Key {
 
 	private static final Logger logger = Logger.getLogger(UnprotectedKey.class.getName());
 

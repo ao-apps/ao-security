@@ -65,7 +65,7 @@ import javax.crypto.spec.PBEKeySpec;
 // TODO: zero salt, hash, ... in all parameters
 // TODO: HashedKey and HashedPassword Destroyable, too?
 // Matches src/main/sql/com/aoapps/security/HashedPassword-type.sql
-public class HashedPassword implements Serializable {
+public final class HashedPassword implements Serializable {
 
 	/**
 	 * Value selected to be distinct from the values used by {@link Base64#getEncoder()},

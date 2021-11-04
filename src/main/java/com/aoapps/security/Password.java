@@ -52,6 +52,7 @@ import javax.security.auth.Destroyable;
  * @author  AO Industries, Inc.
  */
 @SuppressWarnings({"EqualsAndHashcode", "overrides"})
+// Java 17: sealed to be extended by UnprotectedPassword only
 public class Password implements Destroyable, AutoCloseable, Cloneable {
 
 	/**
@@ -62,7 +63,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
 
 	/**
 	 * Gets a new password or {@link Optional#empty()} when {@code password == null || password.length == 0}.
-	 * 
+	 *
 	 * @param  password  Is zeroed before this method returns.  If the original password is
 	 *                   needed, pass a copy to this method.
 	 *

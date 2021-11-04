@@ -54,11 +54,12 @@ import javax.security.auth.Destroyable;
  */
 // TODO: Should the key contain the algorithm, too?
 @SuppressWarnings({"EqualsAndHashcode", "overrides"})
+// Java 17: sealed to be extended by UnprotectedKey only
 public class Key implements Destroyable, AutoCloseable, Cloneable {
 
 	/**
 	 * Gets a new key or {@link Optional#empty()} when {@code key == null || key.length == 0}.
-	 * 
+	 *
 	 * @param  key  Is zeroed before this method returns.  If the original key is
 	 *              needed, pass a copy to this method.
 	 *

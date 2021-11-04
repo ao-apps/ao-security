@@ -5,7 +5,7 @@ package com.aoapps.security;
  *              this type of encryption, please use {@link org.apache.commons.codec.digest.UnixCrypt}.
  */
 @Deprecated // Java 9: (forRemoval = true)
-public class UnixCrypt {
+public final class UnixCrypt {
 
 	/* (mostly) Standard DES Tables from Tom Truscott */
 	private static final byte[] IP = {		/* initial permutation */

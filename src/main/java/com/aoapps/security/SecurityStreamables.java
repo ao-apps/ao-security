@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author  AO Industries, Inc.
  */
-public class SecurityStreamables {
+public final class SecurityStreamables {
 
 	private SecurityStreamables() {
 	}

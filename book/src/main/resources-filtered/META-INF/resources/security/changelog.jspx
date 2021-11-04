@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-11-01T23:24:57-05:00"
+		dateModified="2021-11-04T05:13:37-05:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -54,6 +54,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 						<code>SecureRandom</code>.  This is to help avoid accidentally using a cryptographically weak
 						random number generator.
 					</li>
+					<li>Set most classes final set not intended to be extended.</li>
 				</ul>
 			</changelog:release>
 		</c:if>

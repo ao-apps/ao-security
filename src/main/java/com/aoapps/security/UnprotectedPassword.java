@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  *
  * @author  AO Industries, Inc.
  */
-public class UnprotectedPassword extends Password {
+public final class UnprotectedPassword extends Password {
 
 	private static final Logger logger = Logger.getLogger(UnprotectedPassword.class.getName());
 
