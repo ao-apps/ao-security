@@ -1361,7 +1361,7 @@ public class HashedPassword implements Serializable {
 				& slowEquals(DUMMY_SALT, DUMMY_SALT)
 				& iterations == other.iterations
 				& slowEquals(DUMMY_HASH, DUMMY_HASH);
-			assert discardMe == true || discardMe == false : "Suppress unused variable warning";
+			assert discardMe || !discardMe : "Suppress unused variable warning";
 			return false;
 		} else {
 			return

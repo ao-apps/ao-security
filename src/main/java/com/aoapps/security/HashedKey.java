@@ -573,7 +573,7 @@ public class HashedKey implements Comparable<HashedKey>, Serializable {
 			boolean discardMe =
 				algorithm == other.algorithm
 				& slowEquals(DUMMY_KEY, DUMMY_KEY);
-			assert discardMe == true || discardMe == false : "Suppress unused variable warning";
+			assert discardMe || !discardMe : "Suppress unused variable warning";
 			return false;
 		} else {
 			return
