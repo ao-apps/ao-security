@@ -5,7 +5,7 @@ package com.aoapps.security;
  *              this type of encryption, please use {@link org.apache.commons.codec.digest.UnixCrypt}.
  */
 @Deprecated // Java 9: (forRemoval = true)
-public final class UnixCrypt {
+public abstract class UnixCrypt {
 
 	/* (mostly) Standard DES Tables from Tom Truscott */
 	private static final byte[] IP = {		/* initial permutation */
@@ -259,7 +259,9 @@ public final class UnixCrypt {
 	/**
 	 * You can't call the constructor.
 	 */
-	private UnixCrypt() { }
+	private UnixCrypt() {
+		throw new AssertionError();
+	}
 
 	/**
 	 * Gets the character representation of the low-order six bits of the given int.

@@ -27,18 +27,19 @@ package com.aoapps.security;
  *
  * @author  AO Industries, Inc.
  */
-public final class SecurityUtil {
+public abstract class SecurityUtil {
 
-	private SecurityUtil() {}
+	/** Make no instances. */
+	private SecurityUtil() {throw new AssertionError();}
 
 	/**
 	 * Compares two byte arrays in length-constant time. This comparison method
-	 * is used so that password hashes cannot be extracted from an on-line 
+	 * is used so that password hashes cannot be extracted from an on-line
 	 * system using a timing attack and then attacked off-line.
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 *
 	 * @param   a       the first byte array
-	 * @param   b       the second byte array 
+	 * @param   b       the second byte array
 	 * @return          true if both byte arrays are the same, false if not
 	 */
 	public static boolean slowEquals(byte[] a, byte[] b) {
@@ -51,12 +52,12 @@ public final class SecurityUtil {
 
 	/**
 	 * Compares two char arrays in length-constant time. This comparison method
-	 * is used so that password hashes cannot be extracted from an on-line 
+	 * is used so that password hashes cannot be extracted from an on-line
 	 * system using a timing attack and then attacked off-line.
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 *
 	 * @param   a       the first char array
-	 * @param   b       the second char array 
+	 * @param   b       the second char array
 	 * @return          true if both char arrays are the same, false if not
 	 */
 	public static boolean slowEquals(char[] a, char[] b) {
@@ -69,7 +70,7 @@ public final class SecurityUtil {
 
 	/**
 	 * Compares if a byte array is all-zero in length-constant time. This comparison method
-	 * is used so that password hashes cannot be extracted from an on-line 
+	 * is used so that password hashes cannot be extracted from an on-line
 	 * system using a timing attack and then attacked off-line.
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 *
@@ -86,7 +87,7 @@ public final class SecurityUtil {
 
 	/**
 	 * Compares if a char array is all-zero in length-constant time. This comparison method
-	 * is used so that password hashes cannot be extracted from an on-line 
+	 * is used so that password hashes cannot be extracted from an on-line
 	 * system using a timing attack and then attacked off-line.
 	 * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
 	 *

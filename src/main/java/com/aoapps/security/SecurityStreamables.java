@@ -31,10 +31,10 @@ import java.io.IOException;
  *
  * @author  AO Industries, Inc.
  */
-public final class SecurityStreamables {
+public abstract class SecurityStreamables {
 
-	private SecurityStreamables() {
-	}
+	/** Make no instances. */
+	private SecurityStreamables() {throw new AssertionError();}
 
 	/**
 	 * Reads a {@link HashedKey}.

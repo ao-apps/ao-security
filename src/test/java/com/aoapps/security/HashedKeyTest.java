@@ -45,9 +45,6 @@ import org.junit.Test;
 @SuppressWarnings("deprecation")
 public class HashedKeyTest {
 
-	public HashedKeyTest() {
-	}
-
 	@Test
 	public void testNoKey() {
 		assertNull(HashedKey.valueOf(null));

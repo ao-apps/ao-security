@@ -49,9 +49,6 @@ public class HashedPasswordTest {
 
 	private static final Logger logger = Logger.getLogger(HashedPasswordTest.class.getName());
 
-	public HashedPasswordTest() {
-	}
-
 	@Test
 	public void testNoPassword() {
 		assertNull(HashedPassword.valueOf(null));
