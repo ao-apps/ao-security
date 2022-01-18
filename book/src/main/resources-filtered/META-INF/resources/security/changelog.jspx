@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2020, 2021  AO Industries, Inc.
+Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-11-04T05:13:37-05:00"
+		dateModified="2022-01-18T04:03:28-06:00"
 	>
 		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
 			<changelog:release
@@ -54,7 +54,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 						<code>SecureRandom</code>.  This is to help avoid accidentally using a cryptographically weak
 						random number generator.
 					</li>
-					<li>Set most classes final set not intended to be extended.</li>
+					<li>Set most classes final since not intended to be extended.</li>
 				</ul>
 			</changelog:release>
 		</c:if>
