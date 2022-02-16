@@ -29,7 +29,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.1.0</version>
+	<groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.1.0-POST-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<properties>
@@ -83,7 +83,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 		<connection>scm:git:git://github.com/ao-apps/ao-security.git</connection>
 		<developerConnection>scm:git:git@github.com:ao-apps/ao-security.git</developerConnection>
 		<url>https://github.com/ao-apps/ao-security</url>
-		<tag>ao-security-3.1.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
