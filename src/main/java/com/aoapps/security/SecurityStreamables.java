@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author  AO Industries, Inc.
  */
-public abstract class SecurityStreamables {
+public final class SecurityStreamables {
 
 	/** Make no instances. */
 	private SecurityStreamables() {throw new AssertionError();}
