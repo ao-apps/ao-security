@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,17 +23,17 @@
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedKey.validate" (algorithm text, "hash" bytea)
 RETURNS text AS $$
 BEGIN
-	IF algorithm IS NULL THEN
-		IF "hash" IS NOT NULL THEN
-			RETURN 'hash must be null when algorithm is null';
-		END IF;
-		-- All is OK
-		RETURN null;
-	ELSIF "hash" IS NULL THEN
-		RETURN 'hash required when have algorithm';
-	ELSE
-		RETURN "com.aoapps.security"."HashedKey.Algorithm.validateHash"(algorithm, "hash");
-	END IF;
+  IF algorithm IS NULL THEN
+    IF "hash" IS NOT NULL THEN
+      RETURN 'hash must be null when algorithm is null';
+    END IF;
+    -- All is OK
+    RETURN null;
+  ELSIF "hash" IS NULL THEN
+    RETURN 'hash required when have algorithm';
+  ELSE
+    RETURN "com.aoapps.security"."HashedKey.Algorithm.validateHash"(algorithm, "hash");
+  END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -43,11 +43,11 @@ COMMENT ON FUNCTION "com.aoapps.security"."HashedKey.validate" (text, bytea) IS
 'Matches method com.aoapps.security.HashedKey.validate';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedKey.validate" (
-	this "com.aoapps.security"."<HashedKey>"
+  this "com.aoapps.security"."<HashedKey>"
 )
 RETURNS text AS $$
 BEGIN
-	RETURN "com.aoapps.security"."HashedKey.validate"(this.algorithm, this."hash");
+  RETURN "com.aoapps.security"."HashedKey.validate"(this.algorithm, this."hash");
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

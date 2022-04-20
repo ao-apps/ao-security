@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,20 +23,20 @@
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.getValue" (ch CHARACTER)
 RETURNS BIGINT AS $$
 DECLARE
-	pos integer;
-	"CHARACTERS" text := 'ACDEFGHIJKLMNPRTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789';
+  pos integer;
+  "CHARACTERS" text := 'ACDEFGHIJKLMNPRTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789';
 BEGIN
-	IF ch IS NULL THEN
-		RETURN NULL;
-	ELSIF length(ch) != 1 THEN
-		RAISE EXCEPTION 'ch length mismatch: expected 1, got %', length(ch);
-	END IF;
-	pos := position(ch in "CHARACTERS");
-	IF pos = 0 THEN
-		RAISE EXCEPTION 'Unexpected character: %', ch;
-	ELSE
-		RETURN pos - 1;
-	END IF;
+  IF ch IS NULL THEN
+    RETURN NULL;
+  ELSIF length(ch) != 1 THEN
+    RAISE EXCEPTION 'ch length mismatch: expected 1, got %', length(ch);
+  END IF;
+  pos := position(ch in "CHARACTERS");
+  IF pos = 0 THEN
+    RAISE EXCEPTION 'Unexpected character: %', ch;
+  ELSE
+    RETURN pos - 1;
+  END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,23 +21,23 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.Algorithm.validateHash" (
-	algorithm text,
-	"hash" bytea
+  algorithm text,
+  "hash" bytea
 )
 RETURNS text AS $$
 DECLARE
-	expected integer;
+  expected integer;
 BEGIN
-	expected := (SELECT "hashBytes" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
-	IF
-		-- Also allows the 256-bit hash for compatibility with previous versions.
-		NOT (algorithm = 'PBKDF2WithHmacSHA1' AND octet_length("hash") = (256 / 8))
-		AND octet_length("hash") != expected
-	THEN
-		RETURN algorithm || ': hash length mismatch: expected ' || expected || ', got ' || octet_length("hash");
-	END IF;
-	-- All is OK
-	RETURN null;
+  expected := (SELECT "hashBytes" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
+  IF
+    -- Also allows the 256-bit hash for compatibility with previous versions.
+    NOT (algorithm = 'PBKDF2WithHmacSHA1' AND octet_length("hash") = (256 / 8))
+    AND octet_length("hash") != expected
+  THEN
+    RETURN algorithm || ': hash length mismatch: expected ' || expected || ', got ' || octet_length("hash");
+  END IF;
+  -- All is OK
+  RETURN null;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

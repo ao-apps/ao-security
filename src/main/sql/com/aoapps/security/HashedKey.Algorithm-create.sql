@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,10 +21,10 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE TABLE "com.aoapps.security"."HashedKey.Algorithm" (
-	"name" text PRIMARY KEY CHECK ("name" NOT LIKE '%$%'),
-	secure boolean NOT NULL,
-	"keyBytes" smallint NOT NULL CHECK ("keyBytes" >= 0),
-	"hashBytes" smallint NOT NULL CHECK ("hashBytes" > 0)
+  "name" text PRIMARY KEY CHECK ("name" NOT LIKE '%$%'),
+  secure boolean NOT NULL,
+  "keyBytes" smallint NOT NULL CHECK ("keyBytes" >= 0),
+  "hashBytes" smallint NOT NULL CHECK ("hashBytes" > 0)
 );
 
 INSERT INTO "com.aoapps.security"."HashedKey.Algorithm" VALUES

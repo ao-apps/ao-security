@@ -58,126 +58,130 @@ import javax.security.auth.Destroyable;
 // Java 17: sealed to be extended by UnprotectedKey only
 public class Key implements Destroyable, AutoCloseable, Cloneable {
 
-	/**
-	 * Gets a new key or {@link Optional#empty()} when {@code key == null || key.length == 0}.
-	 *
-	 * @param  key  Is zeroed before this method returns.  If the original key is
-	 *              needed, pass a copy to this method.
-	 *
-	 * @throws IllegalArgumentException when {@code key} is already destroyed (contains all zeroes).
-	 *
-	 * @see #Key(byte[])
-	 */
-	public static Optional<Key> valueOf(byte[] key) throws IllegalArgumentException {
-		return (key == null || key.length == 0)
-			? Optional.empty()
-			: Optional.of(new Key(key));
-	}
+  /**
+   * Gets a new key or {@link Optional#empty()} when {@code key == null || key.length == 0}.
+   *
+   * @param  key  Is zeroed before this method returns.  If the original key is
+   *              needed, pass a copy to this method.
+   *
+   * @throws IllegalArgumentException when {@code key} is already destroyed (contains all zeroes).
+   *
+   * @see #Key(byte[])
+   */
+  public static Optional<Key> valueOf(byte[] key) throws IllegalArgumentException {
+    return (key == null || key.length == 0)
+      ? Optional.empty()
+      : Optional.of(new Key(key));
+  }
 
-	/**
-	 * Contains the key or all zeroes once destroyed.
-	 * <p>
-	 * All uses must be synchronized on this <code>byte[]</code> itself.
-	 * </p>
-	 */
-	final byte[] key;
+  /**
+   * Contains the key or all zeroes once destroyed.
+   * <p>
+   * All uses must be synchronized on this <code>byte[]</code> itself.
+   * </p>
+   */
+  final byte[] key;
 
-	/**
-	 * @param  key  Is zeroed before this method returns.  If the original key is
-	 *              needed, pass a copy to this method.
-	 *
-	 * @throws IllegalArgumentException when {@code key == null || key.length == 0} or when {@code key}
-	 *                                  is already destroyed (contains all zeroes).
-	 *
-	 * @see #valueOf(byte[])
-	 */
-	public Key(byte[] key) throws IllegalArgumentException {
-		if(key == null || key.length == 0) {
-			throw new IllegalArgumentException("Refusing to create empty key");
-		} else {
-			try {
-				byte[] copy = Arrays.copyOf(key, key.length);
-				Arrays.fill(key, (byte)0);
-				key = null;
-				assert copy.length > 0;
-				// length-constant time implementation:
-				if(SecurityUtil.slowAllZero(copy)) {
-					throw new IllegalArgumentException("Refusing to create destroyed key");
-				} else {
-					this.key = copy;
-				}
-			} finally {
-				if(key != null) Arrays.fill(key, (byte)0);
-			}
-		}
-	}
+  /**
+   * @param  key  Is zeroed before this method returns.  If the original key is
+   *              needed, pass a copy to this method.
+   *
+   * @throws IllegalArgumentException when {@code key == null || key.length == 0} or when {@code key}
+   *                                  is already destroyed (contains all zeroes).
+   *
+   * @see #valueOf(byte[])
+   */
+  public Key(byte[] key) throws IllegalArgumentException {
+    if (key == null || key.length == 0) {
+      throw new IllegalArgumentException("Refusing to create empty key");
+    } else {
+      try {
+        byte[] copy = Arrays.copyOf(key, key.length);
+        Arrays.fill(key, (byte)0);
+        key = null;
+        assert copy.length > 0;
+        // length-constant time implementation:
+        if (SecurityUtil.slowAllZero(copy)) {
+          throw new IllegalArgumentException("Refusing to create destroyed key");
+        } else {
+          this.key = copy;
+        }
+      } finally {
+        if (key != null) {
+          Arrays.fill(key, (byte)0);
+        }
+      }
+    }
+  }
 
-	/**
-	 * Copy constructor.
-	 *
-	 * @see  #clone()
-	 */
-	Key(Key other) {
-		synchronized(other.key) {
-			this.key = Arrays.copyOf(other.key, other.key.length);
-		}
-	}
+  /**
+   * Copy constructor.
+   *
+   * @see  #clone()
+   */
+  Key(Key other) {
+    synchronized (other.key) {
+      this.key = Arrays.copyOf(other.key, other.key.length);
+    }
+  }
 
-	@Override
-	public String toString() {
-		return isDestroyed()
-			? "\uD83D\uDC7B"  // Ghost emoji
-			: "\uD83D\uDE4A"; // Speak-no-evil monkey emoji
-	}
+  @Override
+  public String toString() {
+    return isDestroyed()
+      ? "\uD83D\uDC7B"  // Ghost emoji
+      : "\uD83D\uDE4A"; // Speak-no-evil monkey emoji
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if(!(obj instanceof Key)) return false;
-		Key other = (Key)obj;
-		// Create a copy to avoid potential deadlock of locking on both
-		byte[] copy2;
-		synchronized(other.key) {
-			copy2 = Arrays.copyOf(other.key, other.key.length);
-		}
-		try {
-			synchronized(key) {
-				// length-constant time
-				return
-					  !SecurityUtil.slowAllZero(key)
-					& !SecurityUtil.slowAllZero(copy2)
-					&  SecurityUtil.slowEquals(key, copy2);
-			}
-		} finally {
-			Arrays.fill(copy2, (byte)0);
-		}
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Key)) {
+      return false;
+    }
+    Key other = (Key)obj;
+    // Create a copy to avoid potential deadlock of locking on both
+    byte[] copy2;
+    synchronized (other.key) {
+      copy2 = Arrays.copyOf(other.key, other.key.length);
+    }
+    try {
+      synchronized (key) {
+        // length-constant time
+        return
+            !SecurityUtil.slowAllZero(key)
+          & !SecurityUtil.slowAllZero(copy2)
+          &  SecurityUtil.slowEquals(key, copy2);
+      }
+    } finally {
+      Arrays.fill(copy2, (byte)0);
+    }
+  }
 
-	@Override
-	@SuppressWarnings({"CloneDeclaresCloneNotSupported", "CloneDoesntCallSuperClone"})
-	public Key clone() {
-		return new Key(this);
-	}
+  @Override
+  @SuppressWarnings({"CloneDeclaresCloneNotSupported", "CloneDoesntCallSuperClone"})
+  public Key clone() {
+    return new Key(this);
+  }
 
-	@Override
-	public void destroy() {
-		synchronized(key) {
-			Arrays.fill(key, (byte)0);
-		}
-	}
+  @Override
+  public void destroy() {
+    synchronized (key) {
+      Arrays.fill(key, (byte)0);
+    }
+  }
 
-	@Override
-	public boolean isDestroyed() {
-		synchronized(key) {
-			return SecurityUtil.slowAllZero(key);
-		}
-	}
+  @Override
+  public boolean isDestroyed() {
+    synchronized (key) {
+      return SecurityUtil.slowAllZero(key);
+    }
+  }
 
-	/**
-	 * {@linkplain #destroy() Destroys the key} on auto-close.
-	 * This use for support of try-with-resources.
-	 */
-	@Override
-	public void close() {
-		destroy();
-	}
+  /**
+   * {@linkplain #destroy() Destroys the key} on auto-close.
+   * This use for support of try-with-resources.
+   */
+  @Override
+  public void close() {
+    destroy();
+  }
 }

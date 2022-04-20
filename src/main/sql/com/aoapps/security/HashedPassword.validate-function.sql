@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,26 +21,26 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.validate" (
-	algorithm text,
-	salt bytea,
-	iterations integer,
-	"hash" bytea
+  algorithm text,
+  salt bytea,
+  iterations integer,
+  "hash" bytea
 )
 RETURNS text AS $$
 BEGIN
-	IF algorithm IS NULL THEN
-		IF salt IS NOT NULL THEN
-			RETURN 'salt must be null when algorithm is null';
-		ELSIF iterations IS DISTINCT FROM 0 THEN
-			RETURN 'iterations must be 0 when algorithm is null';
-		ELSIF "hash" IS NOT NULL THEN
-			RETURN 'hash must be null when algorithm is null';
-		END IF;
-		-- All is OK
-		RETURN null;
-	ELSE
-		RETURN "com.aoapps.security"."HashedPassword.Algorithm.validate"(algorithm, salt, iterations, "hash");
-	END IF;
+  IF algorithm IS NULL THEN
+    IF salt IS NOT NULL THEN
+      RETURN 'salt must be null when algorithm is null';
+    ELSIF iterations IS DISTINCT FROM 0 THEN
+      RETURN 'iterations must be 0 when algorithm is null';
+    ELSIF "hash" IS NOT NULL THEN
+      RETURN 'hash must be null when algorithm is null';
+    END IF;
+    -- All is OK
+    RETURN null;
+  ELSE
+    RETURN "com.aoapps.security"."HashedPassword.Algorithm.validate"(algorithm, salt, iterations, "hash");
+  END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -50,22 +50,22 @@ COMMENT ON FUNCTION "com.aoapps.security"."HashedPassword.validate" (text, bytea
 'Matches method com.aoapps.security.HashedPassword.validate';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.validate" (
-	this "com.aoapps.security"."<HashedPassword>"
+  this "com.aoapps.security"."<HashedPassword>"
 )
 RETURNS text AS $$
 BEGIN
-	RETURN "com.aoapps.security"."HashedPassword.validate"(
-		this.algorithm,
-		this.salt,
-		this.iterations,
-		this."hash"
-	);
+  RETURN "com.aoapps.security"."HashedPassword.validate"(
+    this.algorithm,
+    this.salt,
+    this.iterations,
+    this."hash"
+  );
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoapps.security"."HashedPassword.validate" (
-	"com.aoapps.security"."<HashedPassword>"
+  "com.aoapps.security"."<HashedPassword>"
 ) IS
 'Matches method com.aoapps.security.HashedPassword.validate';

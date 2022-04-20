@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,18 +23,18 @@
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedKey.Algorithm.validateHash" (algorithm text, "hash" bytea)
 RETURNS text AS $$
 DECLARE
-	expected integer;
+  expected integer;
 BEGIN
-	IF user = 'postgres' THEN
-		-- Do not check while performing database dump/restore, since other table might not be populated
-		RETURN NULL;
-	END IF;
-	expected := (SELECT "hashBytes" FROM "com.aoapps.security"."HashedKey.Algorithm" WHERE "name" = algorithm);
-	IF octet_length("hash") != expected THEN
-		RETURN algorithm || ': hash length mismatch: expected ' || expected || ', got ' || octet_length("hash");
-	END IF;
-	-- All is OK
-	RETURN null;
+  IF user = 'postgres' THEN
+    -- Do not check while performing database dump/restore, since other table might not be populated
+    RETURN NULL;
+  END IF;
+  expected := (SELECT "hashBytes" FROM "com.aoapps.security"."HashedKey.Algorithm" WHERE "name" = algorithm);
+  IF octet_length("hash") != expected THEN
+    RETURN algorithm || ': hash length mismatch: expected ' || expected || ', got ' || octet_length("hash");
+  END IF;
+  -- All is OK
+  RETURN null;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

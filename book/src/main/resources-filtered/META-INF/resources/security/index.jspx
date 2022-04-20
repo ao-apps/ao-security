@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2020, 2021  AO Industries, Inc.
+Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -22,153 +22,153 @@ You should have received a copy of the GNU Lesser General Public License
 along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 -->
 <jsp:root
-	xmlns:ao="https://oss.aoapps.com/taglib/"
-	xmlns:core="https://semanticcms.com/core/taglib/"
-	xmlns:jsp="http://java.sun.com/JSP/Page"
-	xmlns:section="https://semanticcms.com/section/taglib/"
-	version="2.1"
+  xmlns:ao="https://oss.aoapps.com/taglib/"
+  xmlns:core="https://semanticcms.com/core/taglib/"
+  xmlns:jsp="http://java.sun.com/JSP/Page"
+  xmlns:section="https://semanticcms.com/section/taglib/"
+  version="2.1"
 >
-	<jsp:directive.page language="java" pageEncoding="UTF-8" />
-	<jsp:directive.page session="false" />
-	<core:page
-		title="@{documented.name}"
-		description="@{documented.description}"
-		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2021-07-16T03:48:08-05:00"
-	>
-		<core:child page="changelog.jspx" />
-		<core:child page="apidocs/index.jspx" />
-		<header>
-			<ao:include
-				page="/ao-badges/badges.inc.jspx"
-				arg.projectStatus="current-stable"
-				arg.managementStatus="production"
-				arg.packagingStatus="active"
-				arg.javaseVersion="@{documented.javase.version}"
-				arg.semanticVersioning="2.0.0"
-				arg.license="lgpl-3.0"
-				arg.scmUrl="@{project.scm.url}"
-				arg.githubBuildWorkflow="Build"
-				arg.mavenBadge="maven-central"
-				arg.groupId="@{project.groupId}"
-				arg.artifactId="@{documented.artifactId}"
-				arg.sonarQualityGate="true"
-				arg.sonarLinesOfCode="true"
-				arg.sonarReliability="true"
-				arg.sonarSecurity="true"
-				arg.sonarMaintainability="true"
-				arg.sonarCoverage="true"
-			/>
-		</header>
-		<p>
-			@{documented.description}
-		</p>
-		<section:nav label="Project Links">
-			<ul>
-				<li><core:link page="index.jspx">Project Home</core:link></li>
-				<li><core:link page="changelog.jspx">Changelog</core:link></li>
-				<li><core:link page="apidocs/index.jspx">API Docs</core:link></li>
-				<li><ao:a href="https://search.maven.org/artifact/${ao:encodeURIComponent('@{project.groupId}')}/${ao:encodeURIComponent('@{documented.artifactId}')}">Maven Central Repository</ao:a></li>
-				<li><ao:a href="@{project.scm.url}">GitHub</ao:a></li>
-			</ul>
-		</section:nav>
-		<section:section label="Features">
-			<ul>
-				<li>Implements best-practices password security, made easy:
-					<ul>
-						<li>Operations are <ao:a href="https://crackstation.net/hashing-security.htm">length-constant time</ao:a>.</li>
-						<li>Plaintext passwords and keys are proactively and aggressively destroyed.</li>
-						<li>Passwords are salted and key-stretched.</li>
-					</ul>
-				</li>
-				<li><code>Identifier</code> and <code>SmallIdentifier</code> are 128-bit and 64-bit random identifiers:
-					<ul>
-						<li>Base-57 textual representation:
-							<ul>
-								<li>
-									Uses an unambiguous subset of URL-safe characters.  For example, the letter <code>B</code> is
-									excluded as potentially ambiguous with the number <code>8</code>.
-								</li>
-								<li>
-									The same length as unpadded base-64 (22 and 11 characters, respectively),
-									while being completely URL safe.
-								</li>
-								<li>Shorter than padded base-64 (24 and 12 characters, respectively).</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<code>Password</code> and <code>Key</code> protect the plaintext from all normal access (reflection, <code>Unsafe</code>, and other such
-					mechanisms are unavoidable).
-				</li>
-				<li>
-					<code>UnprotectedPassword</code> and <code>UnprotectedKey</code> provide access to the password and key, but with
-					automatically destroyed copies.
-				</li>
-				<li><code>HashedPassword</code> and <code>HashedKey</code> contain hashed/encrypted forms of passwords and keys:
-					<ul>
-						<li>Are strongly self-validating, including when deserialized.</li>
-						<li>Are intended for long-term persistence, either in textual forms or in the provided SQL composite types.</li>
-					</ul>
-				</li>
-				<li>Multi-algorithm support, with backward compatibility mechanisms:
-					<ul>
-						<li>Allows systems to upgrade crypto while maintaining compatibility.</li>
-						<li>
-							Textual form includes algorithm, iterations, salt, and hash - everything needed for future password
-							validation even when default settings upgraded.
-						</li>
-						<li>
-							Algorithm support going back the full twenty years of AO application support, including the likes of
-							<code>crypt</code>, <code>MD5</code>, <code>SHA-1</code>, … (don't use these for new passwords, but they are still supported for
-							compatibility with ancient password databases).
-						</li>
-					</ul>
-				</li>
-				<li>Robust, bi-directional, future-proof textual representations of <code>HashedPassword</code> and <code>HashedKey</code>:
-					<ul>
-						<li>To and from <code>String</code> in Java allows storage and transmission as simple text.</li>
-						<li>
-							SQL <code>CAST</code> are declared for easy conversion of legacy databases to the new composite types,
-							including database-level parsing of all supported algorithms (yes, even you, <code>crypt</code>).
-						</li>
-					</ul>
-				</li>
-				<li>API-provided, actively supported default encryption settings:
-					<ul>
-						<li>
-							API recommends to re-hash passwords on login when default settings are stronger than those used
-							to originally hash the password.  This allows to keep the stored values up-to-date (or
-							to prompt the user to change password, depending on needs).
-						</li>
-					</ul>
-				</li>
-				<li>Java 1.8 implementation:
-					<ul>
-						<li><code>Password</code> and <code>Key</code> are <code>AutoCloseable</code>, to destroy the plaintext via try-with-resources.</li>
-						<li><code>Optional</code> used where a <code>Password</code> or <code>Key</code> may not be returned.</li>
-						<li>Very lambda-friendly: <code>Function</code>, <code>Consumer</code>, and <code>Predicate</code> all leveraged in the automatic destruction of passwords and keys.</li>
-					</ul>
-				</li>
-				<li>Small footprint, minimal dependencies - not part of a big monolithic package.</li>
-				<li>Compatible <ao:a href="https://www.postgresql.org/">PostgreSQL</ao:a> implementation:
-					<ul>
-						<li>Composite types for <code>Identifier</code>, <code>HashedPassword</code>, and <code>HashedKey</code>.</li>
-						<li><code>DOMAIN</code> type for <code>SmallIdentifier</code>.</li>
-						<li>Full set of validation functions.</li>
-						<li>
-							Very thorough validation, matching every detail the Java API.  As an example, the first four bits
-							of the salt for <code>crypt</code> are verified to be zero, since <code>crypt</code> only uses a 12-bit salt.
-						</li>
-						<li>
-							Full set of bi-directional <code>TEXT</code> conversions, including <code>CAST</code> definitions, which makes for very simple
-							legacy password database upgrades.  All it will typically take is:<ao:br />
-							<code>ALTER TABLE … ALTER COLUMN … TYPE "com.aoapps.security"."HashedPassword";</code>
-						</li>
-					</ul>
-				</li>
-			</ul>
-		</section:section>
-	</core:page>
+  <jsp:directive.page language="java" pageEncoding="UTF-8" />
+  <jsp:directive.page session="false" />
+  <core:page
+    title="@{documented.name}"
+    description="@{documented.description}"
+    datePublished="2020-12-19T21:29:44-06:00"
+    dateModified="2021-07-16T03:48:08-05:00"
+  >
+    <core:child page="changelog.jspx" />
+    <core:child page="apidocs/index.jspx" />
+    <header>
+      <ao:include
+        page="/ao-badges/badges.inc.jspx"
+        arg.projectStatus="current-stable"
+        arg.managementStatus="production"
+        arg.packagingStatus="active"
+        arg.javaseVersion="@{documented.javase.version}"
+        arg.semanticVersioning="2.0.0"
+        arg.license="lgpl-3.0"
+        arg.scmUrl="@{project.scm.url}"
+        arg.githubBuildWorkflow="Build"
+        arg.mavenBadge="maven-central"
+        arg.groupId="@{project.groupId}"
+        arg.artifactId="@{documented.artifactId}"
+        arg.sonarQualityGate="true"
+        arg.sonarLinesOfCode="true"
+        arg.sonarReliability="true"
+        arg.sonarSecurity="true"
+        arg.sonarMaintainability="true"
+        arg.sonarCoverage="true"
+      />
+    </header>
+    <p>
+      @{documented.description}
+    </p>
+    <section:nav label="Project Links">
+      <ul>
+        <li><core:link page="index.jspx">Project Home</core:link></li>
+        <li><core:link page="changelog.jspx">Changelog</core:link></li>
+        <li><core:link page="apidocs/index.jspx">API Docs</core:link></li>
+        <li><ao:a href="https://search.maven.org/artifact/${ao:encodeURIComponent('@{project.groupId}')}/${ao:encodeURIComponent('@{documented.artifactId}')}">Maven Central Repository</ao:a></li>
+        <li><ao:a href="@{project.scm.url}">GitHub</ao:a></li>
+      </ul>
+    </section:nav>
+    <section:section label="Features">
+      <ul>
+        <li>Implements best-practices password security, made easy:
+          <ul>
+            <li>Operations are <ao:a href="https://crackstation.net/hashing-security.htm">length-constant time</ao:a>.</li>
+            <li>Plaintext passwords and keys are proactively and aggressively destroyed.</li>
+            <li>Passwords are salted and key-stretched.</li>
+          </ul>
+        </li>
+        <li><code>Identifier</code> and <code>SmallIdentifier</code> are 128-bit and 64-bit random identifiers:
+          <ul>
+            <li>Base-57 textual representation:
+              <ul>
+                <li>
+                  Uses an unambiguous subset of URL-safe characters.  For example, the letter <code>B</code> is
+                  excluded as potentially ambiguous with the number <code>8</code>.
+                </li>
+                <li>
+                  The same length as unpadded base-64 (22 and 11 characters, respectively),
+                  while being completely URL safe.
+                </li>
+                <li>Shorter than padded base-64 (24 and 12 characters, respectively).</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <code>Password</code> and <code>Key</code> protect the plaintext from all normal access (reflection, <code>Unsafe</code>, and other such
+          mechanisms are unavoidable).
+        </li>
+        <li>
+          <code>UnprotectedPassword</code> and <code>UnprotectedKey</code> provide access to the password and key, but with
+          automatically destroyed copies.
+        </li>
+        <li><code>HashedPassword</code> and <code>HashedKey</code> contain hashed/encrypted forms of passwords and keys:
+          <ul>
+            <li>Are strongly self-validating, including when deserialized.</li>
+            <li>Are intended for long-term persistence, either in textual forms or in the provided SQL composite types.</li>
+          </ul>
+        </li>
+        <li>Multi-algorithm support, with backward compatibility mechanisms:
+          <ul>
+            <li>Allows systems to upgrade crypto while maintaining compatibility.</li>
+            <li>
+              Textual form includes algorithm, iterations, salt, and hash - everything needed for future password
+              validation even when default settings upgraded.
+            </li>
+            <li>
+              Algorithm support going back the full twenty years of AO application support, including the likes of
+              <code>crypt</code>, <code>MD5</code>, <code>SHA-1</code>, … (don't use these for new passwords, but they are still supported for
+              compatibility with ancient password databases).
+            </li>
+          </ul>
+        </li>
+        <li>Robust, bi-directional, future-proof textual representations of <code>HashedPassword</code> and <code>HashedKey</code>:
+          <ul>
+            <li>To and from <code>String</code> in Java allows storage and transmission as simple text.</li>
+            <li>
+              SQL <code>CAST</code> are declared for easy conversion of legacy databases to the new composite types,
+              including database-level parsing of all supported algorithms (yes, even you, <code>crypt</code>).
+            </li>
+          </ul>
+        </li>
+        <li>API-provided, actively supported default encryption settings:
+          <ul>
+            <li>
+              API recommends to re-hash passwords on login when default settings are stronger than those used
+              to originally hash the password.  This allows to keep the stored values up-to-date (or
+              to prompt the user to change password, depending on needs).
+            </li>
+          </ul>
+        </li>
+        <li>Java 1.8 implementation:
+          <ul>
+            <li><code>Password</code> and <code>Key</code> are <code>AutoCloseable</code>, to destroy the plaintext via try-with-resources.</li>
+            <li><code>Optional</code> used where a <code>Password</code> or <code>Key</code> may not be returned.</li>
+            <li>Very lambda-friendly: <code>Function</code>, <code>Consumer</code>, and <code>Predicate</code> all leveraged in the automatic destruction of passwords and keys.</li>
+          </ul>
+        </li>
+        <li>Small footprint, minimal dependencies - not part of a big monolithic package.</li>
+        <li>Compatible <ao:a href="https://www.postgresql.org/">PostgreSQL</ao:a> implementation:
+          <ul>
+            <li>Composite types for <code>Identifier</code>, <code>HashedPassword</code>, and <code>HashedKey</code>.</li>
+            <li><code>DOMAIN</code> type for <code>SmallIdentifier</code>.</li>
+            <li>Full set of validation functions.</li>
+            <li>
+              Very thorough validation, matching every detail the Java API.  As an example, the first four bits
+              of the salt for <code>crypt</code> are verified to be zero, since <code>crypt</code> only uses a 12-bit salt.
+            </li>
+            <li>
+              Full set of bi-directional <code>TEXT</code> conversions, including <code>CAST</code> definitions, which makes for very simple
+              legacy password database upgrades.  All it will typically take is:<ao:br />
+              <code>ALTER TABLE … ALTER COLUMN … TYPE "com.aoapps.security"."HashedPassword";</code>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </section:section>
+  </core:page>
 </jsp:root>

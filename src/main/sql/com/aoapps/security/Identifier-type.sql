@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,16 +21,16 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE TYPE "com.aoapps.security"."<Identifier>" AS (
-	hi bigint,
-	lo bigint
+  hi bigint,
+  lo bigint
 );
 
 COMMENT ON TYPE "com.aoapps.security"."<Identifier>" IS
 'Row definition for "com.aoapps.security"."Identifier"';
 
 CREATE DOMAIN "com.aoapps.security"."Identifier" AS "com.aoapps.security"."<Identifier>" CHECK (
-	VALUE IS NOT DISTINCT FROM NULL
-	OR "com.aoapps.security"."Identifier.validate"(VALUE) IS NULL
+  VALUE IS NOT DISTINCT FROM NULL
+  OR "com.aoapps.security"."Identifier.validate"(VALUE) IS NULL
 );
 
 COMMENT ON DOMAIN "com.aoapps.security"."Identifier" IS

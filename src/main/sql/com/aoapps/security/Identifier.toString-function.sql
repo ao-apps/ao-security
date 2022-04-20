@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,14 +21,14 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.toString" (
-	hi BIGINT,
-	lo BIGINT
+  hi BIGINT,
+  lo BIGINT
 )
 RETURNS text AS $$
 BEGIN
-	RETURN
-		   "com.aoapps.security"."SmallIdentifier.toString"(hi)
-		|| "com.aoapps.security"."SmallIdentifier.toString"(lo);
+  RETURN
+       "com.aoapps.security"."SmallIdentifier.toString"(hi)
+    || "com.aoapps.security"."SmallIdentifier.toString"(lo);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -39,11 +39,11 @@ COMMENT ON FUNCTION "com.aoapps.security"."Identifier.toString" (BIGINT, BIGINT)
 'Matches method com.aoapps.security.Identifier.toString';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.toString" (
-	this "com.aoapps.security"."Identifier"
+  this "com.aoapps.security"."Identifier"
 )
 RETURNS text AS $$
 BEGIN
-	RETURN "com.aoapps.security"."Identifier.toString"(this.hi, this.lo);
+  RETURN "com.aoapps.security"."Identifier.toString"(this.hi, this.lo);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -54,22 +54,22 @@ COMMENT ON FUNCTION "com.aoapps.security"."Identifier.toString" ("com.aoapps.sec
 'Matches method com.aoapps.security.Identifier.toString';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.toString" (
-	this "com.aoapps.security"."<Identifier>"
+  this "com.aoapps.security"."<Identifier>"
 )
 RETURNS text AS $$
 DECLARE
-	"isValid" text;
+  "isValid" text;
 BEGIN
-	-- Validate before casting to DOMAIN to give meaningful error message
-	IF this IS DISTINCT FROM NULL
-	THEN
-		"isValid" := "com.aoapps.security"."Identifier.validate"(this.hi, this.lo);
-		IF "isValid" IS NOT NULL
-		THEN
-			RAISE EXCEPTION '%', "isValid";
-		END IF;
-	END IF;
-	RETURN "com.aoapps.security"."Identifier.toString"(this::"com.aoapps.security"."Identifier");
+  -- Validate before casting to DOMAIN to give meaningful error message
+  IF this IS DISTINCT FROM NULL
+  THEN
+    "isValid" := "com.aoapps.security"."Identifier.validate"(this.hi, this.lo);
+    IF "isValid" IS NOT NULL
+    THEN
+      RAISE EXCEPTION '%', "isValid";
+    END IF;
+  END IF;
+  RETURN "com.aoapps.security"."Identifier.toString"(this::"com.aoapps.security"."Identifier");
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

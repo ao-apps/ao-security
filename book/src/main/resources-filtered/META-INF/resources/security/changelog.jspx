@@ -22,198 +22,198 @@ You should have received a copy of the GNU Lesser General Public License
 along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 -->
 <jsp:root
-	xmlns:ao="https://oss.aoapps.com/taglib/"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:changelog="https://semanticcms.com/changelog/taglib/"
-	xmlns:core="https://semanticcms.com/core/taglib/"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsp="http://java.sun.com/JSP/Page"
-	version="2.1"
+  xmlns:ao="https://oss.aoapps.com/taglib/"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:changelog="https://semanticcms.com/changelog/taglib/"
+  xmlns:core="https://semanticcms.com/core/taglib/"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:jsp="http://java.sun.com/JSP/Page"
+  version="2.1"
 >
-	<jsp:directive.page language="java" pageEncoding="UTF-8" />
-	<jsp:directive.page session="false" />
-	<core:page
-		title="@{documented.name} Changelog"
-		shortTitle="Changelog"
-		tocLevels="1"
-		datePublished="2020-12-19T21:29:44-06:00"
-		dateModified="2022-02-15T22:29:03-06:00"
-	>
-		<c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
-			<changelog:release
-				projectName="@{documented.name}"
-				version="@{project.version}"
-				groupId="@{project.groupId}"
-				artifactId="@{documented.artifactId}"
-				repository="@{nexusUrl}content/repositories/snapshots/"
-				scmUrl="@{project.scm.url}"
-			/>
-		</c:if>
+  <jsp:directive.page language="java" pageEncoding="UTF-8" />
+  <jsp:directive.page session="false" />
+  <core:page
+    title="@{documented.name} Changelog"
+    shortTitle="Changelog"
+    tocLevels="1"
+    datePublished="2020-12-19T21:29:44-06:00"
+    dateModified="2022-02-15T22:29:03-06:00"
+  >
+    <c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
+      <changelog:release
+        projectName="@{documented.name}"
+        version="@{project.version}"
+        groupId="@{project.groupId}"
+        artifactId="@{documented.artifactId}"
+        repository="@{nexusUrl}content/repositories/snapshots/"
+        scmUrl="@{project.scm.url}"
+      />
+    </c:if>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="3.1.0"
-			datePublished="2022-02-15T22:29:03-06:00"
-			groupId="@{project.groupId}"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Deprecated methods that accept a provided <code>Random</code> in favor of
-					<code>SecureRandom</code>.  This is to help avoid accidentally using a cryptographically weak
-					random number generator.
-				</li>
-				<li>Set most classes final since not intended to be extended.</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="3.1.0"
+      datePublished="2022-02-15T22:29:03-06:00"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Deprecated methods that accept a provided <code>Random</code> in favor of
+          <code>SecureRandom</code>.  This is to help avoid accidentally using a cryptographically weak
+          random number generator.
+        </li>
+        <li>Set most classes final since not intended to be extended.</li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="3.0.0"
-			datePublished="2021-07-20T03:02:07-05:00"
-			groupId="@{project.groupId}"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>Now supports Java 9+ modules with included <code>module-info.class</code>.</li>
-				<li>Maven artifact relocated from <code>com.aoindustries:ao-security</code> to <code>com.aoapps:ao-security</code>.</li>
-				<li>Package renamed from <code>com.aoindustries.security</code> to <code>com.aoapps.security</code>.</li>
-				<li>SQL schema renamed from <code>com.aoindustries.security</code> to <code>com.aoapps.security</code>.</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="3.0.0"
+      datePublished="2021-07-20T03:02:07-05:00"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>Now supports Java 9+ modules with included <code>module-info.class</code>.</li>
+        <li>Maven artifact relocated from <code>com.aoindustries:ao-security</code> to <code>com.aoapps:ao-security</code>.</li>
+        <li>Package renamed from <code>com.aoindustries.security</code> to <code>com.aoapps.security</code>.</li>
+        <li>SQL schema renamed from <code>com.aoindustries.security</code> to <code>com.aoapps.security</code>.</li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="2.3.0"
-			datePublished="2021-02-05T05:15:07-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Fixed bug in <code>MD5</code> and <code>SHA-1</code> password hashing.  Any extra zeroes after
-					conversion to UTF-8 were incorrectly being passed to the message digest.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.3.0"
+      datePublished="2021-02-05T05:15:07-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Fixed bug in <code>MD5</code> and <code>SHA-1</code> password hashing.  Any extra zeroes after
+          conversion to UTF-8 were incorrectly being passed to the message digest.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="2.2.0"
-			datePublished="2021-02-04T18:08:17-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Implemented <code>Key.equals(…)</code> and <code>Password.equals(…)</code>.  Both are
-					length-constant time implementations, and will always return <code>false</code> when either is
-					destroyed (including when both are destroyed).
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.2.0"
+      datePublished="2021-02-04T18:08:17-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Implemented <code>Key.equals(…)</code> and <code>Password.equals(…)</code>.  Both are
+          length-constant time implementations, and will always return <code>false</code> when either is
+          destroyed (including when both are destroyed).
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="2.1.0"
-			datePublished="2021-02-03T14:52:32-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Added <code>SecurityStreamables</code> for <code>HashedKey</code> and <code>HashedPassword</code>.
-					This allows optimized network protocol versus converting to/from string.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.1.0"
+      datePublished="2021-02-03T14:52:32-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Added <code>SecurityStreamables</code> for <code>HashedKey</code> and <code>HashedPassword</code>.
+          This allows optimized network protocol versus converting to/from string.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="2.0.1"
-			datePublished="2021-01-14T21:15:02-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Fixed database dump/restore data ordering problems by skipping some validation steps when the
-					user is <code>postgres</code>.  Please replace the following functions:
-					<ol type="1">
-						<li><code>HashedKey.Algorithm.validateHash-function.sql</code></li>
-						<li><code>HashedPassword.Algorithm.validate-function.sql</code></li>
-					</ol>
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.0.1"
+      datePublished="2021-01-14T21:15:02-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Fixed database dump/restore data ordering problems by skipping some validation steps when the
+          user is <code>postgres</code>.  Please replace the following functions:
+          <ol type="1">
+            <li><code>HashedKey.Algorithm.validateHash-function.sql</code></li>
+            <li><code>HashedPassword.Algorithm.validate-function.sql</code></li>
+          </ol>
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="2.0.0"
-			datePublished="2021-01-02T04:51:20-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Exposed some static implementation utilities as <code>SecurityUtil</code>.
-				</li>
-				<li>
-					<p>
-						Created a new pair of classes <code>Password</code> and <code>UnprotectedPassword</code> that should be
-						used to encapsulate plaintext passwords instead of using <code>char[]</code> or <code>String</code>.
-						Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
-					</p>
-					<p>
-						All uses are aggressively destroyed, thus requiring the caller to actively clone when the
-						password is still required.  Thus, programmer errors should be in the direction of safety:
-						no action means password is destroyed.
-					</p>
-					<p>
-						Deprecated the <code>String</code>-based representations of passwords, in favor of the
-						aggressively destroyed <code>Password</code>.
-					</p>
-				</li>
-				<li>
-					<p>
-						Created a new pair of classes <code>Key</code> and <code>UnprotectedKey</code> that should be
-						used to encapsulate keys instead of working directly with <code>byte[]</code>.
-						Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
-					</p>
-					<p>
-						All uses are aggressively destroyed, thus requiring the caller to actively clone when the
-						key is still required.  Thus, programmer errors should be in the direction of safety:
-						no action means key is destroyed.
-					</p>
-					<p>
-						Deprecated the <code>byte[]</code>-based representations of keys, in favor of the
-						aggressively destroyed <code>Key</code>.
-					</p>
-					<p>
-						<code>generateKey(…)</code> now returns <code>UnprotectedKey</code> instead of <code>byte[]</code>,
-						which is a breaking change.  This is major version increment.
-					</p>
-				</li>
-				<li>
-					New method <code>HashedKey.matches(Key)</code>, for consistency with
-					<code>HashedPassword.matches(Password)</code>.
-				</li>
-				<li>
-					Added domains over the composite types for self-validation.
-					This means tables may now use the type directly, without needing an explicit check constraint
-					calling the per-type <code>validate</code> functions.
-				</li>
-				<li>Now requires PostgreSQL 11 and above.</li>
-				<li>A database schema update is required:
-					<ol>
-						<li>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.0.0"
+      datePublished="2021-01-02T04:51:20-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Exposed some static implementation utilities as <code>SecurityUtil</code>.
+        </li>
+        <li>
+          <p>
+            Created a new pair of classes <code>Password</code> and <code>UnprotectedPassword</code> that should be
+            used to encapsulate plaintext passwords instead of using <code>char[]</code> or <code>String</code>.
+            Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
+          </p>
+          <p>
+            All uses are aggressively destroyed, thus requiring the caller to actively clone when the
+            password is still required.  Thus, programmer errors should be in the direction of safety:
+            no action means password is destroyed.
+          </p>
+          <p>
+            Deprecated the <code>String</code>-based representations of passwords, in favor of the
+            aggressively destroyed <code>Password</code>.
+          </p>
+        </li>
+        <li>
+          <p>
+            Created a new pair of classes <code>Key</code> and <code>UnprotectedKey</code> that should be
+            used to encapsulate keys instead of working directly with <code>byte[]</code>.
+            Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
+          </p>
+          <p>
+            All uses are aggressively destroyed, thus requiring the caller to actively clone when the
+            key is still required.  Thus, programmer errors should be in the direction of safety:
+            no action means key is destroyed.
+          </p>
+          <p>
+            Deprecated the <code>byte[]</code>-based representations of keys, in favor of the
+            aggressively destroyed <code>Key</code>.
+          </p>
+          <p>
+            <code>generateKey(…)</code> now returns <code>UnprotectedKey</code> instead of <code>byte[]</code>,
+            which is a breaking change.  This is major version increment.
+          </p>
+        </li>
+        <li>
+          New method <code>HashedKey.matches(Key)</code>, for consistency with
+          <code>HashedPassword.matches(Password)</code>.
+        </li>
+        <li>
+          Added domains over the composite types for self-validation.
+          This means tables may now use the type directly, without needing an explicit check constraint
+          calling the per-type <code>validate</code> functions.
+        </li>
+        <li>Now requires PostgreSQL 11 and above.</li>
+        <li>A database schema update is required:
+          <ol>
+            <li>
 <pre><![CDATA[BEGIN;
 
 ALTER TYPE "com.aoindustries.security"."HashedKey"       RENAME TO "&lt;HashedKey&gt;";
@@ -228,16 +228,16 @@ COMMENT ON TYPE "com.aoindustries.security"."&lt;Identifier&gt;" IS
 'Row definition for "com.aoindustries.security"."Identifier"';
 
 CREATE DOMAIN "com.aoindustries.security"."HashedKey" AS "com.aoindustries.security"."&lt;HashedKey&gt;" CHECK (
-	VALUE IS NOT DISTINCT FROM NULL
-	OR "com.aoindustries.security"."HashedKey.validate"(VALUE) IS NULL
+  VALUE IS NOT DISTINCT FROM NULL
+  OR "com.aoindustries.security"."HashedKey.validate"(VALUE) IS NULL
 );
 CREATE DOMAIN "com.aoindustries.security"."HashedPassword" AS "com.aoindustries.security"."&lt;HashedPassword&gt;" CHECK (
-	VALUE IS NOT DISTINCT FROM NULL
-	OR "com.aoindustries.security"."HashedPassword.validate"(VALUE) IS NULL
+  VALUE IS NOT DISTINCT FROM NULL
+  OR "com.aoindustries.security"."HashedPassword.validate"(VALUE) IS NULL
 );
 CREATE DOMAIN "com.aoindustries.security"."Identifier" AS "com.aoindustries.security"."&lt;Identifier&gt;" CHECK (
-	VALUE IS NOT DISTINCT FROM NULL
-	OR "com.aoindustries.security"."Identifier.validate"(VALUE) IS NULL
+  VALUE IS NOT DISTINCT FROM NULL
+  OR "com.aoindustries.security"."Identifier.validate"(VALUE) IS NULL
 );
 
 COMMENT ON DOMAIN "com.aoindustries.security"."HashedKey" IS
@@ -248,287 +248,287 @@ COMMENT ON DOMAIN "com.aoindustries.security"."Identifier" IS
 'Matches class com.aoindustries.security.Identifier';
 
 COMMIT;]]></pre>
-						</li>
-						<li>Recreate all functions, for "PARALLEL SAFE" and type changes.</li>
-						<li>Update your column types</li>
-						<li>Drop the unnecessary column check constraints</li>
-					</ol>
-				</li>
-			</ul>
-		</changelog:release>
+            </li>
+            <li>Recreate all functions, for "PARALLEL SAFE" and type changes.</li>
+            <li>Update your column types</li>
+            <li>Drop the unnecessary column check constraints</li>
+          </ol>
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.7"
-			datePublished="2020-12-29T02:01:55-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Created new SQL function <code>"com.aoindustries.security"."Identifier.validate"</code>.
-					Although it is very simple in that it merely ensures both values are non-null and could be
-					accomplished in per-table check "IS NOT NULL" check constraints, this follows the pattern of
-					other composite types.  Composite types are responsible for their own validation, and will
-					also become DOMAIN in PostgreSQL 11+, further solidifying this.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.7"
+      datePublished="2020-12-29T02:01:55-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Created new SQL function <code>"com.aoindustries.security"."Identifier.validate"</code>.
+          Although it is very simple in that it merely ensures both values are non-null and could be
+          accomplished in per-table check "IS NOT NULL" check constraints, this follows the pattern of
+          other composite types.  Composite types are responsible for their own validation, and will
+          also become DOMAIN in PostgreSQL 11+, further solidifying this.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.6"
-			datePublished="2020-12-28T06:14:00-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Made the per-algorithm validation methods public.  This allows them to be used earlier, such as
-					when validating request parameters.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.6"
+      datePublished="2020-12-28T06:14:00-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Made the per-algorithm validation methods public.  This allows them to be used earlier, such as
+          when validating request parameters.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.5"
-			datePublished="2020-12-25T21:04:22-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Documented that the default <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>
-					instance is not a <ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>.
-				</li>
-				<li>
-					Added overloads to all places that use <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>,
-					allowing the caller to provide their own random instance, which may be a
-					<ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>
-					where appropriate to the application.
-				</li>
-				<li>
-					<code>HashedPassword</code> now refuses to hash an empty password.  Implementations should be using
-					<code>null</code> or <code>HashedPassword.NO_PASSWORD</code> when there is no password.  We expect
-					that all forms and tools already check for empty passwords, but this is a final sanity check.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.5"
+      datePublished="2020-12-25T21:04:22-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Documented that the default <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>
+          instance is not a <ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>.
+        </li>
+        <li>
+          Added overloads to all places that use <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>,
+          allowing the caller to provide their own random instance, which may be a
+          <ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>
+          where appropriate to the application.
+        </li>
+        <li>
+          <code>HashedPassword</code> now refuses to hash an empty password.  Implementations should be using
+          <code>null</code> or <code>HashedPassword.NO_PASSWORD</code> when there is no password.  We expect
+          that all forms and tools already check for empty passwords, but this is a final sanity check.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.4"
-			datePublished="2020-12-25T11:47:45-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Corrected the zero-padding of hash for crypt algorithm in SQL function
-					<code>HashedPassword.valueOf(TEXT)</code>.  Hashes that started with zero nibbles could not be
-					parsed and would result in an exception.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.4"
+      datePublished="2020-12-25T11:47:45-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Corrected the zero-padding of hash for crypt algorithm in SQL function
+          <code>HashedPassword.valueOf(TEXT)</code>.  Hashes that started with zero nibbles could not be
+          parsed and would result in an exception.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.3"
-			datePublished="2020-12-25T11:11:21-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Implemented SQL function <code>HashedPassword.valueOf(TEXT)</code> for the "crypt" algorithm.
-					This allows the conversion of very old databases with just a simple SQL cast - no need to write
-					any Java conversion code.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.3"
+      datePublished="2020-12-25T11:11:21-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Implemented SQL function <code>HashedPassword.valueOf(TEXT)</code> for the "crypt" algorithm.
+          This allows the conversion of very old databases with just a simple SQL cast - no need to write
+          any Java conversion code.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.2"
-			datePublished="2020-12-25T02:01:00-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					<p>
-						Reverted back to generating keys with as many bits as their corresponding hash function (with
-						the exception of SHA-1).  Keys themselves are subject to the birthday paradox and should thus
-						be as long as the hash.
-					</p>
-					<p>
-						We have set SHA-1 to a key of 128 bits, however, which is roughly double its currently
-						estimated collision resistance of 65 bits.  But, SHA-1 is deprecated, so this shouldn't
-						matter.
-					</p>
-					<p>
-						With this change, we have restored the recommended algorithm to the previous <code>SHA-256</code>
-						so that URL parameter and cookie value lengths will not change.  We believe <code>SHA-512</code>
-						would be overkill, especially considering it is a hash of an equally-sized random key.
-					</p>
-				</li>
-				<li>
-					Deprecated the all-field constructors, with new <code>valueOf(…)</code> methods.  This is because
-					the public constructor does not accept a null algorithm, since the <code>NO_KEY</code> /
-					<code>NO_PASSWORD</code> singletons must be used.  With this change, the static method can
-					determine the correct action, instead of forcing it on the calling code.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.2"
+      datePublished="2020-12-25T02:01:00-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          <p>
+            Reverted back to generating keys with as many bits as their corresponding hash function (with
+            the exception of SHA-1).  Keys themselves are subject to the birthday paradox and should thus
+            be as long as the hash.
+          </p>
+          <p>
+            We have set SHA-1 to a key of 128 bits, however, which is roughly double its currently
+            estimated collision resistance of 65 bits.  But, SHA-1 is deprecated, so this shouldn't
+            matter.
+          </p>
+          <p>
+            With this change, we have restored the recommended algorithm to the previous <code>SHA-256</code>
+            so that URL parameter and cookie value lengths will not change.  We believe <code>SHA-512</code>
+            would be overkill, especially considering it is a hash of an equally-sized random key.
+          </p>
+        </li>
+        <li>
+          Deprecated the all-field constructors, with new <code>valueOf(…)</code> methods.  This is because
+          the public constructor does not accept a null algorithm, since the <code>NO_KEY</code> /
+          <code>NO_PASSWORD</code> singletons must be used.  With this change, the static method can
+          determine the correct action, instead of forcing it on the calling code.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.1"
-			datePublished="2020-12-24T23:51:29-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Fixed bug in SQL <code>HashedKey.validate</code> and <code>HashedPassword.validate</code>
-					functions.  The composite-type overload was incorrectly calling the <code>Algorithm.validate</code>
-					function directly, instead of calling the other overload.
-				</li>
-			</ul>
-		</changelog:release>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.1"
+      datePublished="2020-12-24T23:51:29-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Fixed bug in SQL <code>HashedKey.validate</code> and <code>HashedPassword.validate</code>
+          functions.  The composite-type overload was incorrectly calling the <code>Algorithm.validate</code>
+          function directly, instead of calling the other overload.
+        </li>
+      </ul>
+    </changelog:release>
 
-		<changelog:release
-			projectName="@{documented.name}"
-			version="1.0.0"
-			datePublished="2020-12-24T23:32:56-06:00"
-			groupId="com.aoindustries"
-			artifactId="@{documented.artifactId}"
-			scmUrl="@{project.scm.url}"
-		>
-			<ul>
-				<li>
-					Pulled existing security utilities out of <core:link book="/lang" page="/index.jspx" /> into
-					this new <core:link page="index.jspx" /> project.
-				</li>
-				<li>Added SQL implementation in alternate "sql" classifier.</li>
-				<li>Length-constant time equality checks <code>Identifier</code>.</li>
-				<li><code>HashedKey</code> improvements:
-					<ol>
-						<li>New constant <code>NO_KEY</code> that must be used when there is no key.</li>
-						<li>
-							Now supports multiple algorithms, with the recommended algorithm being "SHA-512".
-							Previously, all keys were "SHA-256".
-						</li>
-						<li>
-							<p>
-								For the SHA-* algorithms (with the exception of SHA-1 explained below), the key length
-								now defaults to half that of the hash length.  This is selected so the likelihood to
-								guess the original key is equal to the hash's expected collision resistance.
-							</p>
-							<p>
-								<ao:a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf">NIST 800-107: 4.1 Hash Function Properties</ao:a>:
-							</p>
-							<blockquote>
-								The expected collision-resistance strength of a hash function is half the length of
-								the hash value produced by that hash function.
-							</blockquote>
-							<p>
-								SHA-256 still allows a 256-bit key for compatibility, but new keys will be generated
-								with 128 bits.  However, given that the default algorithm has also been changed to
-								"SHA-512", expect the same default key length (URL parameter and cookie value lengths
-								will not change).
-							</p>
-							<p>
-								For SHA-1, which is deprecated and should not be used anyway, we have further reduced
-								the key size to 64 bits (instead of the 80 bits it would be if assumed half the hash size).
-								This is because SHA-1 is now considered to have at best 65-bits of collision resistance.
-								If using SHA-1 (which you shouldn't) its key size is correspondingly limited to 64 bits.
-								See:
-							</p>
-							<ul>
-								<li><ao:a href="https://blog.cloudflare.com/why-its-harder-to-forge-a-sha-1-certificate-than-it-is-to-find-a-sha-1-collision/">Why it’s harder to forge a SHA-1 certificate than it is to find a SHA-1 collision</ao:a></li>
-								<li><ao:a href="https://marc-stevens.nl/research/papers/PhD%20Thesis%20Marc%20Stevens%20-%20Attacks%20on%20Hash%20Functions%20and%20Applications.pdf">Attacks on Hash Functions and Applications - PhD Thesis Marc Stevens - Attacks on Hash Functions and Applications.pdf</ao:a></li>
-							</ul>
-						</li>
-						<li>Length-constant time equality checks</li>
-						<li><code>compareTo(HashedKey)</code> now orders unsigned</li>
-						<li>
-							<p>
-								<code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
-								key in an unambiguous string format.  "*" represents "No key".
-							</p>
-							<p>
-								This may be used to insert the password into a database, and it is compatible with
-								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com.aoapps.dbc/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
-								However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
-								This type is more compact and enforces much more integrity than just stuffing the
-								value in as a string.
-							</p>
-						</li>
-						<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
-						<li>
-							New main method that can be used to generate a key and hash pair.  Includes a <code>-b</code>
-							option for benchmark mode, which runs all algorithms and gives timings.
-						</li>
-					</ol>
-				</li>
-				<li><code>HashedPassword</code> improvements:
-					<ol>
-						<li>New constant <code>NO_PASSWORD</code> that must be used when there is no password.</li>
-						<li>Now supports multiple algorithms, with the recommended algorithm being "PBKDF2WithHmacSHA512".</li>
-						<li>
-							Per-algorithm recommended iterations, with values increased significantly higher than
-							the previously recommended <code>1000</code>.  Recommended values are selected to complete
-							the hashing in around 100 ms on commodity PC hardware from around the year 2012.
-						</li>
-						<li>
-							New method <code>isRehashRecommended()</code> that provides a hint when the password
-							should be rehashed during login.
-						</li>
-						<li>
-							<p>
-								<code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
-								password in an unambiguous string format.  "*" represents "No key".
-							</p>
-							<p>
-								This may be used to insert the password into a database, and it is compatible with
-								<ao:a href="https://oss.aoapps.com/dbc/apidocs/com.aoapps.dbc/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
-								However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
-								This type is more compact and enforces much more integrity than just stuffing the
-								value in as a string.
-							</p>
-						</li>
-						<li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
-						<li>
-							New main method that can be used to hash passwords.  Includes a <code>-b</code> option
-							for benchmark mode, which runs all algorithms, gives timings, and will recommend increasing
-							<code>recommendedIterations</code> when a hash is performed in under 100 ms.
-						</li>
-						<li>
-							Unit tests will now issue a warning to suggest increasing default iterations when an
-							algorithm completes in under 100 ms.
-						</li>
-						<li>Convenience constructors that perform all the steps of generating salt and hash.</li>
-					</ol>
-				</li>
-				<li>
-					Moved read/write methods for <code>Identifier</code> and <code>SmallIdentifier</code> from
-					<code>StreamableInput</code> and <code>StreamableOutput</code> to static methods on a new
-					<code>SecurityStreamables</code> class.
-				</li>
-				<li>
-					Deprecated <code>UnixCrypt</code> in favor of the <ao:a href="https://commons.apache.org/proper/commons-codec/">Apache Commons Codec</ao:a>
-					implementation: <code><ao:a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/UnixCrypt.html">UnixCrypt</ao:a></code>.
-				</li>
-			</ul>
-		</changelog:release>
-	</core:page>
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.0"
+      datePublished="2020-12-24T23:32:56-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Pulled existing security utilities out of <core:link book="/lang" page="/index.jspx" /> into
+          this new <core:link page="index.jspx" /> project.
+        </li>
+        <li>Added SQL implementation in alternate "sql" classifier.</li>
+        <li>Length-constant time equality checks <code>Identifier</code>.</li>
+        <li><code>HashedKey</code> improvements:
+          <ol>
+            <li>New constant <code>NO_KEY</code> that must be used when there is no key.</li>
+            <li>
+              Now supports multiple algorithms, with the recommended algorithm being "SHA-512".
+              Previously, all keys were "SHA-256".
+            </li>
+            <li>
+              <p>
+                For the SHA-* algorithms (with the exception of SHA-1 explained below), the key length
+                now defaults to half that of the hash length.  This is selected so the likelihood to
+                guess the original key is equal to the hash's expected collision resistance.
+              </p>
+              <p>
+                <ao:a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-107r1.pdf">NIST 800-107: 4.1 Hash Function Properties</ao:a>:
+              </p>
+              <blockquote>
+                The expected collision-resistance strength of a hash function is half the length of
+                the hash value produced by that hash function.
+              </blockquote>
+              <p>
+                SHA-256 still allows a 256-bit key for compatibility, but new keys will be generated
+                with 128 bits.  However, given that the default algorithm has also been changed to
+                "SHA-512", expect the same default key length (URL parameter and cookie value lengths
+                will not change).
+              </p>
+              <p>
+                For SHA-1, which is deprecated and should not be used anyway, we have further reduced
+                the key size to 64 bits (instead of the 80 bits it would be if assumed half the hash size).
+                This is because SHA-1 is now considered to have at best 65-bits of collision resistance.
+                If using SHA-1 (which you shouldn't) its key size is correspondingly limited to 64 bits.
+                See:
+              </p>
+              <ul>
+                <li><ao:a href="https://blog.cloudflare.com/why-its-harder-to-forge-a-sha-1-certificate-than-it-is-to-find-a-sha-1-collision/">Why it’s harder to forge a SHA-1 certificate than it is to find a SHA-1 collision</ao:a></li>
+                <li><ao:a href="https://marc-stevens.nl/research/papers/PhD%20Thesis%20Marc%20Stevens%20-%20Attacks%20on%20Hash%20Functions%20and%20Applications.pdf">Attacks on Hash Functions and Applications - PhD Thesis Marc Stevens - Attacks on Hash Functions and Applications.pdf</ao:a></li>
+              </ul>
+            </li>
+            <li>Length-constant time equality checks</li>
+            <li><code>compareTo(HashedKey)</code> now orders unsigned</li>
+            <li>
+              <p>
+                <code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
+                key in an unambiguous string format.  "*" represents "No key".
+              </p>
+              <p>
+                This may be used to insert the password into a database, and it is compatible with
+                <ao:a href="https://oss.aoapps.com/dbc/apidocs/com.aoapps.dbc/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+                However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
+                This type is more compact and enforces much more integrity than just stuffing the
+                value in as a string.
+              </p>
+            </li>
+            <li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
+            <li>
+              New main method that can be used to generate a key and hash pair.  Includes a <code>-b</code>
+              option for benchmark mode, which runs all algorithms and gives timings.
+            </li>
+          </ol>
+        </li>
+        <li><code>HashedPassword</code> improvements:
+          <ol>
+            <li>New constant <code>NO_PASSWORD</code> that must be used when there is no password.</li>
+            <li>Now supports multiple algorithms, with the recommended algorithm being "PBKDF2WithHmacSHA512".</li>
+            <li>
+              Per-algorithm recommended iterations, with values increased significantly higher than
+              the previously recommended <code>1000</code>.  Recommended values are selected to complete
+              the hashing in around 100 ms on commodity PC hardware from around the year 2012.
+            </li>
+            <li>
+              New method <code>isRehashRecommended()</code> that provides a hint when the password
+              should be rehashed during login.
+            </li>
+            <li>
+              <p>
+                <code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
+                password in an unambiguous string format.  "*" represents "No key".
+              </p>
+              <p>
+                This may be used to insert the password into a database, and it is compatible with
+                <ao:a href="https://oss.aoapps.com/dbc/apidocs/com.aoapps.dbc/com/aoapps/dbc/AutoObjectFactory.html">AutoObjectFactory</ao:a>.
+                However, a PostgreSQL composite type is provided in the alternate "sql" classifier.
+                This type is more compact and enforces much more integrity than just stuffing the
+                value in as a string.
+              </p>
+            </li>
+            <li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
+            <li>
+              New main method that can be used to hash passwords.  Includes a <code>-b</code> option
+              for benchmark mode, which runs all algorithms, gives timings, and will recommend increasing
+              <code>recommendedIterations</code> when a hash is performed in under 100 ms.
+            </li>
+            <li>
+              Unit tests will now issue a warning to suggest increasing default iterations when an
+              algorithm completes in under 100 ms.
+            </li>
+            <li>Convenience constructors that perform all the steps of generating salt and hash.</li>
+          </ol>
+        </li>
+        <li>
+          Moved read/write methods for <code>Identifier</code> and <code>SmallIdentifier</code> from
+          <code>StreamableInput</code> and <code>StreamableOutput</code> to static methods on a new
+          <code>SecurityStreamables</code> class.
+        </li>
+        <li>
+          Deprecated <code>UnixCrypt</code> in favor of the <ao:a href="https://commons.apache.org/proper/commons-codec/">Apache Commons Codec</ao:a>
+          implementation: <code><ao:a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/UnixCrypt.html">UnixCrypt</ao:a></code>.
+        </li>
+      </ul>
+    </changelog:release>
+  </core:page>
 </jsp:root>

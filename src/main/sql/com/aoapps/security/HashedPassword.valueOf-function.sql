@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,81 +23,81 @@
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.valueOf" ("hashedPassword" TEXT)
 RETURNS "com.aoapps.security"."<HashedPassword>" AS $$
 DECLARE
-	split TEXT[];
-	splitlen INTEGER;
-	salt INTEGER;
-	rsltblock BIGINT;
-	salt_hex TEXT;
-	rsltblock_hex TEXT;
-	"algorithmName" TEXT;
-	"algorithm" TEXT;
-	"hash" BYTEA;
-	hashlen INTEGER;
-	"result" "com.aoapps.security"."<HashedPassword>";
-	"resultValid" TEXT;
+  split TEXT[];
+  splitlen INTEGER;
+  salt INTEGER;
+  rsltblock BIGINT;
+  salt_hex TEXT;
+  rsltblock_hex TEXT;
+  "algorithmName" TEXT;
+  "algorithm" TEXT;
+  "hash" BYTEA;
+  hashlen INTEGER;
+  "result" "com.aoapps.security"."<HashedPassword>";
+  "resultValid" TEXT;
 BEGIN
-	IF "hashedPassword" IS NULL THEN
-		"result" := NULL;
-	ELSIF "hashedPassword" = '*' THEN
-		"result" := ROW(NULL, NULL, 0, NULL);
-	ELSIF "hashedPassword" LIKE '$%' THEN
-		split := regexp_split_to_array("hashedPassword", '\$');
-		splitlen := array_length(split, 1);
-		IF splitlen != 5 THEN
-			RAISE EXCEPTION 'Unexpected number of parts: expected 5, got %: %', splitlen, "hashedPassword";
-		END IF;
-		"algorithmName" := split[2];
-		algorithm := (SELECT "name" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE lower("name")=lower("algorithmName"));
-		IF algorithm IS NULL THEN
-			RAISE EXCEPTION 'Unsupported algorithm: %', "algorithmName";
-		END IF;
-		"result" := ROW(
-			"algorithm",
-			decode(split[4], 'base64'),
-			split[3],
-			decode(split[5], 'base64')
-		);
-	ELSIF length("hashedPassword") = 13 THEN
-		salt :=
-			  ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 2, 1)) << 6)
-			|  "com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 1, 1));
-		rsltblock :=
-			  ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 3, 1))::BIGINT << 58)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 4, 1))::BIGINT << 52)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 5, 1))::BIGINT << 46)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 6, 1))::BIGINT << 40)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 7, 1))::BIGINT << 34)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 8, 1))::BIGINT << 28)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 9, 1))::BIGINT << 22)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",10, 1))::BIGINT << 16)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",11, 1))::BIGINT << 10)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",12, 1))::BIGINT <<  4)
-			| ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",13, 1))::BIGINT >>  2);
-		-- Zero-pad hex to full binary length
-		salt_hex := right('000' || to_hex(salt), 4);
-		rsltblock_hex := right('000000000000000' || to_hex(rsltblock), 16);
-		"result" := ROW(
-			'crypt',
-			decode(salt_hex, 'hex'),
-			0,
-			decode(rsltblock_hex, 'hex')
-		);
-	ELSIF length("hashedPassword") = (128 / 4) THEN
-		"result" := ROW('MD5', E''::bytea, 0, decode("hashedPassword", 'hex'));
-	ELSE
-		"hash" := decode("hashedPassword", 'base64');
-		hashlen := octet_length("hash");
-		IF hashlen = (160 / 8) THEN
-			"result" := ROW('SHA-1', E''::bytea, 0, "hash");
-		ELSE
-			RAISE EXCEPTION 'Unable to guess algorithm by hash length: %', hashlen;
-		END IF;
-	END IF;
-	"resultValid" := "com.aoapps.security"."HashedPassword.validate"("result");
-	IF "resultValid" IS NOT NULL THEN
-		RAISE EXCEPTION '%', "resultValid";
-	END IF;
-	RETURN "result";
+  IF "hashedPassword" IS NULL THEN
+    "result" := NULL;
+  ELSIF "hashedPassword" = '*' THEN
+    "result" := ROW(NULL, NULL, 0, NULL);
+  ELSIF "hashedPassword" LIKE '$%' THEN
+    split := regexp_split_to_array("hashedPassword", '\$');
+    splitlen := array_length(split, 1);
+    IF splitlen != 5 THEN
+      RAISE EXCEPTION 'Unexpected number of parts: expected 5, got %: %', splitlen, "hashedPassword";
+    END IF;
+    "algorithmName" := split[2];
+    algorithm := (SELECT "name" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE lower("name")=lower("algorithmName"));
+    IF algorithm IS NULL THEN
+      RAISE EXCEPTION 'Unsupported algorithm: %', "algorithmName";
+    END IF;
+    "result" := ROW(
+      "algorithm",
+      decode(split[4], 'base64'),
+      split[3],
+      decode(split[5], 'base64')
+    );
+  ELSIF length("hashedPassword") = 13 THEN
+    salt :=
+        ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 2, 1)) << 6)
+      |  "com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 1, 1));
+    rsltblock :=
+        ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 3, 1))::BIGINT << 58)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 4, 1))::BIGINT << 52)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 5, 1))::BIGINT << 46)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 6, 1))::BIGINT << 40)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 7, 1))::BIGINT << 34)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 8, 1))::BIGINT << 28)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword", 9, 1))::BIGINT << 22)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",10, 1))::BIGINT << 16)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",11, 1))::BIGINT << 10)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",12, 1))::BIGINT <<  4)
+      | ("com.aoapps.security"."UnixCrypt.a64toi"(substr("hashedPassword",13, 1))::BIGINT >>  2);
+    -- Zero-pad hex to full binary length
+    salt_hex := right('000' || to_hex(salt), 4);
+    rsltblock_hex := right('000000000000000' || to_hex(rsltblock), 16);
+    "result" := ROW(
+      'crypt',
+      decode(salt_hex, 'hex'),
+      0,
+      decode(rsltblock_hex, 'hex')
+    );
+  ELSIF length("hashedPassword") = (128 / 4) THEN
+    "result" := ROW('MD5', E''::bytea, 0, decode("hashedPassword", 'hex'));
+  ELSE
+    "hash" := decode("hashedPassword", 'base64');
+    hashlen := octet_length("hash");
+    IF hashlen = (160 / 8) THEN
+      "result" := ROW('SHA-1', E''::bytea, 0, "hash");
+    ELSE
+      RAISE EXCEPTION 'Unable to guess algorithm by hash length: %', hashlen;
+    END IF;
+  END IF;
+  "resultValid" := "com.aoapps.security"."HashedPassword.validate"("result");
+  IF "resultValid" IS NOT NULL THEN
+    RAISE EXCEPTION '%', "resultValid";
+  END IF;
+  RETURN "result";
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

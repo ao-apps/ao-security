@@ -34,177 +34,193 @@ import java.io.IOException;
  */
 public final class SecurityStreamables {
 
-	/** Make no instances. */
-	private SecurityStreamables() {throw new AssertionError();}
+  /** Make no instances. */
+  private SecurityStreamables() {
+    throw new AssertionError();
+  }
 
-	/**
-	 * Reads a {@link HashedKey}.
-	 */
-	public static HashedKey readHashedKey(DataInputStream in) throws IOException {
-		HashedKey.Algorithm algorithm;
-		byte[] hash;
-		if(in.readBoolean()) {
-			algorithm = HashedKey.Algorithm.findAlgorithm(in.readUTF());
-			int hashBytes = Short.toUnsignedInt(in.readShort());
-			hash = new byte[hashBytes];
-			in.readFully(hash);
-		} else {
-			algorithm = null;
-			hash = null;
-		}
-		return HashedKey.valueOf(algorithm, hash);
-	}
+  /**
+   * Reads a {@link HashedKey}.
+   */
+  public static HashedKey readHashedKey(DataInputStream in) throws IOException {
+    HashedKey.Algorithm algorithm;
+    byte[] hash;
+    if (in.readBoolean()) {
+      algorithm = HashedKey.Algorithm.findAlgorithm(in.readUTF());
+      int hashBytes = Short.toUnsignedInt(in.readShort());
+      hash = new byte[hashBytes];
+      in.readFully(hash);
+    } else {
+      algorithm = null;
+      hash = null;
+    }
+    return HashedKey.valueOf(algorithm, hash);
+  }
 
-	/**
-	 * Reads a possibly-{@code null} {@link HashedKey}.
-	 */
-	public static HashedKey readNullHashedKey(DataInputStream in) throws IOException {
-		return in.readBoolean() ? readHashedKey(in) : null;
-	}
+  /**
+   * Reads a possibly-{@code null} {@link HashedKey}.
+   */
+  public static HashedKey readNullHashedKey(DataInputStream in) throws IOException {
+    return in.readBoolean() ? readHashedKey(in) : null;
+  }
 
-	/**
-	 * Reads a {@link HashedPassword}.
-	 */
-	public static HashedPassword readHashedPassword(DataInputStream in) throws IOException {
-		HashedPassword.Algorithm algorithm;
-		byte[] salt;
-		int iterations;
-		byte[] hash;
-		if(in.readBoolean()) {
-			algorithm = HashedPassword.Algorithm.findAlgorithm(in.readUTF());
-			int saltBytes = Short.toUnsignedInt(in.readShort());
-			salt = new byte[saltBytes];
-			in.readFully(salt);
-			iterations = in.readInt();
-			int hashBytes = Short.toUnsignedInt(in.readShort());
-			hash = new byte[hashBytes];
-			in.readFully(hash);
-		} else {
-			algorithm = null;
-			salt = null;
-			iterations = 0;
-			hash = null;
-		}
-		return HashedPassword.valueOf(algorithm, salt, iterations, hash);
-	}
+  /**
+   * Reads a {@link HashedPassword}.
+   */
+  public static HashedPassword readHashedPassword(DataInputStream in) throws IOException {
+    HashedPassword.Algorithm algorithm;
+    byte[] salt;
+    int iterations;
+    byte[] hash;
+    if (in.readBoolean()) {
+      algorithm = HashedPassword.Algorithm.findAlgorithm(in.readUTF());
+      int saltBytes = Short.toUnsignedInt(in.readShort());
+      salt = new byte[saltBytes];
+      in.readFully(salt);
+      iterations = in.readInt();
+      int hashBytes = Short.toUnsignedInt(in.readShort());
+      hash = new byte[hashBytes];
+      in.readFully(hash);
+    } else {
+      algorithm = null;
+      salt = null;
+      iterations = 0;
+      hash = null;
+    }
+    return HashedPassword.valueOf(algorithm, salt, iterations, hash);
+  }
 
-	/**
-	 * Reads a possibly-{@code null} {@link HashedPassword}.
-	 */
-	public static HashedPassword readNullHashedPassword(DataInputStream in) throws IOException {
-		return in.readBoolean() ? readHashedPassword(in) : null;
-	}
+  /**
+   * Reads a possibly-{@code null} {@link HashedPassword}.
+   */
+  public static HashedPassword readNullHashedPassword(DataInputStream in) throws IOException {
+    return in.readBoolean() ? readHashedPassword(in) : null;
+  }
 
-	/**
-	 * Reads an {@link Identifier}.
-	 */
-	public static Identifier readIdentifier(DataInputStream in) throws IOException {
-		return new Identifier(in.readLong(), in.readLong());
-	}
+  /**
+   * Reads an {@link Identifier}.
+   */
+  public static Identifier readIdentifier(DataInputStream in) throws IOException {
+    return new Identifier(in.readLong(), in.readLong());
+  }
 
-	/**
-	 * Reads a possibly-{@code null} {@link Identifier}.
-	 */
-	public static Identifier readNullIdentifier(DataInputStream in) throws IOException {
-		return in.readBoolean() ? readIdentifier(in) : null;
-	}
+  /**
+   * Reads a possibly-{@code null} {@link Identifier}.
+   */
+  public static Identifier readNullIdentifier(DataInputStream in) throws IOException {
+    return in.readBoolean() ? readIdentifier(in) : null;
+  }
 
-	/**
-	 * Reads a {@link SmallIdentifier}.
-	 */
-	public static SmallIdentifier readSmallIdentifier(DataInputStream in) throws IOException {
-		return new SmallIdentifier(in.readLong());
-	}
+  /**
+   * Reads a {@link SmallIdentifier}.
+   */
+  public static SmallIdentifier readSmallIdentifier(DataInputStream in) throws IOException {
+    return new SmallIdentifier(in.readLong());
+  }
 
-	/**
-	 * Reads a possibly-{@code null} {@link Identifier}.
-	 */
-	public static SmallIdentifier readNullSmallIdentifier(DataInputStream in) throws IOException {
-		return in.readBoolean() ? readSmallIdentifier(in) : null;
-	}
+  /**
+   * Reads a possibly-{@code null} {@link Identifier}.
+   */
+  public static SmallIdentifier readNullSmallIdentifier(DataInputStream in) throws IOException {
+    return in.readBoolean() ? readSmallIdentifier(in) : null;
+  }
 
-	/**
-	 * Writes a {@link HashedKey}.
-	 */
-	public static void writeHashedKey(HashedKey hashedKey, DataOutputStream out) throws IOException {
-		HashedKey.Algorithm algorithm = hashedKey.getAlgorithm();
-		out.writeBoolean(algorithm != null);
-		if(algorithm != null) {
-			out.writeUTF(algorithm.getAlgorithmName());
-			byte[] hash = hashedKey.getHash();
-			int hashBytes = hash.length;
-			if(hashBytes >= (1 << Short.SIZE)) throw new IOException("length too long for unsigned short: " + hashBytes);
-			out.writeShort(hashBytes);
-			out.write(hash);
-		}
-	}
+  /**
+   * Writes a {@link HashedKey}.
+   */
+  public static void writeHashedKey(HashedKey hashedKey, DataOutputStream out) throws IOException {
+    HashedKey.Algorithm algorithm = hashedKey.getAlgorithm();
+    out.writeBoolean(algorithm != null);
+    if (algorithm != null) {
+      out.writeUTF(algorithm.getAlgorithmName());
+      byte[] hash = hashedKey.getHash();
+      int hashBytes = hash.length;
+      if (hashBytes >= (1 << Short.SIZE)) {
+        throw new IOException("length too long for unsigned short: " + hashBytes);
+      }
+      out.writeShort(hashBytes);
+      out.write(hash);
+    }
+  }
 
-	/**
-	 * Writes a possibly-{@code null} {@link HashedKey}.
-	 */
-	public static void writeNullHashedKey(HashedKey hashedKey, DataOutputStream out) throws IOException {
-		out.writeBoolean(hashedKey != null);
-		if(hashedKey != null) writeHashedKey(hashedKey, out);
-	}
+  /**
+   * Writes a possibly-{@code null} {@link HashedKey}.
+   */
+  public static void writeNullHashedKey(HashedKey hashedKey, DataOutputStream out) throws IOException {
+    out.writeBoolean(hashedKey != null);
+    if (hashedKey != null) {
+      writeHashedKey(hashedKey, out);
+    }
+  }
 
-	/**
-	 * Writes a {@link HashedPassword}.
-	 */
-	public static void writeHashedPassword(HashedPassword hashedPassword, DataOutputStream out) throws IOException {
-		HashedPassword.Algorithm algorithm = hashedPassword.getAlgorithm();
-		out.writeBoolean(algorithm != null);
-		if(algorithm != null) {
-			out.writeUTF(algorithm.getAlgorithmName());
-			byte[] salt = hashedPassword.getSalt();
-			int saltBytes = salt.length;
-			if(saltBytes >= (1 << Short.SIZE)) throw new IOException("length too long for unsigned short: " + saltBytes);
-			out.writeShort(saltBytes);
-			out.write(salt);
-			out.writeInt(hashedPassword.getIterations());
-			byte[] hash = hashedPassword.getHash();
-			int hashBytes = hash.length;
-			if(hashBytes >= (1 << Short.SIZE)) throw new IOException("length too long for unsigned short: " + hashBytes);
-			out.writeShort(hashBytes);
-			out.write(hash);
-		}
-	}
+  /**
+   * Writes a {@link HashedPassword}.
+   */
+  public static void writeHashedPassword(HashedPassword hashedPassword, DataOutputStream out) throws IOException {
+    HashedPassword.Algorithm algorithm = hashedPassword.getAlgorithm();
+    out.writeBoolean(algorithm != null);
+    if (algorithm != null) {
+      out.writeUTF(algorithm.getAlgorithmName());
+      byte[] salt = hashedPassword.getSalt();
+      int saltBytes = salt.length;
+      if (saltBytes >= (1 << Short.SIZE)) {
+        throw new IOException("length too long for unsigned short: " + saltBytes);
+      }
+      out.writeShort(saltBytes);
+      out.write(salt);
+      out.writeInt(hashedPassword.getIterations());
+      byte[] hash = hashedPassword.getHash();
+      int hashBytes = hash.length;
+      if (hashBytes >= (1 << Short.SIZE)) {
+        throw new IOException("length too long for unsigned short: " + hashBytes);
+      }
+      out.writeShort(hashBytes);
+      out.write(hash);
+    }
+  }
 
-	/**
-	 * Writes a possibly-{@code null} {@link HashedPassword}.
-	 */
-	public static void writeNullHashedPassword(HashedPassword hashedPassword, DataOutputStream out) throws IOException {
-		out.writeBoolean(hashedPassword != null);
-		if(hashedPassword != null) writeHashedPassword(hashedPassword, out);
-	}
+  /**
+   * Writes a possibly-{@code null} {@link HashedPassword}.
+   */
+  public static void writeNullHashedPassword(HashedPassword hashedPassword, DataOutputStream out) throws IOException {
+    out.writeBoolean(hashedPassword != null);
+    if (hashedPassword != null) {
+      writeHashedPassword(hashedPassword, out);
+    }
+  }
 
-	/**
-	 * Writes an {@link Identifier}.
-	 */
-	public static void writeIdentifier(Identifier identifier, DataOutputStream out) throws IOException {
-		out.writeLong(identifier.getHi());
-		out.writeLong(identifier.getLo());
-	}
+  /**
+   * Writes an {@link Identifier}.
+   */
+  public static void writeIdentifier(Identifier identifier, DataOutputStream out) throws IOException {
+    out.writeLong(identifier.getHi());
+    out.writeLong(identifier.getLo());
+  }
 
-	/**
-	 * Writes a possibly-{@code null} {@link Identifier}.
-	 */
-	public static void writeNullIdentifier(Identifier identifier, DataOutputStream out) throws IOException {
-		out.writeBoolean(identifier != null);
-		if(identifier != null) writeIdentifier(identifier, out);
-	}
+  /**
+   * Writes a possibly-{@code null} {@link Identifier}.
+   */
+  public static void writeNullIdentifier(Identifier identifier, DataOutputStream out) throws IOException {
+    out.writeBoolean(identifier != null);
+    if (identifier != null) {
+      writeIdentifier(identifier, out);
+    }
+  }
 
-	/**
-	 * Writes a {@link SmallIdentifier}.
-	 */
-	public static void writeSmallIdentifier(SmallIdentifier identifier, DataOutputStream out) throws IOException {
-		out.writeLong(identifier.getValue());
-	}
+  /**
+   * Writes a {@link SmallIdentifier}.
+   */
+  public static void writeSmallIdentifier(SmallIdentifier identifier, DataOutputStream out) throws IOException {
+    out.writeLong(identifier.getValue());
+  }
 
-	/**
-	 * Writes a possibly-{@code null} {@link SmallIdentifier}.
-	 */
-	public static void writeNullSmallIdentifier(SmallIdentifier identifier, DataOutputStream out) throws IOException {
-		out.writeBoolean(identifier != null);
-		if(identifier != null) writeSmallIdentifier(identifier, out);
-	}
+  /**
+   * Writes a possibly-{@code null} {@link SmallIdentifier}.
+   */
+  public static void writeNullSmallIdentifier(SmallIdentifier identifier, DataOutputStream out) throws IOException {
+    out.writeBoolean(identifier != null);
+    if (identifier != null) {
+      writeSmallIdentifier(identifier, out);
+    }
+  }
 }

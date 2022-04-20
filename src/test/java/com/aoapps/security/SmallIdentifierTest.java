@@ -34,19 +34,19 @@ import junit.framework.TestSuite;
  */
 public class SmallIdentifierTest extends TestCase {
 
-	public SmallIdentifierTest(String testName) {
-		super(testName);
-	}
+  public SmallIdentifierTest(String testName) {
+    super(testName);
+  }
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(SmallIdentifierTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(SmallIdentifierTest.class);
+    return suite;
+  }
 
-	public void testDiscrepancyWithDatabaseFunction() {
-		SmallIdentifier parsed = new SmallIdentifier("bWMZti51JU8");
-		assertEquals(8442361102747480762L, parsed.getValue());
-		String formatted = parsed.toString();
-		assertEquals("bWMZti51JU8", formatted);
-	}
+  public void testDiscrepancyWithDatabaseFunction() {
+    SmallIdentifier parsed = new SmallIdentifier("bWMZti51JU8");
+    assertEquals(8442361102747480762L, parsed.getValue());
+    String formatted = parsed.toString();
+    assertEquals("bWMZti51JU8", formatted);
+  }
 }

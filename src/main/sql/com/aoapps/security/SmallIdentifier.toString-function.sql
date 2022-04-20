@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,12 +21,12 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide" (
-	dividend NUMERIC(20,0),
-	divisor NUMERIC(20,0)
+  dividend NUMERIC(20,0),
+  divisor NUMERIC(20,0)
 )
 RETURNS NUMERIC(20,0) AS $$
 BEGIN
-	RETURN ((dividend - mod(dividend, divisor)) / divisor)::NUMERIC(20,0);
+  RETURN ((dividend - mod(dividend, divisor)) / divisor)::NUMERIC(20,0);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -34,8 +34,8 @@ PARALLEL SAFE
 RETURNS NULL ON NULL INPUT;
 
 COMMENT ON FUNCTION "com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide" (
-	NUMERIC(20,0),
-	NUMERIC(20,0)
+  NUMERIC(20,0),
+  NUMERIC(20,0)
 ) IS
 'PostgreSQL seems to have a rounding-up behavior (sometimes) on numeric division.
 For example:
@@ -45,30 +45,30 @@ This works around this issue by first subtracting the modulus.
 This only works on positive values for this specific purpose.';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."SmallIdentifier.toString" (
-	this "com.aoapps.security"."SmallIdentifier"
+  this "com.aoapps.security"."SmallIdentifier"
 )
 RETURNS text AS $$
 DECLARE
-	"BASE" NUMERIC(20,0) := 57;
-	num NUMERIC(20,0) := this;
+  "BASE" NUMERIC(20,0) := 57;
+  num NUMERIC(20,0) := this;
 BEGIN
-	IF num IS NULL THEN
-		RETURN NULL;
-	ELSIF num < 0 THEN
-		num := num + '18446744073709551616'::numeric(20,0);
-	END IF;
-	RETURN
-		   "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE")))
-		|| "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, "BASE"))
-		|| "com.aoapps.security"."Identifier.getCharacter"(num);
+  IF num IS NULL THEN
+    RETURN NULL;
+  ELSIF num < 0 THEN
+    num := num + '18446744073709551616'::numeric(20,0);
+  END IF;
+  RETURN
+       "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE")))
+    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, "BASE"))
+    || "com.aoapps.security"."Identifier.getCharacter"(num);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

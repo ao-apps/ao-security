@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,18 +21,18 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE TYPE "com.aoapps.security"."<HashedPassword>" AS (
-	algorithm text,
-	salt bytea,
-	iterations integer,
-	"hash" bytea
+  algorithm text,
+  salt bytea,
+  iterations integer,
+  "hash" bytea
 );
 
 COMMENT ON TYPE "com.aoapps.security"."<HashedPassword>" IS
 'Row definition for "com.aoapps.security"."HashedPassword"';
 
 CREATE DOMAIN "com.aoapps.security"."HashedPassword" AS "com.aoapps.security"."<HashedPassword>" CHECK (
-	VALUE IS NOT DISTINCT FROM NULL
-	OR "com.aoapps.security"."HashedPassword.validate"(VALUE) IS NULL
+  VALUE IS NOT DISTINCT FROM NULL
+  OR "com.aoapps.security"."HashedPassword.validate"(VALUE) IS NULL
 );
 
 COMMENT ON DOMAIN "com.aoapps.security"."HashedPassword" IS

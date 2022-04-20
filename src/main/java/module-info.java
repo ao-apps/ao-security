@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021  AO Industries, Inc.
+ * Copyright (C) 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,10 +21,10 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 module com.aoapps.security {
-	exports com.aoapps.security;
-	// Direct
-	requires com.aoapps.lang; // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
-	requires static org.apache.commons.codec; // <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
-	// Java SE
-	requires java.logging;
+  exports com.aoapps.security;
+  // Direct
+  requires com.aoapps.lang; // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
+  requires static org.apache.commons.codec; // <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
+  // Java SE
+  requires java.logging;
 }

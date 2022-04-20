@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,24 +21,24 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.Algorithm.validateIterations" (
-	algorithm text,
-	iterations integer
+  algorithm text,
+  iterations integer
 )
 RETURNS text AS $$
 DECLARE
-	"_minimumIterations" integer;
-	"_maximumIterations" integer;
+  "_minimumIterations" integer;
+  "_maximumIterations" integer;
 BEGIN
-	"_minimumIterations" := (SELECT "minimumIterations" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
-	IF iterations < "_minimumIterations" THEN
-		RETURN algorithm || ': iterations < minimumIterations: ' || iterations || ' < ' || "_minimumIterations";
-	END IF;
-	"_maximumIterations" := (SELECT "maximumIterations" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
-	IF "_maximumIterations" IS NOT NULL And iterations > "_maximumIterations" THEN
-		RETURN algorithm || ': iterations > maximumIterations: ' || iterations || ' > ' || "_maximumIterations";
-	END IF;
-	-- All is OK
-	RETURN null;
+  "_minimumIterations" := (SELECT "minimumIterations" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
+  IF iterations < "_minimumIterations" THEN
+    RETURN algorithm || ': iterations < minimumIterations: ' || iterations || ' < ' || "_minimumIterations";
+  END IF;
+  "_maximumIterations" := (SELECT "maximumIterations" FROM "com.aoapps.security"."HashedPassword.Algorithm" WHERE "name" = algorithm);
+  IF "_maximumIterations" IS NOT NULL And iterations > "_maximumIterations" THEN
+    RETURN algorithm || ': iterations > maximumIterations: ' || iterations || ' > ' || "_maximumIterations";
+  END IF;
+  -- All is OK
+  RETURN null;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

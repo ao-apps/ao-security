@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,22 +21,22 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.toString" (
-	this "com.aoapps.security"."HashedPassword"
+  this "com.aoapps.security"."HashedPassword"
 )
 RETURNS text AS $$
 BEGIN
-	IF this IS NULL THEN
-		RETURN NULL;
-	ELSIF this.algorithm IS NULL THEN
-		RETURN '*';
-	ELSE
-		RETURN "com.aoapps.security"."HashedPassword.Algorithm.toString"(
-			this.algorithm,
-			this.salt,
-			this.iterations,
-			this."hash"
-		);
-	END IF;
+  IF this IS NULL THEN
+    RETURN NULL;
+  ELSIF this.algorithm IS NULL THEN
+    RETURN '*';
+  ELSE
+    RETURN "com.aoapps.security"."HashedPassword.Algorithm.toString"(
+      this.algorithm,
+      this.salt,
+      this.iterations,
+      this."hash"
+    );
+  END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -47,22 +47,22 @@ COMMENT ON FUNCTION "com.aoapps.security"."HashedPassword.toString" ("com.aoapps
 'Matches method com.aoapps.security.HashedPassword.toString';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."HashedPassword.toString" (
-	this "com.aoapps.security"."<HashedPassword>"
+  this "com.aoapps.security"."<HashedPassword>"
 )
 RETURNS text AS $$
 DECLARE
-	"isValid" text;
+  "isValid" text;
 BEGIN
-	-- Validate before casting to DOMAIN to give meaningful error message
-	IF this IS DISTINCT FROM NULL
-	THEN
-		"isValid" := "com.aoapps.security"."HashedPassword.validate"(this.algorithm, this.salt, this.iterations, this."hash");
-		IF "isValid" IS NOT NULL
-		THEN
-			RAISE EXCEPTION '%', "isValid";
-		END IF;
-	END IF;
-	RETURN "com.aoapps.security"."HashedPassword.toString"(this::"com.aoapps.security"."HashedPassword");
+  -- Validate before casting to DOMAIN to give meaningful error message
+  IF this IS DISTINCT FROM NULL
+  THEN
+    "isValid" := "com.aoapps.security"."HashedPassword.validate"(this.algorithm, this.salt, this.iterations, this."hash");
+    IF "isValid" IS NOT NULL
+    THEN
+      RAISE EXCEPTION '%', "isValid";
+    END IF;
+  END IF;
+  RETURN "com.aoapps.security"."HashedPassword.toString"(this::"com.aoapps.security"."HashedPassword");
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

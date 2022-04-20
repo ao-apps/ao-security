@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,12 +23,12 @@
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."SmallIdentifier.valueOf" (encoded character(11))
 RETURNS "com.aoapps.security"."SmallIdentifier" AS $$
 BEGIN
-	IF encoded IS NULL THEN
-		RETURN NULL;
-	ELSIF length(encoded) != 11 THEN
-		RAISE EXCEPTION 'encoded length mismatch: expected 11, got %', length(encoded);
-	END IF;
-	RETURN "com.aoapps.security"."Identifier.decode"(encoded);
+  IF encoded IS NULL THEN
+    RETURN NULL;
+  ELSIF length(encoded) != 11 THEN
+    RAISE EXCEPTION 'encoded length mismatch: expected 11, got %', length(encoded);
+  END IF;
+  RETURN "com.aoapps.security"."Identifier.decode"(encoded);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

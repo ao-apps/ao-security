@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,13 +23,13 @@
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.validate" (hi bigint, lo bigint)
 RETURNS text AS $$
 BEGIN
-	IF hi IS NULL THEN
-		RETURN 'hi may not be null';
-	ELSIF lo IS NULL THEN
-		RETURN 'lo may not be null';
-	ELSE
-		RETURN null;
-	END IF;
+  IF hi IS NULL THEN
+    RETURN 'hi may not be null';
+  ELSIF lo IS NULL THEN
+    RETURN 'lo may not be null';
+  ELSE
+    RETURN null;
+  END IF;
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
@@ -39,17 +39,17 @@ COMMENT ON FUNCTION "com.aoapps.security"."Identifier.validate" (bigint, bigint)
 'Enforces neither hi nor lo may be null.';
 
 CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.validate" (
-	this "com.aoapps.security"."<Identifier>"
+  this "com.aoapps.security"."<Identifier>"
 )
 RETURNS text AS $$
 BEGIN
-	RETURN "com.aoapps.security"."Identifier.validate"(this.hi, this.lo);
+  RETURN "com.aoapps.security"."Identifier.validate"(this.hi, this.lo);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
 PARALLEL SAFE;
 
 COMMENT ON FUNCTION "com.aoapps.security"."Identifier.validate" (
-	"com.aoapps.security"."<Identifier>"
+  "com.aoapps.security"."<Identifier>"
 ) IS
 'Enforces neither hi nor lo may be null.';

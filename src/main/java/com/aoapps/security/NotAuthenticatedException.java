@@ -33,27 +33,27 @@ import com.aoapps.lang.Throwables;
  */
 public class NotAuthenticatedException extends SecurityException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public NotAuthenticatedException() {
-		super();
-	}
+  public NotAuthenticatedException() {
+    super();
+  }
 
-	public NotAuthenticatedException(String message) {
-		super(message);
-	}
+  public NotAuthenticatedException(String message) {
+    super(message);
+  }
 
-	public NotAuthenticatedException(Throwable cause) {
-		super(cause);
-	}
+  public NotAuthenticatedException(Throwable cause) {
+    super(cause);
+  }
 
-	public NotAuthenticatedException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  public NotAuthenticatedException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-	static {
-		Throwables.registerSurrogateFactory(NotAuthenticatedException.class, (template, cause) ->
-			new NotAuthenticatedException(template.getMessage(), cause)
-		);
-	}
+  static {
+    Throwables.registerSurrogateFactory(NotAuthenticatedException.class, (template, cause) ->
+      new NotAuthenticatedException(template.getMessage(), cause)
+    );
+  }
 }

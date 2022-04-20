@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -21,22 +21,22 @@
  * along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
  */
 CREATE TABLE "com.aoapps.security"."HashedPassword.Algorithm" (
-	"name" text PRIMARY KEY CHECK ("name" NOT LIKE '%$%'),
-	secure boolean NOT NULL,
-	"saltBytes" smallint NOT NULL CHECK ("saltBytes" >= 0),
-	"minimumIterations" integer NOT NULL CHECK ("minimumIterations" >= 0),
-	"maximumIterations" integer,
-	"recommendedIterations" integer NOT NULL,
-	"hashBytes" smallint NOT NULL CHECK ("hashBytes" > 0),
-	CHECK (
-		CASE WHEN "minimumIterations" = 0 THEN
-			"maximumIterations" = 0
-			AND "recommendedIterations" = 0
-		ELSE
-			("maximumIterations" IS NULL OR "maximumIterations" > 0)
-			AND "recommendedIterations" > 0
-		END
-	)
+  "name" text PRIMARY KEY CHECK ("name" NOT LIKE '%$%'),
+  secure boolean NOT NULL,
+  "saltBytes" smallint NOT NULL CHECK ("saltBytes" >= 0),
+  "minimumIterations" integer NOT NULL CHECK ("minimumIterations" >= 0),
+  "maximumIterations" integer,
+  "recommendedIterations" integer NOT NULL,
+  "hashBytes" smallint NOT NULL CHECK ("hashBytes" > 0),
+  CHECK (
+    CASE WHEN "minimumIterations" = 0 THEN
+      "maximumIterations" = 0
+      AND "recommendedIterations" = 0
+    ELSE
+      ("maximumIterations" IS NULL OR "maximumIterations" > 0)
+      AND "recommendedIterations" > 0
+    END
+  )
 );
 
 INSERT INTO "com.aoapps.security"."HashedPassword.Algorithm" VALUES
