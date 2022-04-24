@@ -71,7 +71,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      * @deprecated  MD5 should not be used for any cryptographic purpose.
      */
     @Deprecated // Java 9: (forRemoval = false)
-    MD5("MD5", 128 / Byte.SIZE),
+      MD5("MD5", 128 / Byte.SIZE),
     /**
      * SHA-1 is now considered to have at best 65-bits of collision resistance, if using SHA-1 (which you
      * shouldn't) its key size is correspondingly limited to 128 bits.  See:
@@ -83,12 +83,12 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      * @deprecated  SHA-1 should no longer be used for any cryptographic purpose.
      */
     @Deprecated // Java 9: (forRemoval = false)
-    SHA_1("SHA-1", 128 / Byte.SIZE, 160 / Byte.SIZE),
+        SHA_1("SHA-1", 128 / Byte.SIZE, 160 / Byte.SIZE),
     /**
      * @deprecated  Collision resistance of at least 128 bits is required
      */
     @Deprecated // Java 9: (forRemoval = false)
-    SHA_224("SHA-224", 224 / Byte.SIZE),
+        SHA_224("SHA-224", 224 / Byte.SIZE),
     SHA_256("SHA-256", 256 / Byte.SIZE),
     SHA_384("SHA-384", 384 / Byte.SIZE),
     SHA_512("SHA-512", 512 / Byte.SIZE),
@@ -96,13 +96,13 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      * @deprecated  Collision resistance of at least 128 bits is required
      */
     @Deprecated // Java 9: (forRemoval = false)
-    SHA_512_224("SHA-512/224", 224 / Byte.SIZE),
+        SHA_512_224("SHA-512/224", 224 / Byte.SIZE),
     SHA_512_256("SHA-512/256", 256 / Byte.SIZE),
     /**
      * @deprecated  Collision resistance of at least 128 bits is required
      */
     @Deprecated // Java 9: (forRemoval = false)
-    SHA3_224("SHA3-224", 224 / Byte.SIZE),
+        SHA3_224("SHA3-224", 224 / Byte.SIZE),
     SHA3_256("SHA3-256", 256 / Byte.SIZE),
     SHA3_384("SHA3-384", 384 / Byte.SIZE),
     SHA3_512("SHA3-512", 512 / Byte.SIZE);
@@ -286,7 +286,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
         byte[] hash;
         synchronized (key.key) {
           hash = MessageDigest.getInstance(getAlgorithmName()).digest(
-            validateKey(IllegalArgumentException::new, key).key
+              validateKey(IllegalArgumentException::new, key).key
           );
           key.destroy();
           key = null;
@@ -314,7 +314,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
     public byte[] hash(byte[] key) {
       try {
         byte[] hash = MessageDigest.getInstance(getAlgorithmName()).digest(
-          validateKey(IllegalArgumentException::new, key)
+            validateKey(IllegalArgumentException::new, key)
         );
         return validateHash(AssertionError::new, hash);
       } catch (NoSuchAlgorithmException e) {
@@ -557,18 +557,18 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
       }
       // These algorithms are base-64 of hash only
       else if (
-        algorithm == Algorithm.SHA_1
-        || algorithm == Algorithm.SHA_224
-        || algorithm == Algorithm.SHA_256
-        || algorithm == Algorithm.SHA_384
-        || algorithm == Algorithm.SHA_512
+          algorithm == Algorithm.SHA_1
+              || algorithm == Algorithm.SHA_224
+              || algorithm == Algorithm.SHA_256
+              || algorithm == Algorithm.SHA_384
+              || algorithm == Algorithm.SHA_512
       ) {
         return ENCODER.encodeToString(hash);
       }
       // All others use separator and explicitely list the algorithm
       else {
         return SEPARATOR + algorithm.getAlgorithmName()
-          + SEPARATOR + ENCODER.encodeToString(hash);
+            + SEPARATOR + ENCODER.encodeToString(hash);
       }
     }
   }
@@ -585,19 +585,19 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
     if (!(obj instanceof HashedKey)) {
       return false;
     }
-    HashedKey other = (HashedKey)obj;
+    HashedKey other = (HashedKey) obj;
     // All done for length-constant time comparisons
     if (algorithm == null | other.algorithm == null) {
       // Perform an equality check with default settings, just to occupy the same amount of time as if had a key
       boolean discardMe =
-        algorithm == other.algorithm
-        & slowEquals(DUMMY_KEY, DUMMY_KEY);
+          algorithm == other.algorithm
+              & slowEquals(DUMMY_KEY, DUMMY_KEY);
       assert discardMe || !discardMe : "Suppress unused variable warning";
       return false;
     } else {
       return
-        algorithm == other.algorithm
-        & slowEquals(hash, other.hash);
+          algorithm == other.algorithm
+              & slowEquals(hash, other.hash);
     }
   }
 
@@ -631,8 +631,8 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
       assert h2.length == hashBytes;
       for (int i = 0; i < hashBytes; i++) {
         diff = Integer.compare(
-          Byte.toUnsignedInt(h1[i]),
-          Byte.toUnsignedInt(h2[i])
+            Byte.toUnsignedInt(h1[i]),
+            Byte.toUnsignedInt(h2[i])
         );
         // Java 9: int diff = Byte.compareUnsigned(h1[i], h2[i]);
         if (diff != 0) {
@@ -689,7 +689,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
           assert !dummiesEqual;
           return false;
         } finally {
-          Arrays.fill(dummyHash, (byte)0);
+          Arrays.fill(dummyHash, (byte) 0);
         }
       } else if (key == null) {
         // Perform a hash with current settings, just to occupy the same amount of time as if had a key
@@ -701,7 +701,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
           assert !dummiesEqual;
           return false;
         } finally {
-          Arrays.fill(dummyHash, (byte)0);
+          Arrays.fill(dummyHash, (byte) 0);
         }
       } else {
         // Hash again
@@ -711,7 +711,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
           key = null;
           return slowEquals(hash, newHash);
         } finally {
-          Arrays.fill(newHash, (byte)0);
+          Arrays.fill(newHash, (byte) 0);
         }
       }
     } finally {
@@ -742,7 +742,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
       boolean hasFailed = false;
       if (benchmark) {
         // Do ten times, but only report the last pass
-        for (int i = 10 ; i > 0; i--) {
+        for (int i = 10; i > 0; i--) {
           boolean output = (i == 1);
           for (Algorithm algorithm : Algorithm.values) {
             try {
@@ -764,7 +764,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
                     System.out.println();
                   }
                 } finally {
-                  Arrays.fill(hashedKey.getHash(), (byte)0);
+                  Arrays.fill(hashedKey.getHash(), (byte) 0);
                 }
               }
             } catch (Error | RuntimeException e) {
@@ -793,7 +793,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
             System.out.println(hashedKey);
           } finally {
             if (hashedKey != null) {
-              Arrays.fill(hashedKey.getHash(), (byte)0);
+              Arrays.fill(hashedKey.getHash(), (byte) 0);
             }
           }
         } catch (Error | RuntimeException e) {

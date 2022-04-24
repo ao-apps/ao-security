@@ -81,7 +81,7 @@ public class HashedKeyTest {
         out.writeObject(hashedKey);
       }
       try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
-        HashedKey serialized = (HashedKey)in.readObject();
+        HashedKey serialized = (HashedKey) in.readObject();
         assertSame(hashedKey.getAlgorithm(), serialized.getAlgorithm());
         assertArrayEquals(hashedKey.getHash(), serialized.getHash());
         assertEquals(hashedKey, serialized);

@@ -70,8 +70,8 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
    */
   public static Optional<Key> valueOf(byte[] key) throws IllegalArgumentException {
     return (key == null || key.length == 0)
-      ? Optional.empty()
-      : Optional.of(new Key(key));
+        ? Optional.empty()
+        : Optional.of(new Key(key));
   }
 
   /**
@@ -97,7 +97,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
     } else {
       try {
         byte[] copy = Arrays.copyOf(key, key.length);
-        Arrays.fill(key, (byte)0);
+        Arrays.fill(key, (byte) 0);
         key = null;
         assert copy.length > 0;
         // length-constant time implementation:
@@ -108,7 +108,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
         }
       } finally {
         if (key != null) {
-          Arrays.fill(key, (byte)0);
+          Arrays.fill(key, (byte) 0);
         }
       }
     }
@@ -128,8 +128,8 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
   @Override
   public String toString() {
     return isDestroyed()
-      ? "\uD83D\uDC7B"  // Ghost emoji
-      : "\uD83D\uDE4A"; // Speak-no-evil monkey emoji
+        ? "\uD83D\uDC7B"  // Ghost emoji
+        : "\uD83D\uDE4A"; // Speak-no-evil monkey emoji
   }
 
   @Override
@@ -137,7 +137,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
     if (!(obj instanceof Key)) {
       return false;
     }
-    Key other = (Key)obj;
+    Key other = (Key) obj;
     // Create a copy to avoid potential deadlock of locking on both
     byte[] copy2;
     synchronized (other.key) {
@@ -148,11 +148,11 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
         // length-constant time
         return
             !SecurityUtil.slowAllZero(key)
-          & !SecurityUtil.slowAllZero(copy2)
-          &  SecurityUtil.slowEquals(key, copy2);
+                & !SecurityUtil.slowAllZero(copy2)
+                &  SecurityUtil.slowEquals(key, copy2);
       }
     } finally {
-      Arrays.fill(copy2, (byte)0);
+      Arrays.fill(copy2, (byte) 0);
     }
   }
 
@@ -165,7 +165,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
   @Override
   public void destroy() {
     synchronized (key) {
-      Arrays.fill(key, (byte)0);
+      Arrays.fill(key, (byte) 0);
     }
   }
 

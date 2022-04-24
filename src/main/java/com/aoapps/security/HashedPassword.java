@@ -108,101 +108,101 @@ public final class HashedPassword implements Serializable {
      *              and not iterated so is subject to both dictionary and brute-force attacks.
      */
     @Deprecated // Java 9: (forRemoval = false)
-    CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
-      /**
-       * @param  <Ex>  An arbitrary exception type that may be thrown
-       */
-      // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.validateSalt-function.sql
-      @Override
-      public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
-        super.validateSalt(newThrowable, salt);
-        if ((salt[0] & 0xf0) != 0) {
-          throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
-        }
-        return salt;
+      CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
+    /**
+     * @param  <Ex>  An arbitrary exception type that may be thrown
+     */
+    // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.validateSalt-function.sql
+    @Override
+    public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
+      super.validateSalt(newThrowable, salt);
+      if ((salt[0] & 0xf0) != 0) {
+        throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
       }
+      return salt;
+    }
 
-      /**
-       * {@inheritDoc}
-       * <p>
-       * Clears the high-order four bits since the salt is only twelve bits.
-       * </p>
-       */
-      @Override
-      byte[] generateSalt(int saltBytes, Random random) {
-        if (saltBytes != 2) {
-          throw new IllegalArgumentException();
-        }
-        byte[] salt = new byte[2];
-        random.nextBytes(salt);
-        salt[0] &= 0x0f;
-        return validateSalt(AssertionError::new, salt);
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Clears the high-order four bits since the salt is only twelve bits.
+     * </p>
+     */
+    @Override
+    byte[] generateSalt(int saltBytes, Random random) {
+      if (saltBytes != 2) {
+        throw new IllegalArgumentException();
       }
+      byte[] salt = new byte[2];
+      random.nextBytes(salt);
+      salt[0] &= 0x0f;
+      return validateSalt(AssertionError::new, salt);
+    }
 
-      /**
-       * @param  password  Is destroyed before this method returns.  If the original password is
+    /**
+     * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
-       */
-      @Override
-      byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
-        synchronized (password.password) {
-          try {
-            if (password.isDestroyed()) {
-              throw new IllegalArgumentException("Refusing to hash destroyed password");
-            }
-            validateSalt(IllegalArgumentException::new, salt);
-            validateIterations(IllegalArgumentException::new, iterations);
-            if (hashBytes != Long.BYTES) {
-              throw new IllegalArgumentException();
-            }
-            byte[] hash = new byte[Long.BYTES];
-            long rsltblock = UnixCrypt.cryptImpl(
+     */
+    @Override
+    byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
+      synchronized (password.password) {
+        try {
+          if (password.isDestroyed()) {
+            throw new IllegalArgumentException("Refusing to hash destroyed password");
+          }
+          validateSalt(IllegalArgumentException::new, salt);
+          validateIterations(IllegalArgumentException::new, iterations);
+          if (hashBytes != Long.BYTES) {
+            throw new IllegalArgumentException();
+          }
+          byte[] hash = new byte[Long.BYTES];
+          long rsltblock = UnixCrypt.cryptImpl(
               new String(password.password), // TODO: Switch to commons-codec to avoid String wrapping
-                ((salt[0] << Byte.SIZE) & 0x0f00)
-              | ( salt[1] & 0xff                )
-            );
+              ((salt[0] << Byte.SIZE) & 0x0f00)
+                  | (salt[1] & 0xff                )
+          );
+          password.destroy();
+          password = null;
+          // System.out.println("rsltblock = " + rsltblock);
+          IoUtils.longToBuffer(rsltblock, hash);
+          return validateHash(AssertionError::new, hash);
+        } finally {
+          if (password != null) {
             password.destroy();
-            password = null;
-            // System.out.println("rsltblock = " + rsltblock);
-            IoUtils.longToBuffer(rsltblock, hash);
-            return validateHash(AssertionError::new, hash);
-          } finally {
-            if (password != null) {
-              password.destroy();
-            }
           }
         }
       }
+    }
 
-      // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
-      @Override
-      String toString(byte[] salt, int iterations, byte[] hash) {
-        // System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
-        return new String(new char[] {
+    // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
+    @Override
+    String toString(byte[] salt, int iterations, byte[] hash) {
+      // System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
+      return new String(new char[]{
           // Salt
-          UnixCrypt.itoa64( salt[1]                                ),
+          UnixCrypt.itoa64(salt[1]                                ),
           UnixCrypt.itoa64((salt[0] << 2) | ((salt[1] >> 6) & 0x03)),
           // Hash
-          UnixCrypt.itoa64( hash[0] >> 2                           ),
+          UnixCrypt.itoa64(hash[0] >> 2                           ),
           UnixCrypt.itoa64((hash[0] << 4) | ((hash[1] >> 4) & 0x0f)),
           UnixCrypt.itoa64((hash[1] << 2) | ((hash[2] >> 6) & 0x03)),
-          UnixCrypt.itoa64( hash[2]                                ),
-          UnixCrypt.itoa64( hash[3] >> 2                           ),
+          UnixCrypt.itoa64(hash[2]                                ),
+          UnixCrypt.itoa64(hash[3] >> 2                           ),
           UnixCrypt.itoa64((hash[3] << 4) | ((hash[4] >> 4) & 0x0f)),
           UnixCrypt.itoa64((hash[4] << 2) | ((hash[5] >> 6) & 0x03)),
-          UnixCrypt.itoa64( hash[5]                                ),
-          UnixCrypt.itoa64( hash[6] >> 2                           ),
+          UnixCrypt.itoa64(hash[5]                                ),
+          UnixCrypt.itoa64(hash[6] >> 2                           ),
           UnixCrypt.itoa64((hash[6] << 4) | ((hash[7] >> 4) & 0x0f)),
-          UnixCrypt.itoa64( hash[7] << 2                           )
-        });
-      }
-    },
+          UnixCrypt.itoa64(hash[7] << 2                           )
+      });
+    }
+  },
     /**
      * @deprecated  MD5 should not be used for any cryptographic purpose, plus this is neither salted nor
      *              iterated so is subject to both dictionary and brute-force attacks.
      */
     @Deprecated // Java 9: (forRemoval = false)
-    MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
+        MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
       /**
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
@@ -228,7 +228,7 @@ public final class HashedPassword implements Serializable {
                 MessageDigest md = MessageDigest.getInstance(getAlgorithmName());
                 md.update(utf8, 0, utf8Buffer.limit());
                 byte[] hash = md.digest();
-                Arrays.fill(utf8, (byte)0);
+                Arrays.fill(utf8, (byte) 0);
                 utf8 = null;
                 return validateHash(AssertionError::new, hash);
               } catch (NoSuchAlgorithmException e) {
@@ -236,7 +236,7 @@ public final class HashedPassword implements Serializable {
               }
             } finally {
               if (utf8 != null) {
-                Arrays.fill(utf8, (byte)0);
+                Arrays.fill(utf8, (byte) 0);
               }
             }
           } finally {
@@ -261,7 +261,7 @@ public final class HashedPassword implements Serializable {
      *              iterated so is subject to both dictionary and brute-force attacks.
      */
     @Deprecated // Java 9: (forRemoval = false)
-    SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
+        SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
       /**
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
@@ -287,7 +287,7 @@ public final class HashedPassword implements Serializable {
                 MessageDigest md = MessageDigest.getInstance(getAlgorithmName());
                 md.update(utf8, 0, utf8Buffer.limit());
                 byte[] hash = md.digest();
-                Arrays.fill(utf8, (byte)0);
+                Arrays.fill(utf8, (byte) 0);
                 utf8 = null;
                 return validateHash(AssertionError::new, hash);
               } catch (NoSuchAlgorithmException e) {
@@ -295,7 +295,7 @@ public final class HashedPassword implements Serializable {
               }
             } finally {
               if (utf8 != null) {
-                Arrays.fill(utf8, (byte)0);
+                Arrays.fill(utf8, (byte) 0);
               }
             }
           } finally {
@@ -322,7 +322,7 @@ public final class HashedPassword implements Serializable {
      *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
      */
     @Deprecated // Java 9: (forRemoval = false)
-    PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
+        PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
       /**
        * Also allows the 256-bit salt for compatibility with previous versions.
        *
@@ -363,9 +363,9 @@ public final class HashedPassword implements Serializable {
         super.validate(newThrowable, salt, iterations, hash);
         if ((salt.length == SALT_BYTES) != (hash.length == HASH_BYTES)) {
           throw newThrowable.apply(
-            getAlgorithmName() + ": salt length and hash length mismatch: expected either the old default lengths ("
-            + SALT_BYTES + ", " + HASH_BYTES + ") or the new lengths ("
-            + getSaltBytes() + ", " + getHashBytes() + "), got (" + salt.length + ", " + hash.length + ")"
+              getAlgorithmName() + ": salt length and hash length mismatch: expected either the old default lengths ("
+                  + SALT_BYTES + ", " + HASH_BYTES + ") or the new lengths ("
+                  + getSaltBytes() + ", " + getHashBytes() + "), got (" + salt.length + ", " + hash.length + ")"
           );
         }
       }
@@ -374,7 +374,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  Collision resistance of at least 128 bits is required
      */
     @Deprecated // Java 9: (forRemoval = false)
-    PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 224 / Byte.SIZE),
+        PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 224 / Byte.SIZE),
     PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 256 / Byte.SIZE),
     PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 384 / Byte.SIZE),
     PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 512 / Byte.SIZE);
@@ -517,9 +517,9 @@ public final class HashedPassword implements Serializable {
     // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
     String toString(byte[] salt, int iterations, byte[] hash) {
       return SEPARATOR + getAlgorithmName()
-        + SEPARATOR + iterations
-        + SEPARATOR + ENCODER.encodeToString(salt)
-        + SEPARATOR + ENCODER.encodeToString(hash);
+          + SEPARATOR + iterations
+          + SEPARATOR + ENCODER.encodeToString(salt)
+          + SEPARATOR + ENCODER.encodeToString(hash);
     }
 
     /**
@@ -571,15 +571,15 @@ public final class HashedPassword implements Serializable {
       int _minimumIterations = getMinimumIterations();
       if (iterations < _minimumIterations) {
         throw newThrowable.apply(
-          getAlgorithmName() + ": iterations < minimumIterations: "
-          + iterations + " < " + _minimumIterations
+            getAlgorithmName() + ": iterations < minimumIterations: "
+                + iterations + " < " + _minimumIterations
         );
       }
       int _maximumIterations = getMaximumIterations();
       if (iterations > _maximumIterations) {
         throw newThrowable.apply(
-          getAlgorithmName() + ": iterations > maximumIterations: "
-          + iterations + " < " + _maximumIterations
+            getAlgorithmName() + ": iterations > maximumIterations: "
+                + iterations + " < " + _maximumIterations
         );
       }
       return iterations;
@@ -635,12 +635,12 @@ public final class HashedPassword implements Serializable {
           try {
             // See https://crackstation.net/hashing-security.htm
             byte[] hash = SecretKeyFactory.getInstance(getAlgorithmName()).generateSecret(
-              new PBEKeySpec(
-                password.password,
-                validateSalt(IllegalArgumentException::new, salt),
-                validateIterations(IllegalArgumentException::new, iterations),
-                hashBytes * Byte.SIZE
-              )
+                new PBEKeySpec(
+                    password.password,
+                    validateSalt(IllegalArgumentException::new, salt),
+                    validateIterations(IllegalArgumentException::new, iterations),
+                    hashBytes * Byte.SIZE
+                )
             ).getEncoded();
             password.destroy();
             password = null;
@@ -746,8 +746,8 @@ public final class HashedPassword implements Serializable {
    */
   @Deprecated // Java 9: (forRemoval = true)
   public static final int RECOMMENDED_ITERATIONS = Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations()
-    // Half the iterations of the new settings because it performs at half the speed due to the additional hash length (256 bits > 160 bits)
-    / 2;
+      // Half the iterations of the new settings because it performs at half the speed due to the additional hash length (256 bits > 160 bits)
+      / 2;
 
   /**
    * A singleton that must be used in places where no password is set.
@@ -788,8 +788,8 @@ public final class HashedPassword implements Serializable {
   @Deprecated // Java 9: (forRemoval = true)
   public static byte[] hash(String password, byte[] salt, int iterations) {
     return Algorithm.PBKDF2WITHHMACSHA1.hash(
-      new Password(password == null ? null : password.toCharArray()),
-      salt, iterations, HASH_BYTES
+        new Password(password == null ? null : password.toCharArray()),
+        salt, iterations, HASH_BYTES
     );
   }
 
@@ -823,40 +823,40 @@ public final class HashedPassword implements Serializable {
       byte[] salt = DECODER.decode(hashedPassword.substring(pos2 + 1, pos3));
       byte[] hash = DECODER.decode(hashedPassword.substring(pos3 + 1));
       return new HashedPassword(
-        algorithm,
-        salt,
-        Integer.parseInt(hashedPassword.substring(pos1 + 1, pos2)),
-        hash
+          algorithm,
+          salt,
+          Integer.parseInt(hashedPassword.substring(pos1 + 1, pos2)),
+          hash
       );
     } else if (hashedPassword.length() == 13) {
       @SuppressWarnings("deprecation")
       int salt =
-          (UnixCrypt.a64toi(hashedPassword.charAt( 1)) << 6)
-        |  UnixCrypt.a64toi(hashedPassword.charAt( 0));
+          (UnixCrypt.a64toi(hashedPassword.charAt(1)) << 6)
+              |  UnixCrypt.a64toi(hashedPassword.charAt(0));
       @SuppressWarnings("deprecation")
       long rsltblock =
-          ((long)UnixCrypt.a64toi(hashedPassword.charAt( 2)) << 58)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 3)) << 52)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 4)) << 46)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 5)) << 40)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 6)) << 34)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 7)) << 28)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 8)) << 22)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt( 9)) << 16)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt(10)) << 10)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt(11)) <<  4)
-        | ((long)UnixCrypt.a64toi(hashedPassword.charAt(12)) >>  2);
+          ((long) UnixCrypt.a64toi(hashedPassword.charAt(2)) << 58)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(3)) << 52)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(4)) << 46)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(5)) << 40)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(6)) << 34)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(7)) << 28)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(8)) << 22)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(9)) << 16)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(10)) << 10)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(11)) <<  4)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(12)) >>  2);
       // System.out.println("rsltblock = " + rsltblock);
       byte[] hash = new byte[Long.BYTES];
       IoUtils.longToBuffer(rsltblock, hash);
       HashedPassword result = new HashedPassword(
-        Algorithm.CRYPT,
-        new byte[] {
-          (byte)((salt >>> Byte.SIZE) & 0x0f),
-          (byte)  salt
-        },
-        0,
-        hash
+          Algorithm.CRYPT,
+          new byte[]{
+              (byte) ((salt >>> Byte.SIZE) & 0x0f),
+              (byte)  salt
+          },
+          0,
+          hash
       );
       assert hashedPassword.equals(result.toString());
       return result;
@@ -889,10 +889,10 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    */
   public static HashedPassword valueOf(
-    Algorithm algorithm,
-    byte[] salt,
-    int iterations,
-    byte[] hash
+      Algorithm algorithm,
+      byte[] salt,
+      int iterations,
+      byte[] hash
   ) throws IllegalArgumentException {
     if (algorithm == null) {
       if (salt != null) {
@@ -1042,12 +1042,12 @@ public final class HashedPassword implements Serializable {
    */
   public HashedPassword(PBEKey pbeKey) throws IllegalArgumentException {
     this(
-      Password.valueOf(pbeKey.getPassword()).orElse(null),
-      Algorithm.findAlgorithm(pbeKey.getAlgorithm()),
-      pbeKey.getSalt(),
-      pbeKey.getIterationCount() == 0
-        ? Algorithm.findAlgorithm(pbeKey.getAlgorithm()).getRecommendedIterations()
-        : pbeKey.getIterationCount()
+        Password.valueOf(pbeKey.getPassword()).orElse(null),
+        Algorithm.findAlgorithm(pbeKey.getAlgorithm()),
+        pbeKey.getSalt(),
+        pbeKey.getIterationCount() == 0
+            ? Algorithm.findAlgorithm(pbeKey.getAlgorithm()).getRecommendedIterations()
+            : pbeKey.getIterationCount()
     );
   }
 
@@ -1413,23 +1413,23 @@ public final class HashedPassword implements Serializable {
     if (!(obj instanceof HashedPassword)) {
       return false;
     }
-    HashedPassword other = (HashedPassword)obj;
+    HashedPassword other = (HashedPassword) obj;
     // All done for length-constant time comparisons
     if (algorithm == null | other.algorithm == null) {
       // Perform an equality check with default settings, just to occupy the same amount of time as if had a key
       boolean discardMe =
-        algorithm == other.algorithm
-        & slowEquals(DUMMY_SALT, DUMMY_SALT)
-        & iterations == other.iterations
-        & slowEquals(DUMMY_HASH, DUMMY_HASH);
+          algorithm == other.algorithm
+              & slowEquals(DUMMY_SALT, DUMMY_SALT)
+              & iterations == other.iterations
+              & slowEquals(DUMMY_HASH, DUMMY_HASH);
       assert discardMe || !discardMe : "Suppress unused variable warning";
       return false;
     } else {
       return
-        algorithm == other.algorithm
-        & slowEquals(salt, other.salt)
-        & iterations == other.iterations
-        & slowEquals(hash, other.hash);
+          algorithm == other.algorithm
+              & slowEquals(salt, other.salt)
+              & iterations == other.iterations
+              & slowEquals(hash, other.hash);
     }
   }
 
@@ -1490,8 +1490,8 @@ public final class HashedPassword implements Serializable {
       if (algorithm == null) {
         // Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
         byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(
-          password == null || password.isDestroyed() ? new Password("<<DUMMY>>".toCharArray()) : password,
-          DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations()
+            password == null || password.isDestroyed() ? new Password("<<DUMMY>>".toCharArray()) : password,
+            DUMMY_SALT, RECOMMENDED_ALGORITHM.getRecommendedIterations()
         );
         boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
         assert !dummiesEqual;
@@ -1543,11 +1543,11 @@ public final class HashedPassword implements Serializable {
    */
   public boolean isRehashRecommended() {
     return
-      algorithm != null
-      && (
-        algorithm.compareTo(RECOMMENDED_ALGORITHM) < 0
-        || iterations < algorithm.getRecommendedIterations()
-      );
+        algorithm != null
+            && (
+            algorithm.compareTo(RECOMMENDED_ALGORITHM) < 0
+                || iterations < algorithm.getRecommendedIterations()
+        );
   }
 
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -1579,77 +1579,77 @@ public final class HashedPassword implements Serializable {
       final boolean[] warmedUp = {false};
       final boolean[] hasFailed = {false};
       stream.forEachOrdered(
-        password -> {
-          if (password.isEmpty()) {
-            System.out.println(NO_PASSWORD);
-          } else if (benchmarkFinal) {
-            // Do ten times, but only report the last pass
-            for (int i = warmedUp[0] ? 1 : 10 ; i > 0; i--) {
-              boolean output = (i == 1);
-              for (Algorithm algorithm : Algorithm.values) {
-                try {
-                  int recommendedIterations = algorithm.getRecommendedIterations();
-                  byte[] salt = algorithm.generateSalt();
-                  long startNanos = output ? System.nanoTime() : 0;
-                  HashedPassword hashedPassword = new HashedPassword(
-                    new Password(password.toCharArray()),
-                    algorithm, salt, recommendedIterations
-                  );
-                  long endNanos = output ? System.nanoTime() : 0;
-                  if (output) {
-                    System.out.println(hashedPassword);
-                    long nanos = endNanos - startNanos;
-                    System.out.println(
-                      algorithm.getAlgorithmName() + ": Completed in "
-                      + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
+          password -> {
+            if (password.isEmpty()) {
+              System.out.println(NO_PASSWORD);
+            } else if (benchmarkFinal) {
+              // Do ten times, but only report the last pass
+              for (int i = warmedUp[0] ? 1 : 10; i > 0; i--) {
+                boolean output = (i == 1);
+                for (Algorithm algorithm : Algorithm.values) {
+                  try {
+                    int recommendedIterations = algorithm.getRecommendedIterations();
+                    byte[] salt = algorithm.generateSalt();
+                    long startNanos = output ? System.nanoTime() : 0;
+                    HashedPassword hashedPassword = new HashedPassword(
+                        new Password(password.toCharArray()),
+                        algorithm, salt, recommendedIterations
                     );
-                    System.out.println();
-                    long millis = nanos / 1_000_000;
-                    if (millis < SUGGEST_INCREASE_ITERATIONS_MILLIS && recommendedIterations != 0) {
-                      System.out.flush();
-                      System.err.println(
-                        algorithm.getAlgorithmName() + ": Password was hashed in under "
-                        + SUGGEST_INCREASE_ITERATIONS_MILLIS
-                        + " ms, recommend increasing the value of recommendedIterations (currently "
-                        + recommendedIterations + ")"
+                    long endNanos = output ? System.nanoTime() : 0;
+                    if (output) {
+                      System.out.println(hashedPassword);
+                      long nanos = endNanos - startNanos;
+                      System.out.println(
+                          algorithm.getAlgorithmName() + ": Completed in "
+                              + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
                       );
-                      System.err.println();
+                      System.out.println();
+                      long millis = nanos / 1_000_000;
+                      if (millis < SUGGEST_INCREASE_ITERATIONS_MILLIS && recommendedIterations != 0) {
+                        System.out.flush();
+                        System.err.println(
+                            algorithm.getAlgorithmName() + ": Password was hashed in under "
+                                + SUGGEST_INCREASE_ITERATIONS_MILLIS
+                                + " ms, recommend increasing the value of recommendedIterations (currently "
+                                + recommendedIterations + ")"
+                        );
+                        System.err.println();
+                        System.err.flush();
+                      }
+                    }
+                    assert hashedPassword.matches(new Password(password.toCharArray()));
+                    assert valueOf(hashedPassword.toString()).matches(new Password(password.toCharArray()));
+                  } catch (Error | RuntimeException e) {
+                    hasFailed[0] = true;
+                    if (output) {
+                      System.out.flush();
+                      System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
                       System.err.flush();
                     }
                   }
-                  assert hashedPassword.matches(new Password(password.toCharArray()));
-                  assert valueOf(hashedPassword.toString()).matches(new Password(password.toCharArray()));
-                } catch (Error | RuntimeException e) {
-                  hasFailed[0] = true;
-                  if (output) {
-                    System.out.flush();
-                    System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
-                    System.err.flush();
-                  }
                 }
               }
-            }
-            warmedUp[0] = true;
-          } else {
-            Algorithm algorithm = RECOMMENDED_ALGORITHM;
-            try {
-              int recommendedIterations = algorithm.getRecommendedIterations();
-              byte[] salt = algorithm.generateSalt();
-              HashedPassword hashedPassword = new HashedPassword(
-                new Password(password.toCharArray()),
-                algorithm, salt, recommendedIterations
-              );
-              System.out.println(hashedPassword);
-              assert hashedPassword.matches(new Password(password.toCharArray()));
-              assert valueOf(hashedPassword.toString()).matches(new Password(password.toCharArray()));
-            } catch (Error | RuntimeException e) {
-              hasFailed[0] = true;
-              System.out.flush();
-              System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
-              System.err.flush();
+              warmedUp[0] = true;
+            } else {
+              Algorithm algorithm = RECOMMENDED_ALGORITHM;
+              try {
+                int recommendedIterations = algorithm.getRecommendedIterations();
+                byte[] salt = algorithm.generateSalt();
+                HashedPassword hashedPassword = new HashedPassword(
+                    new Password(password.toCharArray()),
+                    algorithm, salt, recommendedIterations
+                );
+                System.out.println(hashedPassword);
+                assert hashedPassword.matches(new Password(password.toCharArray()));
+                assert valueOf(hashedPassword.toString()).matches(new Password(password.toCharArray()));
+              } catch (Error | RuntimeException e) {
+                hasFailed[0] = true;
+                System.out.flush();
+                System.err.println(algorithm.getAlgorithmName() + ": " + e.toString());
+                System.err.flush();
+              }
             }
           }
-        }
       );
       if (hasFailed[0]) {
         System.exit(SysExits.EX_SOFTWARE);

@@ -51,14 +51,14 @@ public class IdentifierTest extends TestCase {
     //System.out.println("DEBUG: "+(Long.MIN_VALUE / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
     //System.out.println("DEBUG: "+((-1) / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
     //System.out.println("DEBUG: " + new Identifier(-1L, 0xffffffffffffffffl));
-    for (int i=0; i<100000; i++) {
+    for (int i = 0; i < 100000; i++) {
       Identifier i1 = new Identifier();
       String s1 = i1.toString();
       Identifier i2 = Identifier.valueOf(s1);
       String s2 = i2.toString();
       if (
-        !s1.equals(s2)
-        || !i1.equals(i2)
+          !s1.equals(s2)
+              || !i1.equals(i2)
       ) {
         System.out.print(s1);
         System.out.print(' ');

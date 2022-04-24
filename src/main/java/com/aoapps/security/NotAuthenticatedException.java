@@ -53,7 +53,7 @@ public class NotAuthenticatedException extends SecurityException {
 
   static {
     Throwables.registerSurrogateFactory(NotAuthenticatedException.class, (template, cause) ->
-      new NotAuthenticatedException(template.getMessage(), cause)
+        new NotAuthenticatedException(template.getMessage(), cause)
     );
   }
 }

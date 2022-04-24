@@ -74,8 +74,8 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
    */
   public static Optional<Password> valueOf(char[] password) throws IllegalArgumentException {
     return (password == null || password.length == 0)
-      ? Optional.empty()
-      : Optional.of(new Password(password));
+        ? Optional.empty()
+        : Optional.of(new Password(password));
   }
 
   /**
@@ -101,7 +101,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
     } else {
       try {
         char[] copy = Arrays.copyOf(password, password.length);
-        Arrays.fill(password, (char)0);
+        Arrays.fill(password, (char) 0);
         password = null;
         assert copy.length > 0;
         // length-constant time implementation:
@@ -112,7 +112,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
         }
       } finally {
         if (password != null) {
-          Arrays.fill(password, (char)0);
+          Arrays.fill(password, (char) 0);
         }
       }
     }
@@ -142,7 +142,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
     if (!(obj instanceof Password)) {
       return false;
     }
-    Password other = (Password)obj;
+    Password other = (Password) obj;
     // Create a copy to avoid potential deadlock of locking on both
     char[] copy2;
     synchronized (other.password) {
@@ -153,11 +153,11 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
         // length-constant time
         return
             !SecurityUtil.slowAllZero(password)
-          & !SecurityUtil.slowAllZero(copy2)
-          &  SecurityUtil.slowEquals(password, copy2);
+                & !SecurityUtil.slowAllZero(copy2)
+                &  SecurityUtil.slowEquals(password, copy2);
       }
     } finally {
-      Arrays.fill(copy2, (char)0);
+      Arrays.fill(copy2, (char) 0);
     }
   }
 
@@ -170,7 +170,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
   @Override
   public void destroy() {
     synchronized (password) {
-      Arrays.fill(password, (char)0);
+      Arrays.fill(password, (char) 0);
     }
   }
 

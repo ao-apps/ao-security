@@ -52,12 +52,13 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   static final long BASE = 57;
 
   private static final char[] CHARACTERS = {
-    'A', /*'B',*/ 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-    'N', /*'O',*/ 'P', /*'Q',*/ 'R', /*'S',*/ 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', /*'l',*/ 'm',
-    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+      'A', /*'B',*/ 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+      'N', /*'O',*/ 'P', /*'Q',*/ 'R', /*'S',*/ 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', /*'l',*/ 'm',
+      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
   };
+
   static {
     assert CHARACTERS.length == BASE;
   }
@@ -66,9 +67,10 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   private static final char HIGHEST_CHAR = 'z';
 
   private static final int[] values = new int[HIGHEST_CHAR + 1 - LOWEST_CHAR];
+
   static {
     Arrays.fill(values, -1);
-    for (int i=0; i<BASE; i++) {
+    for (int i = 0; i < BASE; i++) {
       values[CHARACTERS[i] - LOWEST_CHAR] = i;
     }
   }
@@ -78,7 +80,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.getCharacter-function.sql
   static char getCharacter(long value) {
-    int index = (int)remainder(value, BASE);
+    int index = (int) remainder(value, BASE);
     return CHARACTERS[index];
   }
 
@@ -113,16 +115,16 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
     assert encoded.length() == 11;
     return
         getValue(encoded.charAt(0)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(1)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(2)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(3)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(4)) * BASE * BASE * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(5)) * BASE * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(6)) * BASE * BASE * BASE * BASE
-      + getValue(encoded.charAt(7)) * BASE * BASE * BASE
-      + getValue(encoded.charAt(8)) * BASE * BASE
-      + getValue(encoded.charAt(9)) * BASE
-      + getValue(encoded.charAt(10))
+            + getValue(encoded.charAt(1)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+            + getValue(encoded.charAt(2)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+            + getValue(encoded.charAt(3)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+            + getValue(encoded.charAt(4)) * BASE * BASE * BASE * BASE * BASE * BASE
+            + getValue(encoded.charAt(5)) * BASE * BASE * BASE * BASE * BASE
+            + getValue(encoded.charAt(6)) * BASE * BASE * BASE * BASE
+            + getValue(encoded.charAt(7)) * BASE * BASE * BASE
+            + getValue(encoded.charAt(8)) * BASE * BASE
+            + getValue(encoded.charAt(9)) * BASE
+            + getValue(encoded.charAt(10))
     ;
   }
 
@@ -139,7 +141,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
    */
   public Identifier() {
-    this((Random)secureRandom);
+    this((Random) secureRandom);
   }
 
   /**
@@ -160,7 +162,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    * Creates a new, random {@link Identifier} using the provided {@link SecureRandom} source.
    */
   public Identifier(SecureRandom secureRandom) {
-    this((Random)secureRandom);
+    this((Random) secureRandom);
   }
 
   public Identifier(long hi, long lo) {
@@ -185,7 +187,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
     if (!(obj instanceof Identifier)) {
       return false;
     }
-    return equals((Identifier)obj);
+    return equals((Identifier) obj);
   }
 
   /**
@@ -205,7 +207,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   @Override
   public int hashCode() {
     // The values should be well distributed, any set of 32 bits should be equally good.
-    return (int)lo;
+    return (int) lo;
   }
 
   /**
@@ -214,29 +216,29 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.toString-function.sql
   public char[] toCharArray() {
-    return new char[] {
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE * BASE)),
-      getCharacter(divide(hi, BASE * BASE)),
-      getCharacter(divide(hi, BASE)),
-      getCharacter(hi),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE * BASE)),
-      getCharacter(divide(lo, BASE * BASE)),
-      getCharacter(divide(lo, BASE)),
-      getCharacter(lo)
+    return new char[]{
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE * BASE)),
+        getCharacter(divide(hi, BASE * BASE)),
+        getCharacter(divide(hi, BASE)),
+        getCharacter(hi),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE * BASE)),
+        getCharacter(divide(lo, BASE * BASE)),
+        getCharacter(divide(lo, BASE)),
+        getCharacter(lo)
     };
   }
 

@@ -110,7 +110,7 @@ public final class UnprotectedPassword extends Password {
    * Generates a new password using the default password generator and the provided {@link SecureRandom} source.
    */
   public UnprotectedPassword(SecureRandom secureRandom) {
-    this((Random)secureRandom);
+    this((Random) secureRandom);
   }
 
   /**
@@ -118,7 +118,7 @@ public final class UnprotectedPassword extends Password {
    * which is not a {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
    */
   public UnprotectedPassword() {
-    this((Random)Identifier.secureRandom);
+    this((Random) Identifier.secureRandom);
   }
 
   /**
@@ -167,7 +167,7 @@ public final class UnprotectedPassword extends Password {
     try {
       return function.apply(copy);
     } finally {
-      Arrays.fill(copy, (char)0);
+      Arrays.fill(copy, (char) 0);
     }
   }
 
@@ -184,7 +184,7 @@ public final class UnprotectedPassword extends Password {
     try {
       consumer.accept(copy);
     } finally {
-      Arrays.fill(copy, (char)0);
+      Arrays.fill(copy, (char) 0);
     }
   }
 
@@ -201,7 +201,7 @@ public final class UnprotectedPassword extends Password {
     try {
       return predicate.test(copy);
     } finally {
-      Arrays.fill(copy, (char)0);
+      Arrays.fill(copy, (char) 0);
     }
   }
 }

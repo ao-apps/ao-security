@@ -132,7 +132,7 @@ public final class UnprotectedKey extends Key {
    * @throws IllegalArgumentException when {@code keyBytes == 0}
    */
   public UnprotectedKey(int keyBytes, SecureRandom secureRandom) throws IllegalArgumentException {
-    this(keyBytes, (Random)secureRandom);
+    this(keyBytes, (Random) secureRandom);
   }
 
   /**
@@ -148,7 +148,7 @@ public final class UnprotectedKey extends Key {
    * @throws IllegalArgumentException when {@code keyBytes == 0}
    */
   public UnprotectedKey(int keyBytes) throws IllegalArgumentException {
-    this(keyBytes, (Random)Identifier.secureRandom);
+    this(keyBytes, (Random) Identifier.secureRandom);
   }
 
   /**
@@ -197,7 +197,7 @@ public final class UnprotectedKey extends Key {
     try {
       return function.apply(copy);
     } finally {
-      Arrays.fill(copy, (byte)0);
+      Arrays.fill(copy, (byte) 0);
     }
   }
 
@@ -214,7 +214,7 @@ public final class UnprotectedKey extends Key {
     try {
       consumer.accept(copy);
     } finally {
-      Arrays.fill(copy, (byte)0);
+      Arrays.fill(copy, (byte) 0);
     }
   }
 
@@ -231,7 +231,7 @@ public final class UnprotectedKey extends Key {
     try {
       return predicate.test(copy);
     } finally {
-      Arrays.fill(copy, (byte)0);
+      Arrays.fill(copy, (byte) 0);
     }
   }
 }

@@ -55,7 +55,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
    */
   public SmallIdentifier() {
-    this((Random)Identifier.secureRandom);
+    this((Random) Identifier.secureRandom);
   }
 
   /**
@@ -75,7 +75,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    * Creates a new, random {@link SmallIdentifier} using the provided {@link SecureRandom} source.
    */
   public SmallIdentifier(SecureRandom secureRandom) {
-    this((Random)secureRandom);
+    this((Random) secureRandom);
   }
 
   public SmallIdentifier(long value) {
@@ -98,20 +98,20 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
     if (!(obj instanceof SmallIdentifier)) {
       return false;
     }
-    return equals((SmallIdentifier)obj);
+    return equals((SmallIdentifier) obj);
   }
 
   public boolean equals(SmallIdentifier other) {
     return
-      other != null
-      && value == other.value
+        other != null
+            && value == other.value
     ;
   }
 
   @Override
   public int hashCode() {
     // The values should be well distributed, any set of 32 bits should be equally good.
-    return (int)value;
+    return (int) value;
   }
 
   /**
@@ -121,18 +121,18 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    * @see  #toString()
    */
   public char[] toCharArray() {
-    return new char[] {
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE * BASE)),
-      Identifier.getCharacter(divide(value, BASE)),
-      Identifier.getCharacter(value)
+    return new char[]{
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE * BASE)),
+        Identifier.getCharacter(divide(value, BASE)),
+        Identifier.getCharacter(value)
     };
   }
 

@@ -70,8 +70,8 @@ public class HashedPasswordTest {
       return new UnprotectedPassword(() -> {
         int length = 1 + secureRandom.nextInt(19);
         char[] password = new char[length];
-        for (int i = 0; i < length ; i++) {
-          password[i] = (char)secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000);
+        for (int i = 0; i < length; i++) {
+          password[i] = (char) secureRandom.nextInt(secureRandom.nextBoolean() ? 0x80 : 0x10000);
         }
         return password;
       });
@@ -89,9 +89,9 @@ public class HashedPasswordTest {
       assertTrue(algorithm.getMaximumIterations() >= 0);
       assertTrue(algorithm.getMaximumIterations() >= algorithm.getMinimumIterations());
       assertEquals(
-        "Both min and max 0 when iteration not supported",
-        (algorithm.getMinimumIterations() == 0),
-        (algorithm.getMaximumIterations() == 0)
+          "Both min and max 0 when iteration not supported",
+          (algorithm.getMinimumIterations() == 0),
+          (algorithm.getMaximumIterations() == 0)
       );
       assertTrue(algorithm.getRecommendedIterations() >= algorithm.getMinimumIterations());
       assertTrue(algorithm.getRecommendedIterations() <= algorithm.getMaximumIterations());
@@ -105,16 +105,16 @@ public class HashedPasswordTest {
       // Warn if too fast
       long nanos = endNanos - startNanos;
       logger.info(
-        algorithm.getAlgorithmName() + ": Completed in "
-        + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
+          algorithm.getAlgorithmName() + ": Completed in "
+              + BigDecimal.valueOf(nanos, 6).toPlainString() + " ms"
       );
       long millis = nanos / 1_000_000;
       if (millis < HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS && iterations != 0) {
         logger.warning(
-          algorithm.getAlgorithmName() + ": Password was hashed in under "
-          + HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS
-          + " ms, recommend increasing the value of recommendedIterations (currently "
-          + iterations + ")"
+            algorithm.getAlgorithmName() + ": Password was hashed in under "
+                + HashedPassword.SUGGEST_INCREASE_ITERATIONS_MILLIS
+                + " ms, recommend increasing the value of recommendedIterations (currently "
+                + iterations + ")"
         );
       }
       // toString -> valueOf
@@ -132,7 +132,7 @@ public class HashedPasswordTest {
         out.writeObject(hashedPassword);
       }
       try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
-        HashedPassword serialized = (HashedPassword)in.readObject();
+        HashedPassword serialized = (HashedPassword) in.readObject();
         assertSame(hashedPassword.getAlgorithm(), serialized.getAlgorithm());
         assertArrayEquals(hashedPassword.getSalt(), serialized.getSalt());
         assertEquals(hashedPassword.getIterations(), serialized.getIterations());
@@ -158,7 +158,7 @@ public class HashedPasswordTest {
 
   private static void testAlgorithm(HashedPassword.Algorithm algorithm) throws Exception {
     testAlgorithm(
-      algorithm, algorithm.getSaltBytes(), algorithm.getRecommendedIterations(), algorithm.getHashBytes()
+        algorithm, algorithm.getSaltBytes(), algorithm.getRecommendedIterations(), algorithm.getHashBytes()
     );
   }
 
@@ -182,10 +182,10 @@ public class HashedPasswordTest {
     testAlgorithm(HashedPassword.Algorithm.PBKDF2WITHHMACSHA1);
     // Old defaults
     testAlgorithm(
-      HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
-      HashedPassword.SALT_BYTES,
-      HashedPassword.RECOMMENDED_ITERATIONS,
-      HashedPassword.HASH_BYTES
+        HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
+        HashedPassword.SALT_BYTES,
+        HashedPassword.RECOMMENDED_ITERATIONS,
+        HashedPassword.HASH_BYTES
     );
   }
 
@@ -216,8 +216,8 @@ public class HashedPasswordTest {
     assertEquals(256 / Byte.SIZE, HashedPassword.SALT_BYTES);
     assertEquals(256 / Byte.SIZE, HashedPassword.HASH_BYTES);
     assertEquals(
-      HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations() / 2,
-      HashedPassword.RECOMMENDED_ITERATIONS
+        HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations() / 2,
+        HashedPassword.RECOMMENDED_ITERATIONS
     );
     byte[] salt = HashedPassword.generateSalt();
     assertEquals(256 / Byte.SIZE, salt.length);
@@ -229,42 +229,42 @@ public class HashedPasswordTest {
       assertFalse(hashedPassword.matches(""));
     }
     assertThrows(
-      "invalid new salt bytes on deprecated constructor",
-      IllegalArgumentException.class,
-      () -> new HashedPassword(
-        new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes()],
-        HashedPassword.RECOMMENDED_ITERATIONS,
-        hash
-      )
+        "invalid new salt bytes on deprecated constructor",
+        IllegalArgumentException.class,
+        () -> new HashedPassword(
+            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes()],
+            HashedPassword.RECOMMENDED_ITERATIONS,
+            hash
+        )
     );
     assertThrows(
-      "invalid new hash bytes on deprecated constructor",
-      IllegalArgumentException.class,
-      () -> new HashedPassword(
-        salt,
-        HashedPassword.RECOMMENDED_ITERATIONS,
-        new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes()]
-      )
+        "invalid new hash bytes on deprecated constructor",
+        IllegalArgumentException.class,
+        () -> new HashedPassword(
+            salt,
+            HashedPassword.RECOMMENDED_ITERATIONS,
+            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes()]
+        )
     );
     assertThrows(
-      "mismatch old and new 1",
-      IllegalArgumentException.class,
-      () -> new HashedPassword(
-        HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
-        new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes()],
-        HashedPassword.RECOMMENDED_ITERATIONS,
-        hash
-      )
+        "mismatch old and new 1",
+        IllegalArgumentException.class,
+        () -> new HashedPassword(
+            HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
+            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes()],
+            HashedPassword.RECOMMENDED_ITERATIONS,
+            hash
+        )
     );
     assertThrows(
-      "mismatch old and new 2",
-      IllegalArgumentException.class,
-      () -> new HashedPassword(
-        HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
-        salt,
-        HashedPassword.RECOMMENDED_ITERATIONS,
-        new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes()]
-      )
+        "mismatch old and new 2",
+        IllegalArgumentException.class,
+        () -> new HashedPassword(
+            HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
+            salt,
+            HashedPassword.RECOMMENDED_ITERATIONS,
+            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes()]
+        )
     );
   }
 
