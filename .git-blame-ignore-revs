@@ -13,3 +13,6 @@
 
 # Added missing spaces after comma
 3b47c48a90c7d367e8be875067b95921f185420d
+
+# Performed automatic source code clean-up with rewrite-maven-plugin
+10919d3830063f6d859ea37e5b6df464046ccf62
