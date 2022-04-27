@@ -284,12 +284,12 @@ public abstract class UnixCrypt {
     }
     for (int t = 0; t < 8; t++) {
       for (int j = 0; j < 64; j++) {
-        int k = ((j & 0x01) << 5) | (((j >> 1) & 0x01) << 3) |
-            (((j >> 2) & 0x01) << 2) | (((j >> 3) & 0x01) << 1) |
-            ((j >> 4) & 0x01) | (((j >> 5) & 0x01) << 4);
+        int k = ((j & 0x01) << 5) | (((j >> 1) & 0x01) << 3)
+            | (((j >> 2) & 0x01) << 2) | (((j >> 3) & 0x01) << 1)
+            | ((j >> 4) & 0x01) | (((j >> 5) & 0x01) << 4);
         k = S[t][k];
-        k = ((k >> 3) & 0x01) | (((k >> 2) & 0x01) << 1) |
-            (((k >> 1) & 0x01) << 2) | ((k & 0x01) << 3);
+        k = ((k >> 3) & 0x01) | (((k >> 2) & 0x01) << 1)
+            | (((k >> 1) & 0x01) << 2) | ((k & 0x01) << 3);
         for (int i = 0; i < 32; i++) {
           temp[i] = 0;
         }
@@ -298,9 +298,9 @@ public abstract class UnixCrypt {
         }
         long kk = 0;
         for (int i = 24; --i >= 0; ) {
-          kk = ((kk << 1) |
-              ((long) temp[perm[i] - 1]) << 32 |
-              ((long) temp[perm[i + 24] - 1]));
+          kk = (kk << 1)
+              | ((long) temp[perm[i] - 1]) << 32
+              | ((long) temp[perm[i + 24] - 1]);
         }
 
         SPE[t][j] = to_six_bit(kk);
@@ -346,7 +346,7 @@ public abstract class UnixCrypt {
    */
   // Matches src/main/sql/com/aoapps/security/UnixCrypt.a64toi-function.sql
   static int a64toi(char c) {
-    int index = (c - ' ');
+    int index = c - ' ';
     byte i;
     if (
         (index < 0 || index >= A64TOI.length)
@@ -441,8 +441,8 @@ public abstract class UnixCrypt {
     long r = l;
     l &= 0x5555555555555555L;
     r = (r & 0xaaaaaaaa00000000L) | ((r >> 1) & 0x0000000055555555L);
-    l = ((((l << 1) | (l << 32)) & 0xffffffff00000000L) |
-        ((r | (r >> 32)) & 0x00000000ffffffffL));
+    l = (((l << 1) | (l << 32)) & 0xffffffff00000000L)
+        | ((r | (r >> 32)) & 0x00000000ffffffffL);
 
     l = perm3264((int) (l >> 32), IE3264);
     r = perm3264((int) (l & 0xffffffff), IE3264);
@@ -455,31 +455,31 @@ public abstract class UnixCrypt {
 
         kp = KS[(loop_count << 1)];
         k = ((r >> 32) ^ r) & salt & 0xffffffffL;
-        k |= (k << 32);
-        b = (k ^ r ^ kp);
+        k |= k << 32;
+        b = k ^ r ^ kp;
 
-        l ^= (SPE[0][(int) ((b >> 58) & 0x3f)] ^ SPE[1][(int) ((b >> 50) & 0x3f)] ^
-            SPE[2][(int) ((b >> 42) & 0x3f)] ^ SPE[3][(int) ((b >> 34) & 0x3f)] ^
-            SPE[4][(int) ((b >> 26) & 0x3f)] ^ SPE[5][(int) ((b >> 18) & 0x3f)] ^
-            SPE[6][(int) ((b >> 10) & 0x3f)] ^ SPE[7][(int) ((b >> 2) & 0x3f)]);
+        l ^= SPE[0][(int) ((b >> 58) & 0x3f)] ^ SPE[1][(int) ((b >> 50) & 0x3f)]
+            ^ SPE[2][(int) ((b >> 42) & 0x3f)] ^ SPE[3][(int) ((b >> 34) & 0x3f)]
+            ^ SPE[4][(int) ((b >> 26) & 0x3f)] ^ SPE[5][(int) ((b >> 18) & 0x3f)]
+            ^ SPE[6][(int) ((b >> 10) & 0x3f)] ^ SPE[7][(int) ((b >> 2) & 0x3f)];
 
         kp = KS[(loop_count << 1) + 1];
         k = ((l >> 32) ^ l) & salt & 0xffffffffL;
-        k |= (k << 32);
-        b = (k ^ l ^ kp);
+        k |= k << 32;
+        b = k ^ l ^ kp;
 
-        r ^= (SPE[0][(int) ((b >> 58) & 0x3f)] ^ SPE[1][(int) ((b >> 50) & 0x3f)] ^
-            SPE[2][(int) ((b >> 42) & 0x3f)] ^ SPE[3][(int) ((b >> 34) & 0x3f)] ^
-            SPE[4][(int) ((b >> 26) & 0x3f)] ^ SPE[5][(int) ((b >> 18) & 0x3f)] ^
-            SPE[6][(int) ((b >> 10) & 0x3f)] ^ SPE[7][(int) ((b >> 2) & 0x3f)]);
+        r ^= SPE[0][(int) ((b >> 58) & 0x3f)] ^ SPE[1][(int) ((b >> 50) & 0x3f)]
+            ^ SPE[2][(int) ((b >> 42) & 0x3f)] ^ SPE[3][(int) ((b >> 34) & 0x3f)]
+            ^ SPE[4][(int) ((b >> 26) & 0x3f)] ^ SPE[5][(int) ((b >> 18) & 0x3f)]
+            ^ SPE[6][(int) ((b >> 10) & 0x3f)] ^ SPE[7][(int) ((b >> 2) & 0x3f)];
       }
       // swap L and R
       l ^= r;
       r ^= l;
       l ^= r;
     }
-    l = ((((l >> 35) & 0x0f0f0f0fL) | (((l & 0xffffffff) << 1) & 0xf0f0f0f0L)) << 32 |
-        (((r >> 35) & 0x0f0f0f0fL) | (((r & 0xffffffff) << 1) & 0xf0f0f0f0L)));
+    l = (((l >> 35) & 0x0f0f0f0fL) | (((l & 0xffffffff) << 1) & 0xf0f0f0f0L)) << 32
+        | (((r >> 35) & 0x0f0f0f0fL) | (((r & 0xffffffff) << 1) & 0xf0f0f0f0L));
 
     l = perm6464(l, CF6464);
 
@@ -515,9 +515,9 @@ public abstract class UnixCrypt {
       int i = l >> 2;
       l = 1 << (l & 0x03);
       for (int j = 0; j < 16; j++) {
-        int s = ((k & 0x07) + ((7 - (k >> 3)) << 3));
+        int s = (k & 0x07) + ((7 - (k >> 3)) << 3);
         if ((j & l) != 0x00) {
-          perm[i][j] |= (1L << s);
+          perm[i][j] |= 1L << s;
         }
       }
     }
@@ -530,7 +530,7 @@ public abstract class UnixCrypt {
   private static long perm3264(int c, long[][]p) {
     long out = 0L;
     for (int i = 4; --i >= 0; ) {
-      int t = (0x00ff & c);
+      int t = 0x00ff & c;
       c >>= 8;
       long tp = p[i << 1][t & 0x0f];
       out |= tp;
@@ -562,8 +562,8 @@ public abstract class UnixCrypt {
    * into a 4-byte code, each having 6 bits.
    */
   private static int to_six_bit(int num) {
-    return (((num << 26) & 0xfc000000) | ((num << 12) & 0xfc0000) |
-        ((num >> 2) & 0xfc00) | ((num >> 16) & 0xfc));
+    return ((num << 26) & 0xfc000000) | ((num << 12) & 0xfc0000)
+        | ((num >> 2) & 0xfc00) | ((num >> 16) & 0xfc);
   }
 
   /**
@@ -571,8 +571,8 @@ public abstract class UnixCrypt {
    * into two 4-byte code, each having 6 bits.
    */
   private static long to_six_bit(long num) {
-    return (((num << 26) & 0xfc000000fc000000L) | ((num << 12) & 0xfc000000fc0000L) |
-        ((num >> 2) & 0xfc000000fc00L) | ((num >> 16) & 0xfc000000fcL));
+    return ((num << 26) & 0xfc000000fc000000L) | ((num << 12) & 0xfc000000fc0000L)
+        | ((num >> 2) & 0xfc000000fc00L) | ((num >> 16) & 0xfc000000fcL);
   }
 
   /**

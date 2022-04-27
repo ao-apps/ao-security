@@ -1579,13 +1579,13 @@ public final class HashedPassword implements Serializable {
       final boolean[] warmedUp = {false};
       final boolean[] hasFailed = {false};
       stream.forEachOrdered(
-          password -> {
+          (String password) -> {
             if (password.isEmpty()) {
               System.out.println(NO_PASSWORD);
             } else if (benchmarkFinal) {
               // Do ten times, but only report the last pass
               for (int i = warmedUp[0] ? 1 : 10; i > 0; i--) {
-                boolean output = (i == 1);
+                boolean output = i == 1;
                 for (Algorithm algorithm : Algorithm.values) {
                   try {
                     int recommendedIterations = algorithm.getRecommendedIterations();

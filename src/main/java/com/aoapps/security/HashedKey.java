@@ -743,7 +743,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
       if (benchmark) {
         // Do ten times, but only report the last pass
         for (int i = 10; i > 0; i--) {
-          boolean output = (i == 1);
+          boolean output = i == 1;
           for (Algorithm algorithm : Algorithm.values) {
             try {
               try (UnprotectedKey key = algorithm.generateKey()) {
