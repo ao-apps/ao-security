@@ -130,6 +130,8 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
   }
 
   /**
+   * {@inheritDoc}
+   *
    * @return Returns {@link #MASKED_PASSWORD} always.
    */
   @Override

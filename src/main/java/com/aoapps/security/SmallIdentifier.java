@@ -23,9 +23,10 @@
 
 package com.aoapps.security;
 
-import com.aoapps.lang.io.IoUtils;
 import static com.aoapps.lang.math.UnsignedLong.divide;
 import static com.aoapps.security.Identifier.BASE;
+
+import com.aoapps.lang.io.IoUtils;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -104,8 +105,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
   public boolean equals(SmallIdentifier other) {
     return
         other != null
-            && value == other.value
-    ;
+            && value == other.value;
   }
 
   @Override

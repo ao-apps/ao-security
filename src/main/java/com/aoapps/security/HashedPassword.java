@@ -23,11 +23,12 @@
 
 package com.aoapps.security;
 
+import static com.aoapps.security.SecurityUtil.slowEquals;
+
 import com.aoapps.lang.Strings;
 import com.aoapps.lang.SysExits;
 import com.aoapps.lang.exception.WrappedException;
 import com.aoapps.lang.io.IoUtils;
-import static com.aoapps.security.SecurityUtil.slowEquals;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -70,7 +71,7 @@ public final class HashedPassword implements Serializable {
 
   /**
    * Value selected to be distinct from the values used by {@link Base64#getEncoder()},
-   * and is similar to the value used in <code>/etc/shadow</code>
+   * and is similar to the value used in <code>/etc/shadow</code>.
    */
   static final char SEPARATOR = '$';
 
@@ -108,102 +109,108 @@ public final class HashedPassword implements Serializable {
      *              and not iterated so is subject to both dictionary and brute-force attacks.
      */
     @Deprecated // Java 9: (forRemoval = false)
-      CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
-    /**
-     * @param  <Ex>  An arbitrary exception type that may be thrown
-     */
-    // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.validateSalt-function.sql
-    @Override
-    public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
-      super.validateSalt(newThrowable, salt);
-      if ((salt[0] & 0xf0) != 0) {
-        throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
+    CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
+      /**
+       * {@inheritDoc}
+       *
+       * @param  <Ex>  An arbitrary exception type that may be thrown
+       */
+      // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.validateSalt-function.sql
+      @Override
+      public <Ex extends Throwable> byte[] validateSalt(Function<? super String, Ex> newThrowable, byte[] salt) throws Ex {
+        super.validateSalt(newThrowable, salt);
+        if ((salt[0] & 0xf0) != 0) {
+          throw new IllegalArgumentException(getAlgorithmName() + ": salt must be twelve bits only");
+        }
+        return salt;
       }
-      return salt;
-    }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Clears the high-order four bits since the salt is only twelve bits.
-     * </p>
-     */
-    @Override
-    byte[] generateSalt(int saltBytes, Random random) {
-      if (saltBytes != 2) {
-        throw new IllegalArgumentException();
+      /**
+       * {@inheritDoc}
+       * <p>
+       * Clears the high-order four bits since the salt is only twelve bits.
+       * </p>
+       */
+      @Override
+      byte[] generateSalt(int saltBytes, Random random) {
+        if (saltBytes != 2) {
+          throw new IllegalArgumentException();
+        }
+        byte[] salt = new byte[2];
+        random.nextBytes(salt);
+        salt[0] &= 0x0f;
+        return validateSalt(AssertionError::new, salt);
       }
-      byte[] salt = new byte[2];
-      random.nextBytes(salt);
-      salt[0] &= 0x0f;
-      return validateSalt(AssertionError::new, salt);
-    }
 
-    /**
-     * @param  password  Is destroyed before this method returns.  If the original password is
+      /**
+       * {@inheritDoc}
+       *
+       * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
-     */
-    @Override
-    byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
-      synchronized (password.password) {
-        try {
-          if (password.isDestroyed()) {
-            throw new IllegalArgumentException("Refusing to hash destroyed password");
-          }
-          validateSalt(IllegalArgumentException::new, salt);
-          validateIterations(IllegalArgumentException::new, iterations);
-          if (hashBytes != Long.BYTES) {
-            throw new IllegalArgumentException();
-          }
-          byte[] hash = new byte[Long.BYTES];
-          long rsltblock = UnixCrypt.cryptImpl(
-              new String(password.password), // TODO: Switch to commons-codec to avoid String wrapping
-              ((salt[0] << Byte.SIZE) & 0x0f00)
-                  | (salt[1] & 0xff                )
-          );
-          password.destroy();
-          password = null;
-          // System.out.println("rsltblock = " + rsltblock);
-          IoUtils.longToBuffer(rsltblock, hash);
-          return validateHash(AssertionError::new, hash);
-        } finally {
-          if (password != null) {
+       */
+      @Override
+      byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
+        synchronized (password.password) {
+          try {
+            if (password.isDestroyed()) {
+              throw new IllegalArgumentException("Refusing to hash destroyed password");
+            }
+            validateSalt(IllegalArgumentException::new, salt);
+            validateIterations(IllegalArgumentException::new, iterations);
+            if (hashBytes != Long.BYTES) {
+              throw new IllegalArgumentException();
+            }
+            byte[] hash = new byte[Long.BYTES];
+            long rsltblock = UnixCrypt.cryptImpl(
+                new String(password.password), // TODO: Switch to commons-codec to avoid String wrapping
+                ((salt[0] << Byte.SIZE) & 0x0f00)
+                    | (salt[1] & 0xff)
+            );
             password.destroy();
+            password = null;
+            // System.out.println("rsltblock = " + rsltblock);
+            IoUtils.longToBuffer(rsltblock, hash);
+            return validateHash(AssertionError::new, hash);
+          } finally {
+            if (password != null) {
+              password.destroy();
+            }
           }
         }
       }
-    }
 
-    // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
-    @Override
-    String toString(byte[] salt, int iterations, byte[] hash) {
-      // System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
-      return new String(new char[]{
+      // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
+      @Override
+      String toString(byte[] salt, int iterations, byte[] hash) {
+        // System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
+        return new String(new char[]{
           // Salt
-          UnixCrypt.itoa64(salt[1]                                ),
+          UnixCrypt.itoa64(salt[1]),
           UnixCrypt.itoa64((salt[0] << 2) | ((salt[1] >> 6) & 0x03)),
           // Hash
-          UnixCrypt.itoa64(hash[0] >> 2                           ),
+          UnixCrypt.itoa64(hash[0] >> 2),
           UnixCrypt.itoa64((hash[0] << 4) | ((hash[1] >> 4) & 0x0f)),
           UnixCrypt.itoa64((hash[1] << 2) | ((hash[2] >> 6) & 0x03)),
-          UnixCrypt.itoa64(hash[2]                                ),
-          UnixCrypt.itoa64(hash[3] >> 2                           ),
+          UnixCrypt.itoa64(hash[2]),
+          UnixCrypt.itoa64(hash[3] >> 2),
           UnixCrypt.itoa64((hash[3] << 4) | ((hash[4] >> 4) & 0x0f)),
           UnixCrypt.itoa64((hash[4] << 2) | ((hash[5] >> 6) & 0x03)),
-          UnixCrypt.itoa64(hash[5]                                ),
-          UnixCrypt.itoa64(hash[6] >> 2                           ),
+          UnixCrypt.itoa64(hash[5]),
+          UnixCrypt.itoa64(hash[6] >> 2),
           UnixCrypt.itoa64((hash[6] << 4) | ((hash[7] >> 4) & 0x0f)),
-          UnixCrypt.itoa64(hash[7] << 2                           )
-      });
-    }
-  },
+          UnixCrypt.itoa64(hash[7] << 2)
+        });
+      }
+    },
     /**
      * @deprecated  MD5 should not be used for any cryptographic purpose, plus this is neither salted nor
      *              iterated so is subject to both dictionary and brute-force attacks.
      */
     @Deprecated // Java 9: (forRemoval = false)
-        MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
+    MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
       /**
+       * {@inheritDoc}
+       *
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
        */
@@ -261,8 +268,10 @@ public final class HashedPassword implements Serializable {
      *              iterated so is subject to both dictionary and brute-force attacks.
      */
     @Deprecated // Java 9: (forRemoval = false)
-        SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
+    SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
       /**
+       * {@inheritDoc}
+       *
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
        */
@@ -322,7 +331,7 @@ public final class HashedPassword implements Serializable {
      *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
      */
     @Deprecated // Java 9: (forRemoval = false)
-        PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
+    PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
       /**
        * Also allows the 256-bit salt for compatibility with previous versions.
        *
@@ -374,7 +383,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  Collision resistance of at least 128 bits is required
      */
     @Deprecated // Java 9: (forRemoval = false)
-        PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 224 / Byte.SIZE),
+    PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 224 / Byte.SIZE),
     PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 256 / Byte.SIZE),
     PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 384 / Byte.SIZE),
     PBKDF2WITHHMACSHA512("PBKDF2WithHmacSHA512", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 512 / Byte.SIZE);
@@ -568,18 +577,18 @@ public final class HashedPassword implements Serializable {
      */
     // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.validateIterations-function.sql
     public <Ex extends Throwable> int validateIterations(Function<? super String, Ex> newThrowable, int iterations) throws Ex {
-      int _minimumIterations = getMinimumIterations();
-      if (iterations < _minimumIterations) {
+      int myMinimumIterations = getMinimumIterations();
+      if (iterations < myMinimumIterations) {
         throw newThrowable.apply(
             getAlgorithmName() + ": iterations < minimumIterations: "
-                + iterations + " < " + _minimumIterations
+                + iterations + " < " + myMinimumIterations
         );
       }
-      int _maximumIterations = getMaximumIterations();
-      if (iterations > _maximumIterations) {
+      int myMaximumIterations = getMaximumIterations();
+      if (iterations > myMaximumIterations) {
         throw newThrowable.apply(
             getAlgorithmName() + ": iterations > maximumIterations: "
-                + iterations + " < " + _maximumIterations
+                + iterations + " < " + myMaximumIterations
         );
       }
       return iterations;
@@ -773,7 +782,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Hash the given password
+   * Hash the given password.
    *
    * @see  #generateSalt()
    * @see  #RECOMMENDED_ITERATIONS

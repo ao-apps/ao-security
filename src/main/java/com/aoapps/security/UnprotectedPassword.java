@@ -50,8 +50,8 @@ public final class UnprotectedPassword extends Password {
    */
   private static <Ex extends Throwable> char[] generatePassword(SupplierE<? extends char[], Ex> generator) throws Ex {
     // Discard any passwords that are generated as all-zero (in the small chance)
-    final int TRIES = 100;
-    for (int i = 0; i < TRIES; i++) {
+    final int tries = 100;
+    for (int i = 0; i < tries; i++) {
       char[] password = generator.get();
       if (password == null) {
         throw new IllegalArgumentException("Generator created null password");
@@ -65,7 +65,7 @@ public final class UnprotectedPassword extends Password {
       logger.warning("Generator created all-zero password, discarding and trying again");
     }
     // Generator is broken; don't loop forever
-    throw new IllegalArgumentException("Generator is only creating all-zero passwords, tried " + TRIES + " times");
+    throw new IllegalArgumentException("Generator is only creating all-zero passwords, tried " + tries + " times");
   }
 
   /**

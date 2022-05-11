@@ -23,14 +23,15 @@
 
 package com.aoapps.security;
 
-import com.aoapps.lang.Strings;
-import com.aoapps.lang.SysExits;
-import com.aoapps.lang.exception.WrappedException;
-import com.aoapps.lang.io.IoUtils;
 import static com.aoapps.security.HashedPassword.DECODER;
 import static com.aoapps.security.HashedPassword.ENCODER;
 import static com.aoapps.security.HashedPassword.SEPARATOR;
 import static com.aoapps.security.SecurityUtil.slowEquals;
+
+import com.aoapps.lang.Strings;
+import com.aoapps.lang.SysExits;
+import com.aoapps.lang.exception.WrappedException;
+import com.aoapps.lang.io.IoUtils;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -61,7 +62,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   public static final String NO_KEY_VALUE = HashedPassword.NO_PASSWORD_VALUE;
 
   /**
-   * See <a href="https://docs.oracle.com/en/java/javase/12/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest Algorithms</a>
+   * See <a href="https://docs.oracle.com/en/java/javase/12/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest Algorithms</a>.
    *
    * @see MessageDigest
    */
@@ -548,28 +549,26 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
     if (algorithm == null) {
       assert hash == null;
       return NO_KEY_VALUE;
+    } else if (
+        // MD5 is represented as hex characters of hash only
+        algorithm == Algorithm.MD5
+    ) {
+      @SuppressWarnings("deprecation")
+      String hex = Strings.convertToHex(hash);
+      return hex;
+    } else if (
+        // These algorithms are base-64 of hash only
+        algorithm == Algorithm.SHA_1
+            || algorithm == Algorithm.SHA_224
+            || algorithm == Algorithm.SHA_256
+            || algorithm == Algorithm.SHA_384
+            || algorithm == Algorithm.SHA_512
+    ) {
+      return ENCODER.encodeToString(hash);
     } else {
-      // MD5 is represented as hex characters of hash only
-      if (algorithm == Algorithm.MD5) {
-        @SuppressWarnings("deprecation")
-        String hex = Strings.convertToHex(hash);
-        return hex;
-      }
-      // These algorithms are base-64 of hash only
-      else if (
-          algorithm == Algorithm.SHA_1
-              || algorithm == Algorithm.SHA_224
-              || algorithm == Algorithm.SHA_256
-              || algorithm == Algorithm.SHA_384
-              || algorithm == Algorithm.SHA_512
-      ) {
-        return ENCODER.encodeToString(hash);
-      }
       // All others use separator and explicitely list the algorithm
-      else {
-        return SEPARATOR + algorithm.getAlgorithmName()
-            + SEPARATOR + ENCODER.encodeToString(hash);
-      }
+      return SEPARATOR + algorithm.getAlgorithmName()
+          + SEPARATOR + ENCODER.encodeToString(hash);
     }
   }
 

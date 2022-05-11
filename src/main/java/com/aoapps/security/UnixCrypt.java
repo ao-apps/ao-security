@@ -10,7 +10,7 @@ public abstract class UnixCrypt {
   // (mostly) Standard DES Tables from Tom Truscott
 
   /**
-   * initial permutation
+   * initial permutation.
    */
   private static final byte[] IP = {
       58, 50, 42, 34, 26, 18, 10,  2,
@@ -25,7 +25,7 @@ public abstract class UnixCrypt {
   // The final permutation is the inverse of IP - no table is necessary
 
   /**
-   * expansion operation
+   * expansion operation.
    */
   private static final byte[] ExpandTr = {
       32,  1,  2,  3,  4,  5,
@@ -38,7 +38,7 @@ public abstract class UnixCrypt {
       28, 29, 30, 31, 32,  1};
 
   /**
-   * permuted choice table 1
+   * permuted choice table 1.
    */
   private static final byte[] PC1 = {
       57, 49, 41, 33, 25, 17,  9,
@@ -52,13 +52,13 @@ public abstract class UnixCrypt {
       21, 13,  5, 28, 20, 12,  4};
 
   /**
-   * PC1 rotation schedule
+   * PC1 rotation schedule.
    */
   private static final byte[] Rotates = {
       1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
   /**
-   * permuted choice table 2
+   * permuted choice table 2.
    */
   private static final byte[] PC2 = {
       9, 18,    14, 17, 11, 24,  1,  5,
@@ -72,7 +72,7 @@ public abstract class UnixCrypt {
       0,  0,    46, 42, 50, 36, 29, 32};
 
   /**
-   * 48->32 bit substitution tables
+   * 48->32 bit substitution tables.
    */
   private static final byte[][] S = {
       // S[1]
@@ -117,7 +117,7 @@ public abstract class UnixCrypt {
           2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11}};
 
   /**
-   * 32-bit permutation function
+   * 32-bit permutation function.
    */
   private static final byte[] P32Tr = {
       16,  7, 20, 21,
@@ -130,7 +130,7 @@ public abstract class UnixCrypt {
       22, 11,  4, 25};
 
   /**
-   * compressed/interleaved permutation
+   * compressed/interleaved permutation.
    */
   private static final byte[] CIFP = {
       1,  2,  3,  4,   17, 18, 19, 20,
@@ -144,7 +144,7 @@ public abstract class UnixCrypt {
       45, 46, 47, 48,   61, 62, 63, 64};
 
   /**
-   * 0..63 => ascii-64
+   * 0..63 => ascii-64.
    */
   private static final char[] ITOA64 =
       "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
@@ -152,22 +152,22 @@ public abstract class UnixCrypt {
   // =====  Tables that are initialized at run time  ====================
 
   /**
-   * (ascii-64 - ' ') => 0..63
+   * (ascii-64 - ' ') => 0..63.
    */
   private static final byte[] A64TOI = new byte[128 - ' '];
 
   /**
-   * Initial key schedule permutation
+   * Initial key schedule permutation.
    */
   private static final long[][] PC1ROT = new long[16][16];
 
   /**
-   * Subsequent key schedule rotation permutations
+   * Subsequent key schedule rotation permutations.
    */
   private static final long[][][] PC2ROT = new long[2][16][16];
 
   /**
-   * Initial permutation/expansion table
+   * Initial permutation/expansion table.
    */
   private static final long[][] IE3264 = new long[8][16];
 
@@ -177,7 +177,7 @@ public abstract class UnixCrypt {
   private static final long[][] SPE = new long[8][64];
 
   /**
-   * compressed/interleaved => final permutation table
+   * compressed/interleaved => final permutation table.
    */
   private static final long[][] CF6464 = new long[16][16];
 
@@ -217,7 +217,7 @@ public abstract class UnixCrypt {
       }
       perm[i] = (byte) k;
     }
-    init_perm(PC1ROT, perm, 8, 8);
+    initPerm(PC1ROT, perm, 8, 8);
 
     // PC2ROT - PC2 inverse, then Rotate, then PC2
     for (int j = 0; j < 2; j++) {
@@ -242,7 +242,7 @@ public abstract class UnixCrypt {
         perm[i] = temp[k];
       }
 
-      init_perm(PC2ROT[j], perm, 8, 8);
+      initPerm(PC2ROT[j], perm, 8, 8);
     }
 
     // Bit reverse, intial permupation, expantion
@@ -263,7 +263,7 @@ public abstract class UnixCrypt {
       }
     }
 
-    init_perm(IE3264, perm, 4, 8);
+    initPerm(IE3264, perm, 4, 8);
 
     // Compression, final permutation, bit reverse
     for (int i = 0; i < 64; i++) {
@@ -276,7 +276,7 @@ public abstract class UnixCrypt {
       perm[k - 1] = (byte) (i + 1);
     }
 
-    init_perm(CF6464, perm, 8, 8);
+    initPerm(CF6464, perm, 8, 8);
 
     // SPE table
     for (int i = 0; i < 48; i++) {
@@ -375,9 +375,12 @@ public abstract class UnixCrypt {
 
   /**
    * Encrypts String into crypt (Unix) code.
+   *
    * @param key the key to be encrypted
    * @param setting the salt to be used
+   *
    * @return the encrypted String
+   *
    * @deprecated  This is not secure anymore.
    *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String, java.lang.String)}
    */
@@ -401,7 +404,7 @@ public abstract class UnixCrypt {
       salt = (salt << 6) | a64toi(c);
     }
 
-    long rsltblock = des_cipher(constdatablock, salt, 25, ks);
+    long rsltblock = desCipher(constdatablock, salt, 25, ks);
 
     cryptresult[12] = itoa64(rsltblock << 2);
     rsltblock >>= 4;
@@ -414,7 +417,7 @@ public abstract class UnixCrypt {
   }
 
   /**
-   * Performs the crypt, returning the long representation
+   * Performs the crypt, returning the long representation.
    */
   @Deprecated // Java 9: (forRemoval = true)
   static long cryptImpl(String key, int salt) {
@@ -428,14 +431,14 @@ public abstract class UnixCrypt {
 
     long[] ks = des_setkey(keyword);
 
-    return des_cipher(constdatablock, salt, 25, ks);
+    return desCipher(constdatablock, salt, 25, ks);
   }
 
   /**
    * Returns the DES encrypted code of the given word with the specified
    * environment.
    */
-  private static long des_cipher(long in, int salt, int num_iter, long[] KS) {
+  private static long desCipher(long in, int salt, int numIter, long[] ks) {
     salt = to_six_bit(salt);
     long l = in;
     long r = l;
@@ -447,23 +450,19 @@ public abstract class UnixCrypt {
     l = perm3264((int) (l >> 32), IE3264);
     r = perm3264((int) (l & 0xffffffff), IE3264);
 
-    while (--num_iter >= 0) {
-      for (int loop_count = 0; loop_count < 8; loop_count++) {
-        long kp;
-        long b;
-        long k;
-
-        kp = KS[(loop_count << 1)];
-        k = ((r >> 32) ^ r) & salt & 0xffffffffL;
+    while (--numIter >= 0) {
+      for (int loopCount = 0; loopCount < 8; loopCount++) {
+        long kp = ks[(loopCount << 1)];
+        long k = ((r >> 32) ^ r) & salt & 0xffffffffL;
         k |= k << 32;
-        b = k ^ r ^ kp;
+        long b = k ^ r ^ kp;
 
         l ^= SPE[0][(int) ((b >> 58) & 0x3f)] ^ SPE[1][(int) ((b >> 50) & 0x3f)]
             ^ SPE[2][(int) ((b >> 42) & 0x3f)] ^ SPE[3][(int) ((b >> 34) & 0x3f)]
             ^ SPE[4][(int) ((b >> 26) & 0x3f)] ^ SPE[5][(int) ((b >> 18) & 0x3f)]
             ^ SPE[6][(int) ((b >> 10) & 0x3f)] ^ SPE[7][(int) ((b >> 2) & 0x3f)];
 
-        kp = KS[(loop_count << 1) + 1];
+        kp = ks[(loopCount << 1) + 1];
         k = ((l >> 32) ^ l) & salt & 0xffffffffL;
         k |= k << 32;
         b = k ^ l ^ kp;
@@ -506,8 +505,8 @@ public abstract class UnixCrypt {
   /**
    * Initializes the given permutation table with the mapping table.
    */
-  private static void init_perm(long[][] perm, byte[] p, int chars_in, int chars_out) {
-    for (int k = 0; k < chars_out * 8; k++) {
+  private static void initPerm(long[][] perm, byte[] p, int charsIn, int charsOut) {
+    for (int k = 0; k < charsOut * 8; k++) {
       int l = p[k] - 1;
       if (l < 0) {
         continue;

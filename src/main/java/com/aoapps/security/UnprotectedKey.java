@@ -50,8 +50,8 @@ public final class UnprotectedKey extends Key {
    */
   private static <Ex extends Throwable> byte[] generateKey(SupplierE<? extends byte[], Ex> generator) throws Ex {
     // Discard any keys that are generated as all-zero (in the small chance)
-    final int TRIES = 100;
-    for (int i = 0; i < TRIES; i++) {
+    final int tries = 100;
+    for (int i = 0; i < tries; i++) {
       byte[] key = generator.get();
       if (key == null) {
         throw new IllegalArgumentException("Generator created null key");
@@ -65,7 +65,7 @@ public final class UnprotectedKey extends Key {
       logger.warning("Generator created all-zero key, discarding and trying again");
     }
     // Generator is broken; don't loop forever
-    throw new IllegalArgumentException("Generator is only creating all-zero keys, tried " + TRIES + " times");
+    throw new IllegalArgumentException("Generator is only creating all-zero keys, tried " + tries + " times");
   }
 
   /**

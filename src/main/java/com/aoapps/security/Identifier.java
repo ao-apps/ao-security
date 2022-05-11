@@ -23,9 +23,10 @@
 
 package com.aoapps.security;
 
-import com.aoapps.lang.io.IoUtils;
 import static com.aoapps.lang.math.UnsignedLong.divide;
 import static com.aoapps.lang.math.UnsignedLong.remainder;
+
+import com.aoapps.lang.io.IoUtils;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -124,8 +125,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
             + getValue(encoded.charAt(7)) * BASE * BASE * BASE
             + getValue(encoded.charAt(8)) * BASE * BASE
             + getValue(encoded.charAt(9)) * BASE
-            + getValue(encoded.charAt(10))
-    ;
+            + getValue(encoded.charAt(10));
   }
 
   /**
