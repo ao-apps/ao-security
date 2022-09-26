@@ -38,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import org.junit.Test;
 
@@ -144,9 +145,13 @@ public class HashedPasswordTest {
       // Compare to other hash of same password
       HashedPassword otherHashedPassword = new HashedPassword(password.clone(), algorithm);
       if (saltBytes != 0) {
-        assertFalse("Salted should have unequal instances", hashedPassword.equals(otherHashedPassword));
+        if (Arrays.equals(hashedPassword.getSalt(), otherHashedPassword.getSalt())) {
+          assertEquals("Salted with same salt should have equal instances", hashedPassword, otherHashedPassword);
+        } else {
+          assertFalse("Salted with different salt should have unequal instances", hashedPassword.equals(otherHashedPassword));
+        }
       } else {
-        assertTrue("Not salted should have equal instances", hashedPassword.equals(otherHashedPassword));
+        assertEquals("Not salted should have equal instances", hashedPassword, otherHashedPassword);
       }
       assertSame(algorithm, hashedPassword.getAlgorithm());
       assertNotSame(algHash, hashedPassword.getHash());
