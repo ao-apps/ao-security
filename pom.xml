@@ -284,8 +284,6 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
-        <!-- Javadoc-only -->
-        <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
       </dependency>
       <!-- Test Direct -->
       <dependency>
