@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -77,7 +77,7 @@ public final class SecurityUtil {
    * system using a timing attack and then attacked off-line.
    * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
    *
-   * @param   a       the first byte array
+   * @param   a       the byte array
    * @return          true if byte arrays is all zeroes, false if not
    */
   public static boolean slowAllZero(byte[] a) {
@@ -94,7 +94,7 @@ public final class SecurityUtil {
    * system using a timing attack and then attacked off-line.
    * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
    *
-   * @param   a       the first char array
+   * @param   a       the char array
    * @return          true if char arrays is all zeroes, false if not
    */
   public static boolean slowAllZero(char[] a) {
