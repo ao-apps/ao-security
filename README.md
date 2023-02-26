@@ -22,7 +22,7 @@ Best-practices security made usable.
 * [Project Home](https://oss.aoapps.com/security/)
 * [Changelog](https://oss.aoapps.com/security/changelog)
 * [API Docs](https://oss.aoapps.com/security/apidocs/)
-* [Maven Central Repository](https://search.maven.org/artifact/com.aoapps/ao-security)
+* [Maven Central Repository](https://central.sonatype.com/search?namespace=com.aoapps&q=a%3Aao-security)
 * [GitHub](https://github.com/ao-apps/ao-security)
 
 ## Features
