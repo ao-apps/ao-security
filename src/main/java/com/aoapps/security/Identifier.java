@@ -116,6 +116,10 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    * @throws IllegalArgumentException when any character is not valid or resulting number would be out of range
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.decode-function.sql
+  // TODO: Fail when encoded != decoded, since some ambiguity exists due to bit overflow.  This could be narrowed down to specific range and specifically excluded from parsing
+  //       Also check same in PostgreSQL implementation
+  //       Check SmallIdentifier and other uses
+  //       Add test to find and assert the boundary condition
   static long decode(String encoded) {
     assert encoded.length() == 11;
     return
