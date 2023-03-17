@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -87,6 +87,8 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
 
   /**
    * Gets the value for a character as a long.
+   *
+   * @throws IllegalArgumentException when character is not valid
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.getValue-function.sql
   private static long getValue(char ch) {
@@ -110,6 +112,8 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
 
   /**
    * Decodes one set of 11 characters to a long.
+   *
+   * @throws IllegalArgumentException when any character is not valid or resulting number would be out of range
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.decode-function.sql
   static long decode(String encoded) {
