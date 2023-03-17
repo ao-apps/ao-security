@@ -52,6 +52,15 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
 
   static final long BASE = 57;
 
+  /**
+   * The characters that represent each value.  These are all URL-safe without encoding.  These are selected to
+   * minimize ambiguity, favoring numeric digits where ambiguous.
+   * <p>
+   * If we were to do this again, we would choose to reassemble these characters into ascending ASCII order.  That way
+   * a simple lexical ordering would be the same as the decoded numeric value ordering.  This is not important, so we
+   * will not change it, but this should be a minor consideration to others implementing similar systems.
+   * </p>
+   */
   private static final char[] CHARACTERS = {
       'A', /*'B',*/ 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
       'N', /*'O',*/ 'P', /*'Q',*/ 'R', /*'S',*/ 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
