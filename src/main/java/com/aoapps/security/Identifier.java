@@ -23,8 +23,8 @@
 
 package com.aoapps.security;
 
-import static com.aoapps.lang.math.UnsignedLong.divide;
-import static com.aoapps.lang.math.UnsignedLong.remainder;
+import static java.lang.Long.divideUnsigned;
+import static java.lang.Long.remainderUnsigned;
 
 import com.aoapps.lang.io.IoUtils;
 import java.io.Serializable;
@@ -95,7 +95,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.getCharacter-function.sql
   static char getCharacter(long value) {
-    int index = (int) remainder(value, BASE);
+    int index = (int) remainderUnsigned(value, BASE);
     return CHARACTERS[index];
   }
 
@@ -128,16 +128,16 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    * Encodes a 64-bit value into the given array at the given position.
    */
   static void encode(long value, char[] chars, int pos) {
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE));
-    chars[pos++] = Identifier.getCharacter(divide(value, BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE));
     chars[pos] = Identifier.getCharacter(value);
   }
 

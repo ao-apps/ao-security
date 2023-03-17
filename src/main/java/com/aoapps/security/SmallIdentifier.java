@@ -23,9 +23,6 @@
 
 package com.aoapps.security;
 
-import static com.aoapps.lang.math.UnsignedLong.divide;
-import static com.aoapps.security.Identifier.BASE;
-
 import com.aoapps.lang.io.IoUtils;
 import java.io.Serializable;
 import java.security.SecureRandom;
