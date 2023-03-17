@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2012, 2016, 2017, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2012, 2016, 2017, 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,26 +23,18 @@
 
 package com.aoapps.security;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * Tests the Identifier class.
  *
  * @author  AO Industries, Inc.
  */
-public class IdentifierTest extends TestCase {
+public class IdentifierTest {
 
-  public IdentifierTest(String testName) {
-    super(testName);
-  }
-
-  public static Test suite() {
-    TestSuite suite = new TestSuite(IdentifierTest.class);
-    return suite;
-  }
-
+  @Test
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
   public void testToStringValueOfEquals() {
     //long divider = (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE);
