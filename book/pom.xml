@@ -29,11 +29,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.aoapps</groupId><artifactId>ao-security-book</artifactId><version>3.1.0-POST-SNAPSHOT</version>
+  <groupId>com.aoapps</groupId><artifactId>ao-security-book</artifactId><version>3.1.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <properties>
-    <project.build.outputTimestamp>2023-02-08T21:06:04Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-03-17T19:05:23Z</project.build.outputTimestamp>
     <module.name>com.aoapps.security.book</module.name>
     <!-- These values are copied from the project being documented -->
     <documented.artifactId>ao-security</documented.artifactId>

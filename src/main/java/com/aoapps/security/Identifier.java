@@ -64,6 +64,11 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
     assert CHARACTERS.length == BASE;
   }
 
+  /**
+   * The number of characters required to represent a 64-but number in base {@link #BASE}.
+   */
+  static final int NUM_CHARACTERS = 11;
+
   private static final char LOWEST_CHAR = '0';
   private static final char HIGHEST_CHAR = 'z';
 
@@ -111,7 +116,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * Decodes one set of 11 characters to a long.
+   * Decodes one set of {@literal #NUM_CHARACTERS} characters to a long.
    *
    * @throws IllegalArgumentException when any character is not valid or resulting number would be out of range
    */
@@ -121,7 +126,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   //       Check SmallIdentifier and other uses
   //       Add test to find and assert the boundary condition
   static long decode(String encoded) {
-    assert encoded.length() == 11;
+    assert encoded.length() == NUM_CHARACTERS;
     return
         getValue(encoded.charAt(0)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
             + getValue(encoded.charAt(1)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
@@ -183,11 +188,11 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.valueOf-function.sql
   public Identifier(String encoded) throws IllegalArgumentException {
-    if (encoded.length() != 22) {
+    if (encoded.length() != (NUM_CHARACTERS * 2)) {
       throw new IllegalArgumentException();
     }
-    this.hi = decode(encoded.substring(0, 11));
-    this.lo = decode(encoded.substring(11));
+    this.hi = decode(encoded.substring(0, NUM_CHARACTERS));
+    this.lo = decode(encoded.substring(NUM_CHARACTERS));
   }
 
   @Override
@@ -219,8 +224,8 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * The external representation is a string of characters encoded in base 57, with
-   * the first 11 characters for "hi" and the last 11 characters for "lo".
+   * The external representation is a string of characters encoded in base {@literal #BASE}, with
+   * the first {@literal #NUM_CHARACTERS} characters for "hi" and the last {@literal #NUM_CHARACTERS} characters for "lo".
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.toString-function.sql
   public char[] toCharArray() {
@@ -251,8 +256,8 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * The external representation is a string of characters encoded in base 57, with
-   * the first 11 characters for "hi" and the last 11 characters for "lo".
+   * The external representation is a string of characters encoded in base {@literal #BASE}, with
+   * the first {@literal #NUM_CHARACTERS} characters for "hi" and the last {@literal #NUM_CHARACTERS} characters for "lo".
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.toString-function.sql
   @Override

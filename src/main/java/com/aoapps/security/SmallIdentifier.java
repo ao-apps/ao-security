@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2014, 2016, 2017, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2014, 2016, 2017, 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -88,7 +88,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    */
   // Matches src/main/sql/com/aoapps/security/SmallIdentifier.valueOf-function.sql
   public SmallIdentifier(String encoded) throws IllegalArgumentException {
-    if (encoded.length() != 11) {
+    if (encoded.length() != Identifier.NUM_CHARACTERS) {
       throw new IllegalArgumentException();
     }
     this.value = Identifier.decode(encoded);
@@ -115,8 +115,8 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
   }
 
   /**
-   * The external representation is a string of characters encoded in base 57, with
-   * 11 characters for "value".
+   * The external representation is a string of characters encoded in base {@literal #BASE}, with
+   * {@literal Identifier#NUM_CHARACTERS} characters for "value".
    *
    * @see  #toString()
    */
@@ -137,8 +137,8 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
   }
 
   /**
-   * The external representation is a string of characters encoded in base 57, with
-   * 11 characters for "value".
+   * The external representation is a string of characters encoded in base {@literal #BASE}, with
+   * {@literal Identifier#NUM_CHARACTERS} characters for "value".
    *
    * @see  #toCharArray()
    */
