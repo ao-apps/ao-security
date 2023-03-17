@@ -148,24 +148,26 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    * @throws IllegalArgumentException when any character is not valid or resulting number would be out of range
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.decode-function.sql
-  // TODO: Fail when encoded != decoded, since some ambiguity exists due to bit overflow.  This could be narrowed down to specific range and specifically excluded from parsing
-  //       Also check same in PostgreSQL implementation
-  //       Check SmallIdentifier and other uses
-  //       Add test to find and assert the boundary condition
   static long decode(String encoded) {
     assert encoded.length() == NUM_CHARACTERS;
-    return
-        getValue(encoded.charAt(0)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(1)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(2)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(3)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(4)) * BASE * BASE * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(5)) * BASE * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(6)) * BASE * BASE * BASE * BASE
-            + getValue(encoded.charAt(7)) * BASE * BASE * BASE
-            + getValue(encoded.charAt(8)) * BASE * BASE
-            + getValue(encoded.charAt(9)) * BASE
-            + getValue(encoded.charAt(10));
+    long value = getValue(encoded.charAt(0)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(1)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(2)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(3)) * BASE * BASE * BASE * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(4)) * BASE * BASE * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(5)) * BASE * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(6)) * BASE * BASE * BASE * BASE
+        + getValue(encoded.charAt(7)) * BASE * BASE * BASE
+        + getValue(encoded.charAt(8)) * BASE * BASE
+        + getValue(encoded.charAt(9)) * BASE
+        + getValue(encoded.charAt(10));
+    // There could be a faster implementation with character-by character comparisions, but this is easy to do
+    char[] reencoded = new char[NUM_CHARACTERS];
+    encode(value, reencoded, 0);
+    if (!Arrays.equals(encoded.toCharArray(), reencoded)) {
+      throw new IllegalArgumentException("Arithmetical overflow: " + encoded);
+    }
+    return value;
   }
 
   /**

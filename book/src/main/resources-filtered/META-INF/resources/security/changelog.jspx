@@ -51,6 +51,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         <ul>
           <li>Use more constants instead of repeated hard-coded literals.</li>
           <li>Consolidated encoding into a single implementation method.</li>
+          <li>
+            <code>Identifier</code> and <code>SmallIdentifier</code> decoding now throw <code>IllegalArgumentException</code>
+            on values that would result in arithmetical overflow.  Previously, there could be two string representations
+            decoding back to the same value.  Value to/from string encoding/decoding is now a strict one-to-one mapping.
+          </li>
         </ul>
       </changelog:release>
     </c:if>

@@ -24,6 +24,7 @@
 package com.aoapps.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -73,5 +74,24 @@ public class IdentifierTest {
     assertEquals("AAAAAAAAAAA", String.valueOf(chars));
     Identifier.encode(0xFFFFFFFFFFFFFFFFL, chars, 0);
     assertEquals("37W0ftWNYM7", String.valueOf(chars));
+  }
+
+  @Test
+  @SuppressWarnings("ThrowableResultIgnored")
+  public void testDecode() {
+    assertEquals(0L, Identifier.decode("AAAAAAAAAAA"));
+    assertEquals(0xFFFFFFFFFFFFFFFFL, Identifier.decode("37W0ftWNYM7"));
+    // Test each position up one character
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0ftWNYM8"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0ftWNYN7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0ftWNZM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0ftWPYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0ftXNYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0fuWNYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W0gtWNYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37W1ftWNYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("37X0ftWNYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("38W0ftWNYM7"));
+    assertThrows(IllegalArgumentException.class, () -> Identifier.decode("47W0ftWNYM7"));
   }
 }

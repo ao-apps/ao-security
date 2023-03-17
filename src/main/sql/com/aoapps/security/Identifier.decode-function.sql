@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -25,6 +25,7 @@ RETURNS BIGINT AS $$
 DECLARE
   "BASE" NUMERIC(20,0) := 57;
   unsigned NUMERIC(20,0);
+  "value" BIGINT;
 BEGIN
   IF encoded IS NULL THEN
     RETURN NULL;
@@ -45,10 +46,14 @@ BEGIN
     + "com.aoapps.security"."Identifier.getValue"(substr(encoded, 11, 1));
   IF unsigned > '9223372036854775807'::NUMERIC(20,0) THEN
     -- Convert back to twos-complement
-    RETURN unsigned - '18446744073709551616'::NUMERIC(20,0);
+    "value" := unsigned - '18446744073709551616'::NUMERIC(20,0);
   ELSE
-    RETURN unsigned;
+    "value" := unsigned;
   END IF;
+  IF encoded != "com.aoapps.security"."Identifier.encode"("value") THEN
+    RAISE EXCEPTION 'Arithmetical overflow: %', encoded;
+  END IF;
+  RETURN "value";
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
