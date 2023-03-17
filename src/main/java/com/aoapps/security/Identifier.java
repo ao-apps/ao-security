@@ -125,6 +125,23 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
+   * Encodes a 64-bit value into the given array at the given position.
+   */
+  static void encode(long value, char[] chars, int pos) {
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE * BASE));
+    chars[pos++] = Identifier.getCharacter(divide(value, BASE));
+    chars[pos] = Identifier.getCharacter(value);
+  }
+
+  /**
    * Decodes one set of {@literal #NUM_CHARACTERS} characters to a long.
    *
    * @throws IllegalArgumentException when any character is not valid or resulting number would be out of range
@@ -238,30 +255,10 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.toString-function.sql
   public char[] toCharArray() {
-    return new char[]{
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE * BASE)),
-        getCharacter(divide(hi, BASE * BASE)),
-        getCharacter(divide(hi, BASE)),
-        getCharacter(hi),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE * BASE)),
-        getCharacter(divide(lo, BASE * BASE)),
-        getCharacter(divide(lo, BASE)),
-        getCharacter(lo)
-    };
+    char[] chars = new char[Identifier.NUM_CHARACTERS * 2];
+    Identifier.encode(hi, chars, 0);
+    Identifier.encode(lo, chars, NUM_CHARACTERS);
+    return chars;
   }
 
   /**

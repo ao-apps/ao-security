@@ -121,19 +121,9 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    * @see  #toString()
    */
   public char[] toCharArray() {
-    return new char[]{
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE * BASE)),
-        Identifier.getCharacter(divide(value, BASE)),
-        Identifier.getCharacter(value)
-    };
+    char[] chars = new char[Identifier.NUM_CHARACTERS];
+    Identifier.encode(value, chars, 0);
+    return chars;
   }
 
   /**

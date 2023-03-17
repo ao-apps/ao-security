@@ -50,6 +50,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
       >
         <ul>
           <li>Use more constants instead of repeated hard-coded literals.</li>
+          <li>Consolidated encoding into a single implementation method.</li>
         </ul>
       </changelog:release>
     </c:if>

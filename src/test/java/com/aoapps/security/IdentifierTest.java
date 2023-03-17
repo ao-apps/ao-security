@@ -65,4 +65,13 @@ public class IdentifierTest {
       assertEquals(i1, i2);
     }
   }
+
+  @Test
+  public void testEncode() {
+    char[] chars = new char[Identifier.NUM_CHARACTERS];
+    Identifier.encode(0x0000000000000000L, chars, 0);
+    assertEquals("AAAAAAAAAAA", String.valueOf(chars));
+    Identifier.encode(0xFFFFFFFFFFFFFFFFL, chars, 0);
+    assertEquals("37W0ftWNYM7", String.valueOf(chars));
+  }
 }
