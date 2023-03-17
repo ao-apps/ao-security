@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -48,27 +48,8 @@ CREATE OR REPLACE FUNCTION "com.aoapps.security"."SmallIdentifier.toString" (
   this "com.aoapps.security"."SmallIdentifier"
 )
 RETURNS text AS $$
-DECLARE
-  "BASE" NUMERIC(20,0) := 57;
-  num NUMERIC(20,0) := this;
 BEGIN
-  IF num IS NULL THEN
-    RETURN NULL;
-  ELSIF num < 0 THEN
-    num := num + '18446744073709551616'::numeric(20,0);
-  END IF;
-  RETURN
-       "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, ("BASE" * "BASE")))
-    || "com.aoapps.security"."Identifier.getCharacter"("com.aoapps.security"."SmallIdentifier.toString.positive_truncate_divide"(num, "BASE"))
-    || "com.aoapps.security"."Identifier.getCharacter"(num);
+  RETURN "com.aoapps.security"."Identifier.encode"(this);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE

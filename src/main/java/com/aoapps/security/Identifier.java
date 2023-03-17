@@ -127,6 +127,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   /**
    * Encodes a 64-bit value into the given array at the given position.
    */
+  // Matches src/main/sql/com/aoapps/security/Identifier.encode-function.sql
   static void encode(long value, char[] chars, int pos) {
     chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));
     chars[pos++] = Identifier.getCharacter(divideUnsigned(value, BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE));

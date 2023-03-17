@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -27,8 +27,8 @@ CREATE OR REPLACE FUNCTION "com.aoapps.security"."Identifier.toString" (
 RETURNS text AS $$
 BEGIN
   RETURN
-       "com.aoapps.security"."SmallIdentifier.toString"(hi)
-    || "com.aoapps.security"."SmallIdentifier.toString"(lo);
+       "com.aoapps.security"."Identifier.encode"(hi)
+    || "com.aoapps.security"."Identifier.encode"(lo);
 END;
 $$ LANGUAGE plpgsql
 IMMUTABLE
