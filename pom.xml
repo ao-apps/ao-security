@@ -29,11 +29,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.2.0</version>
+  <groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.2.0-POST-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <properties>
-    <project.build.outputTimestamp>2023-03-18T00:38:19Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-03-18T00:39:26Z</project.build.outputTimestamp>
     <module.name>com.aoapps.security</module.name>
     <!-- Java 1.8 -->
     <javase.version>1.8</javase.version>
@@ -85,7 +85,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <connection>scm:git:git://github.com/ao-apps/ao-security.git</connection>
     <developerConnection>scm:git:git@github.com:ao-apps/ao-security.git</developerConnection>
     <url>https://github.com/ao-apps/ao-security</url>
-    <tag>ao-security-3.2.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
