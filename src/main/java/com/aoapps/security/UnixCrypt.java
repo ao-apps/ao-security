@@ -217,7 +217,7 @@ public abstract class UnixCrypt {
       }
       perm[i] = (byte) k;
     }
-    initPerm(PC1ROT, perm, 8, 8);
+    initPerm(PC1ROT, perm, 8);
 
     // PC2ROT - PC2 inverse, then Rotate, then PC2
     for (int j = 0; j < 2; j++) {
@@ -242,7 +242,7 @@ public abstract class UnixCrypt {
         perm[i] = temp[k];
       }
 
-      initPerm(PC2ROT[j], perm, 8, 8);
+      initPerm(PC2ROT[j], perm, 8);
     }
 
     // Bit reverse, intial permupation, expantion
@@ -263,7 +263,7 @@ public abstract class UnixCrypt {
       }
     }
 
-    initPerm(IE3264, perm, 4, 8);
+    initPerm(IE3264, perm, 8);
 
     // Compression, final permutation, bit reverse
     for (int i = 0; i < 64; i++) {
@@ -276,7 +276,7 @@ public abstract class UnixCrypt {
       perm[k - 1] = (byte) (i + 1);
     }
 
-    initPerm(CF6464, perm, 8, 8);
+    initPerm(CF6464, perm, 8);
 
     // SPE table
     for (int i = 0; i < 48; i++) {
@@ -505,7 +505,7 @@ public abstract class UnixCrypt {
   /**
    * Initializes the given permutation table with the mapping table.
    */
-  private static void initPerm(long[][] perm, byte[] p, int charsIn, int charsOut) {
+  private static void initPerm(long[][] perm, byte[] p, int charsOut) {
     for (int k = 0; k < charsOut * 8; k++) {
       int l = p[k] - 1;
       if (l < 0) {
