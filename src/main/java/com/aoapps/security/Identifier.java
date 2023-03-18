@@ -112,15 +112,6 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
         return value;
       }
     }
-    //if (ch >= 'A' && ch <= 'Z') {
-    //  return (long)(ch - 'A');
-    //}
-    //if (ch >= 'a' && ch <= 'z') {
-    //  return (long)(ch - 'a' + 26);
-    //}
-    //if (ch >= '0' && ch <= '4') {
-    //  return (long)(ch - '0' + 52);
-    //}
     throw new IllegalArgumentException(Character.toString(ch));
   }
 

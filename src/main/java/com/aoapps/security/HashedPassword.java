@@ -169,7 +169,6 @@ public final class HashedPassword implements Serializable {
             );
             password.destroy();
             password = null;
-            // System.out.println("rsltblock = " + rsltblock);
             IoUtils.longToBuffer(rsltblock, hash);
             return validateHash(AssertionError::new, hash);
           } finally {
@@ -183,7 +182,6 @@ public final class HashedPassword implements Serializable {
       // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
       @Override
       String toString(byte[] salt, int iterations, byte[] hash) {
-        // System.out.println("salt: " + Strings.convertToHex(salt) + ", hash: " + Strings.convertToHex(hash));
         return new String(new char[]{
           // Salt
           UnixCrypt.itoa64(salt[1]),
@@ -856,7 +854,6 @@ public final class HashedPassword implements Serializable {
               | ((long) UnixCrypt.a64toi(hashedPassword.charAt(10)) << 10)
               | ((long) UnixCrypt.a64toi(hashedPassword.charAt(11)) <<  4)
               | ((long) UnixCrypt.a64toi(hashedPassword.charAt(12)) >>  2);
-      // System.out.println("rsltblock = " + rsltblock);
       byte[] hash = new byte[Long.BYTES];
       IoUtils.longToBuffer(rsltblock, hash);
       HashedPassword result = new HashedPassword(
