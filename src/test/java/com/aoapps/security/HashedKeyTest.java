@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -26,6 +26,7 @@ package com.aoapps.security;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -52,7 +53,7 @@ public class HashedKeyTest {
     assertNull(HashedKey.valueOf(null));
     assertSame(HashedKey.NO_KEY, HashedKey.valueOf("*"));
     assertSame(HashedKey.valueOf("*"), HashedKey.valueOf("*"));
-    assertFalse(HashedKey.valueOf("*").equals(HashedKey.valueOf("*")));
+    assertNotEquals(HashedKey.valueOf("*"), HashedKey.valueOf("*"));
     assertNull(HashedKey.NO_KEY.getAlgorithm());
     assertNull(HashedKey.NO_KEY.getHash());
   }
@@ -71,8 +72,8 @@ public class HashedKeyTest {
       assertSame(hashedKey.getAlgorithm(), valueOf.getAlgorithm());
       assertArrayEquals(hashedKey.getHash(), valueOf.getHash());
       assertEquals(hashedKey, valueOf);
-      assertFalse(hashedKey.equals(HashedKey.NO_KEY));
-      assertFalse(HashedKey.NO_KEY.equals(hashedKey));
+      assertNotEquals(hashedKey, HashedKey.NO_KEY);
+      assertNotEquals(HashedKey.NO_KEY, hashedKey);
       assertFalse(hashedKey.matches(algorithm.generateKey(keyBytes, Identifier.secureRandom)));
       assertFalse(HashedKey.NO_KEY.matches(algorithm.generateKey(keyBytes, Identifier.secureRandom)));
       assertNotSame(hashedKey, valueOf);
@@ -92,7 +93,7 @@ public class HashedKeyTest {
       try (UnprotectedKey otherKey = algorithm.generateKey()) {
         byte[] otherHash = algorithm.hash(otherKey);
         HashedKey otherHashedKey = new HashedKey(algorithm, otherHash);
-        assertFalse(hashedKey.equals(otherHashedKey));
+        assertNotEquals(hashedKey, otherHashedKey);
         assertSame(algorithm, hashedKey.getAlgorithm());
         assertNotSame(algHash, hashedKey.getHash());
         assertEquals("hash size same, regardless of key size", algorithm.getHashBytes(), hashedKey.getHash().length);
@@ -226,9 +227,9 @@ public class HashedKeyTest {
     byte[] hash = HashedKey.hash(key);
     assertEquals(256 / Byte.SIZE, hash.length);
     HashedKey hashedKey = new HashedKey(hash);
-    assertTrue(hashedKey.equals(new HashedKey(HashedKey.Algorithm.SHA_256, hash)));
-    assertFalse(hashedKey.equals(HashedKey.NO_KEY));
-    assertFalse(HashedKey.NO_KEY.equals(hashedKey));
+    assertEquals(hashedKey, new HashedKey(HashedKey.Algorithm.SHA_256, hash));
+    assertNotEquals(hashedKey, HashedKey.NO_KEY);
+    assertNotEquals(HashedKey.NO_KEY, hashedKey);
   }
 
   @Test

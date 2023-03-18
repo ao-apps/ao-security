@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -27,6 +27,7 @@ import static com.aoapps.security.Identifier.secureRandom;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -57,7 +58,7 @@ public class HashedPasswordTest {
     assertNull(HashedPassword.valueOf(null));
     assertSame(HashedPassword.NO_PASSWORD, HashedPassword.valueOf("*"));
     assertSame(HashedPassword.valueOf("*"), HashedPassword.valueOf("*"));
-    assertFalse(HashedPassword.valueOf("*").equals(HashedPassword.valueOf("*")));
+    assertNotEquals(HashedPassword.valueOf("*"), HashedPassword.valueOf("*"));
     assertFalse(HashedPassword.valueOf("*").matches(""));
     assertNull(HashedPassword.NO_PASSWORD.getAlgorithm());
     assertNull(HashedPassword.NO_PASSWORD.getSalt());
@@ -148,7 +149,7 @@ public class HashedPasswordTest {
         if (Arrays.equals(hashedPassword.getSalt(), otherHashedPassword.getSalt())) {
           assertEquals("Salted with same salt should have equal instances", hashedPassword, otherHashedPassword);
         } else {
-          assertFalse("Salted with different salt should have unequal instances", hashedPassword.equals(otherHashedPassword));
+          assertNotEquals("Salted with different salt should have unequal instances", hashedPassword, otherHashedPassword);
         }
       } else {
         assertEquals("Not salted should have equal instances", hashedPassword, otherHashedPassword);
@@ -234,34 +235,38 @@ public class HashedPasswordTest {
     if (!password.isEmpty()) {
       assertFalse(hashedPassword.matches(""));
     }
+    int saltBytes1 = HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes();
     assertThrows(
         "invalid new salt bytes on deprecated constructor",
         IllegalArgumentException.class,
         () -> new HashedPassword(
-            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes()],
+            new byte[saltBytes1],
             HashedPassword.RECOMMENDED_ITERATIONS,
             hash
         )
     );
+    int hashBytes1 = HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes();
     assertThrows(
         "invalid new hash bytes on deprecated constructor",
         IllegalArgumentException.class,
         () -> new HashedPassword(
             salt,
             HashedPassword.RECOMMENDED_ITERATIONS,
-            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes()]
+            new byte[hashBytes1]
         )
     );
+    int saltBytes2 = HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes();
     assertThrows(
         "mismatch old and new 1",
         IllegalArgumentException.class,
         () -> new HashedPassword(
             HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
-            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getSaltBytes()],
+            new byte[saltBytes2],
             HashedPassword.RECOMMENDED_ITERATIONS,
             hash
         )
     );
+    int hashBytes2 = HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes();
     assertThrows(
         "mismatch old and new 2",
         IllegalArgumentException.class,
@@ -269,7 +274,7 @@ public class HashedPasswordTest {
             HashedPassword.Algorithm.PBKDF2WITHHMACSHA1,
             salt,
             HashedPassword.RECOMMENDED_ITERATIONS,
-            new byte[HashedPassword.Algorithm.PBKDF2WITHHMACSHA1.getHashBytes()]
+            new byte[hashBytes2]
         )
     );
   }
