@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -647,11 +647,10 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   }
 
   /**
-   * @return  No defensive copy
+   * @return  Defensive copy
    */
-  @SuppressWarnings("ReturnOfCollectionOrArrayField")
   public byte[] getHash() {
-    return hash;
+    return (hash == null) ? null : Arrays.copyOf(hash, hash.length);
   }
 
   /**

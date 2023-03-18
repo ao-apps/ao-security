@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,6 +29,7 @@ import com.aoapps.lang.Strings;
 import com.aoapps.lang.SysExits;
 import com.aoapps.lang.exception.WrappedException;
 import com.aoapps.lang.io.IoUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -1457,11 +1458,10 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * @return  No defensive copy
+   * @return  Defensive copy
    */
-  @SuppressWarnings("ReturnOfCollectionOrArrayField")
   public byte[] getSalt() {
-    return salt;
+    return (salt == null) ? null : Arrays.copyOf(salt, salt.length);
   }
 
   public int getIterations() {
@@ -1469,11 +1469,10 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * @return  No defensive copy
+   * @return  Defensive copy
    */
-  @SuppressWarnings("ReturnOfCollectionOrArrayField")
   public byte[] getHash() {
-    return hash;
+    return (hash == null) ? null : Arrays.copyOf(hash, hash.length);
   }
 
   /**
@@ -1560,6 +1559,9 @@ public final class HashedPassword implements Serializable {
   }
 
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
+  @SuppressFBWarnings(
+      value = "DM_DEFAULT_ENCODING",
+      justification = "Default system encoding expected for main method")
   public static void main(String... args) {
     List<String> passwords = new ArrayList<>(args.length);
     boolean benchmark = false;

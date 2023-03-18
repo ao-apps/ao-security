@@ -29,11 +29,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.1.1-SNAPSHOT</version>
+  <groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.2.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <properties>
-    <project.build.outputTimestamp>2023-03-17T19:05:23Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-03-18T00:27:52Z</project.build.outputTimestamp>
     <module.name>com.aoapps.security</module.name>
     <!-- Java 1.8 -->
     <javase.version>1.8</javase.version>
@@ -50,6 +50,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!-- Dependencies -->
     <commons-codec.version>1.15</commons-codec.version>
+    <spotbugs-annotations.version>4.7.3</spotbugs-annotations.version>
   </properties>
 
   <name>AO Security</name>
@@ -207,13 +208,6 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-maven-plugin</artifactId>
-        <configuration>
-          <!-- TODO: Clean-up SpotBugs -->
-          <failOnError>false</failOnError>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -240,6 +234,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
                       <includes>element-list, package-list</includes>
                       <outputDirectory>${project.build.directory}/offlineLinks/commons-codec/commons-codec</outputDirectory>
                     </artifactItem>
+                    <artifactItem>
+                      <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><classifier>javadoc</classifier>
+                      <includes>element-list, package-list</includes>
+                      <outputDirectory>${project.build.directory}/offlineLinks/com.github.spotbugs/spotbugs-annotations</outputDirectory>
+                    </artifactItem>
                     <!-- Test Direct -->
                     <artifactItem>
                       <groupId>junit</groupId><artifactId>junit</artifactId><classifier>javadoc</classifier>
@@ -264,6 +263,10 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
                   <url>https://commons.apache.org/proper/commons-codec/archives/${commons-codec.version}/apidocs/</url>
                   <location>${project.build.directory}/offlineLinks/commons-codec/commons-codec</location>
                 </offlineLink>
+                <offlineLink>
+                  <url>https://javadoc.io/doc/com.github.spotbugs/spotbugs-annotations/${spotbugs-annotations.version}/</url>
+                  <location>${project.build.directory}/offlineLinks/com.github.spotbugs/spotbugs-annotations</location>
+                </offlineLink>
                 <!-- Test Direct -->
                 <offlineLink>
                   <url>https://junit.org/junit4/javadoc/latest/</url>
@@ -285,6 +288,13 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>${spotbugs-annotations.version}</version>
+      </dependency>
+      <!-- Transitive -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId><version>3.0.2</version>
       </dependency>
       <!-- Test Direct -->
       <dependency>
@@ -309,6 +319,10 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <dependency>
       <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
       <!-- Javadoc-only -->
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId>
       <optional>true</optional>
     </dependency>
     <!-- Test Direct -->

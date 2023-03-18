@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -25,6 +25,7 @@ module com.aoapps.security {
   // Direct
   requires com.aoapps.lang; // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
   requires static org.apache.commons.codec; // <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
+  requires static com.github.spotbugs.annotations; // <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId>
   // Java SE
   requires java.logging;
 }

@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -39,6 +39,7 @@ import java.util.logging.Logger;
  *
  * @author  AO Industries, Inc.
  */
+@SuppressWarnings("EqualsAndHashcode") // Inherited equals method is consistent with hashCode implementation
 public final class UnprotectedKey extends Key {
 
   private static final Logger logger = Logger.getLogger(UnprotectedKey.class.getName());
@@ -158,6 +159,15 @@ public final class UnprotectedKey extends Key {
    */
   private UnprotectedKey(UnprotectedKey other) {
     super(other);
+  }
+
+  /**
+   * Implements hash code via {@link Arrays#hashCode(byte[])} on the key.
+   * Please note that the hash code may change when {@linkplain #destroy() destroyed}.
+   */
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(key);
   }
 
   @Override

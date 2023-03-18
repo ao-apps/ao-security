@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,6 +23,7 @@
 
 package com.aoapps.security;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.Externalizable;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -54,7 +55,6 @@ import javax.security.auth.Destroyable;
  * @author  AO Industries, Inc.
  */
 // TODO: Should the key contain the algorithm, too?
-@SuppressWarnings({"EqualsAndHashcode", "overrides"})
 // Java 17: sealed to be extended by UnprotectedKey only
 public class Key implements Destroyable, AutoCloseable, Cloneable {
 
@@ -156,8 +156,21 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
     }
   }
 
+  /**
+   * Uses default implementation from {@link Object#hashCode()}.
+   * Any meaningful implementation could leak private key information.
+   * Use {@link UnprotectedKey} instead when needing to use in hash-based data structures.
+   */
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   @Override
   @SuppressWarnings({"CloneDeclaresCloneNotSupported", "CloneDoesntCallSuperClone"})
+  @SuppressFBWarnings(
+      value = "CN_IDIOM_NO_SUPER_CALL",
+      justification = "Delegating to a copy constructor")
   public Key clone() {
     return new Key(this);
   }
