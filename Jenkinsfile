@@ -33,6 +33,7 @@ def upstreamProjects = [
   // Direct
   'lang', // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
   // No Jenkins: <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId>
+  // No Jenkins: <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId>
 
   // Test Direct
   // No Jenkins: <groupId>junit</groupId><artifactId>junit</artifactId>
