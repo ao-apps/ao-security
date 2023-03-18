@@ -198,18 +198,18 @@ public abstract class UnixCrypt {
 
     // PC1ROT - bit reverse, then PC1, then Rotate, then PC2
     for (int i = 0; i < 64; i++) {
-      perm[i] = (byte) 0;
+      perm[i] = 0;
     }
     for (int i = 0; i < 64; i++) {
       int k;
-      if ((k = (int) PC2[i]) == 0) {
+      if ((k = PC2[i]) == 0) {
         continue;
       }
       k += Rotates[0] - 1;
       if ((k % 28) < Rotates[0]) {
         k -= 28;
       }
-      k = (int) PC1[k];
+      k = PC1[k];
       if (k > 0) {
         k--;
         k = (k | 0x07) - (k & 0x07);
@@ -226,13 +226,13 @@ public abstract class UnixCrypt {
         perm[i] = temp[i] = 0;
       }
       for (int i = 0; i < 64; i++) {
-        if ((k = (int) PC2[i]) == 0) {
+        if ((k = PC2[i]) == 0) {
           continue;
         }
         temp[k - 1] = (byte) (i + 1);
       }
       for (int i = 0; i < 64; i++) {
-        if ((k = (int) PC2[i]) == 0) {
+        if ((k = PC2[i]) == 0) {
           continue;
         }
         k += j;
