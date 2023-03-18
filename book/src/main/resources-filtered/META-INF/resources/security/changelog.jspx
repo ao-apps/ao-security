@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="Changelog"
     tocLevels="1"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2023-03-17T23:23:57Z"
+    dateModified="2023-03-18T00:39:23Z"
   >
     <c:if test="${fn:endsWith('@{project.version}', '-SNAPSHOT') and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')}">
       <changelog:release
@@ -47,29 +47,40 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         artifactId="@{documented.artifactId}"
         repository="@{nexusUrl}content/repositories/snapshots/"
         scmUrl="@{project.scm.url}"
-      >
-        <ul>
-          <li>Use more constants instead of repeated hard-coded literals.</li>
-          <li>Consolidated encoding into a single implementation method.</li>
-          <li>
-            <code>Identifier</code> and <code>SmallIdentifier</code> decoding now throw <code>IllegalArgumentException</code>
-            on values that would result in arithmetical overflow.  Previously, there could be two string representations
-            decoding back to the same value.  Value to/from string encoding/decoding is now a strict one-to-one mapping.
-          </li>
-          <li>Cleaned-up SpotBugs issues:
-            <ol>
-              <li>
-                Defensive copies of <code>byte[]</code> returned by <code>HashedKey</code> and <code>HashedPassword</code>.
-              </li>
-              <li>
-                Implemented meaningful <code>hashCode()</code> methods on <code>UnprotectedKey</code> and
-                <code>UnprotectedPassword</code>.
-              </li>
-            </ol>
-          </li>
-        </ul>
-      </changelog:release>
+      />
     </c:if>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="3.2.0"
+      datePublished="2023-03-18T00:39:23Z"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>Use more constants instead of repeated hard-coded literals.</li>
+        <li>Consolidated encoding into a single implementation method.</li>
+        <li>
+          <code>Identifier</code> and <code>SmallIdentifier</code> decoding now throw
+          <code>IllegalArgumentException</code> on values that would result in arithmetical overflow.  Previously, there
+          could be two string representations decoding back to the same value.  Value to/from string encoding/decoding
+          is now a strict one-to-one mapping.
+        </li>
+        <li>Cleaned-up SpotBugs issues:
+          <ol>
+            <li>
+              Defensive copies of <code>byte[]</code> returned by <code>HashedKey</code> and
+              <code>HashedPassword</code>.
+            </li>
+            <li>
+              Implemented meaningful <code>hashCode()</code> methods on <code>UnprotectedKey</code> and
+              <code>UnprotectedPassword</code>.
+            </li>
+          </ol>
+        </li>
+      </ul>
+    </changelog:release>
 
     <changelog:release
       projectName="@{documented.name}"
