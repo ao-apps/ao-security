@@ -74,7 +74,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * The number of characters required to represent a 64-but number in base {@link #BASE}.
+   * The number of characters required to represent a 64-bit number in base {@link #BASE}.
    */
   static final int NUM_CHARACTERS = 11;
 
