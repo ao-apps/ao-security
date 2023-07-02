@@ -45,7 +45,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <javadoc.breadcrumbs><![CDATA[<a target="${javadoc.target}" href="https://oss.aoapps.com/">AO OSS</a>
 / <a target="${javadoc.target}" href="${project.url}">Security</a>]]></javadoc.breadcrumbs>
     <!-- Dependencies -->
-    <commons-codec.version>1.15</commons-codec.version>
+    <commons-codec.version>1.16.0</commons-codec.version>
     <spotbugs-annotations.version>4.7.3</spotbugs-annotations.version>
   </properties>
 
