@@ -43,9 +43,6 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
 
     <javadoc.breadcrumbs><![CDATA[<a target="${javadoc.target}" href="https://oss.aoapps.com/">AO OSS</a>
 / <a target="${javadoc.target}" href="${project.url}">Security</a>]]></javadoc.breadcrumbs>
-    <!-- Dependencies -->
-    <commons-codec.version>1.16.0</commons-codec.version>
-    <spotbugs-annotations.version>4.7.3</spotbugs-annotations.version>
   </properties>
 
   <name>AO Security</name>
@@ -255,11 +252,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
                   <location>${project.build.directory}/offlineLinks/com.aoapps/ao-lang</location>
                 </offlineLink>
                 <offlineLink>
-                  <url>https://commons.apache.org/proper/commons-codec/archives/${commons-codec.version}/apidocs/</url>
+                  <url>https://commons.apache.org/proper/commons-codec/archives/${commons-codec:commons-codec:jar.version}/apidocs/</url>
                   <location>${project.build.directory}/offlineLinks/commons-codec/commons-codec</location>
                 </offlineLink>
                 <offlineLink>
-                  <url>https://javadoc.io/doc/com.github.spotbugs/spotbugs-annotations/${spotbugs-annotations.version}/</url>
+                  <url>https://javadoc.io/doc/com.github.spotbugs/spotbugs-annotations/${com.github.spotbugs:spotbugs-annotations:jar.version}/</url>
                   <location>${project.build.directory}/offlineLinks/com.github.spotbugs/spotbugs-annotations</location>
                 </offlineLink>
                 <!-- Test Direct -->
@@ -282,10 +279,10 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId><version>5.5.1${POST-SNAPSHOT}</version>
       </dependency>
       <dependency>
-        <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>${commons-codec.version}</version>
+        <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.16.0</version>
       </dependency>
       <dependency>
-        <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>${spotbugs-annotations.version}</version>
+        <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.7.3</version>
       </dependency>
       <!-- Transitive -->
       <dependency>
