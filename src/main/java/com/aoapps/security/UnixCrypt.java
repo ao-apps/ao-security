@@ -1,5 +1,7 @@
 package com.aoapps.security;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * @deprecated  This is not secure anymore.  We will be removing in a future major version update.  If you still require
  *              this type of encryption, please use {@link org.apache.commons.codec.digest.UnixCrypt}.
@@ -311,6 +313,7 @@ public abstract class UnixCrypt {
   /**
    * You can't call the constructor.
    */
+  @SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
   private UnixCrypt() {
     throw new AssertionError();
   }

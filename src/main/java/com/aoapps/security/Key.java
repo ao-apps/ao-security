@@ -56,6 +56,7 @@ import javax.security.auth.Destroyable;
  */
 // TODO: Should the key contain the algorithm, too?
 // Java 17: sealed to be extended by UnprotectedKey only
+@SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
 public class Key implements Destroyable, AutoCloseable, Cloneable {
 
   /**
@@ -91,6 +92,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
    *
    * @see #valueOf(byte[])
    */
+  @SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
   public Key(byte[] key) throws IllegalArgumentException {
     if (key == null || key.length == 0) {
       throw new IllegalArgumentException("Refusing to create empty key");

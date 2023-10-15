@@ -54,6 +54,7 @@ import javax.security.auth.Destroyable;
  * @author  AO Industries, Inc.
  */
 // Java 17: sealed to be extended by UnprotectedPassword only
+@SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
 public class Password implements Destroyable, AutoCloseable, Cloneable {
 
   /**
@@ -95,6 +96,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
    *
    * @see #valueOf(char[])
    */
+  @SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
   public Password(char[] password) throws IllegalArgumentException {
     if (password == null || password.length == 0) {
       throw new IllegalArgumentException("Refusing to create empty password");

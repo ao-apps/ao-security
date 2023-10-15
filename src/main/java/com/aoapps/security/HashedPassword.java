@@ -104,6 +104,7 @@ public final class HashedPassword implements Serializable {
    */
   // Note: These must be ordered by relative strength, from weakest to strongest for isRehashRecommended() to work
   // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm-create.sql
+  @SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
   public enum Algorithm {
     /**
      * @deprecated  {@link UnixCrypt} should not be used for any cryptographic purpose, plus this is barely salted
@@ -425,6 +426,7 @@ public final class HashedPassword implements Serializable {
     private final int recommendedIterations;
     private final int hashBytes;
 
+    @SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
     private Algorithm(String algorithmName, int saltBytes, int minimumIterations, int maximumIterations, int recommendedIterations, int hashBytes) {
       assert algorithmName.indexOf(SEPARATOR) == -1;
       this.algorithmName = algorithmName;

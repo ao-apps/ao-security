@@ -32,6 +32,7 @@ import com.aoapps.lang.Strings;
 import com.aoapps.lang.SysExits;
 import com.aoapps.lang.exception.WrappedException;
 import com.aoapps.lang.io.IoUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -67,6 +68,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
    * @see MessageDigest
    */
   // Matches src/main/sql/com/aoapps/security/HashedKey.Algorithm-create.sql
+  @SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
   public enum Algorithm {
     /**
      * @deprecated  MD5 should not be used for any cryptographic purpose.

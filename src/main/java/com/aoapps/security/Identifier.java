@@ -27,6 +27,7 @@ import static java.lang.Long.divideUnsigned;
 import static java.lang.Long.remainderUnsigned;
 
 import com.aoapps.lang.io.IoUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ import java.util.Random;
  * @author  AO Industries, Inc.
  */
 // Matches src/main/sql/com/aoapps/security/Identifier-type.sql
+@SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
 public final class Identifier implements Serializable, Comparable<Identifier> {
 
   private static final long serialVersionUID = 1L;
