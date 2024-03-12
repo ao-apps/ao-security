@@ -187,8 +187,8 @@ public abstract class UnixCrypt {
   // ====================================
 
   static {
-    byte[] perm = new byte[64];
-    byte[] temp = new byte[64];
+    final byte[] perm = new byte[64];
+    final byte[] temp = new byte[64];
 
     // inverse table.
     for (int i = 0; i < A64TOI.length; i++) {
