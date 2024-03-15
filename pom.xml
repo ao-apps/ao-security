@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
+Copyright (C) 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -279,7 +279,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId><version>5.6.0-SNAPSHOT<!-- ${POST-SNAPSHOT} --></version>
       </dependency>
       <dependency>
-        <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.16.0</version>
+        <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.16.1</version>
       </dependency>
       <dependency>
         <groupId>com.github.spotbugs</groupId><artifactId>spotbugs-annotations</artifactId><version>4.8.3</version>
