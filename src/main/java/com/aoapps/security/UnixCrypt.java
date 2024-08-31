@@ -305,7 +305,7 @@ public abstract class UnixCrypt {
               | ((long) temp[perm[i + 24] - 1]);
         }
 
-        SPE[t][j] = to_six_bit(kk);
+        SPE[t][j] = toSixBit(kk);
       }
     }
   }
@@ -398,7 +398,7 @@ public abstract class UnixCrypt {
       keyword = (keyword << 8) | ((i < keylen) ? 2 * key.charAt(i) : 0);
     }
 
-    long[] ks = des_setkey(keyword);
+    long[] ks = desSetkey(keyword);
 
     int salt = 0;
     for (int i = 2; --i >= 0; ) {
@@ -432,7 +432,7 @@ public abstract class UnixCrypt {
       keyword = (keyword << 8) | ((i < keylen) ? 2 * key.charAt(i) : 0);
     }
 
-    long[] ks = des_setkey(keyword);
+    long[] ks = desSetkey(keyword);
 
     return desCipher(constdatablock, salt, 25, ks);
   }
@@ -442,7 +442,7 @@ public abstract class UnixCrypt {
    * environment.
    */
   private static long desCipher(long in, int salt, int numIter, long[] ks) {
-    salt = to_six_bit(salt);
+    salt = toSixBit(salt);
     long l = in;
     long r = l;
     l &= 0x5555555555555555L;
@@ -491,7 +491,7 @@ public abstract class UnixCrypt {
   /**
    * Returns the key schedule for the given key.
    */
-  private static long[] des_setkey(long keyword) {
+  private static long[] desSetkey(long keyword) {
     long k = perm6464(keyword, PC1ROT);
     long[] ks = new long[16];
     ks[0] = k & ~0x0303030300000000L;
@@ -563,7 +563,7 @@ public abstract class UnixCrypt {
    * Returns the transposed and split code of a 24-bit code
    * into a 4-byte code, each having 6 bits.
    */
-  private static int to_six_bit(int num) {
+  private static int toSixBit(int num) {
     return ((num << 26) & 0xfc000000) | ((num << 12) & 0xfc0000)
         | ((num >> 2) & 0xfc00) | ((num >> 16) & 0xfc);
   }
@@ -572,7 +572,7 @@ public abstract class UnixCrypt {
    * Returns the transposed and split code of two 24-bit code
    * into two 4-byte code, each having 6 bits.
    */
-  private static long to_six_bit(long num) {
+  private static long toSixBit(long num) {
     return ((num << 26) & 0xfc000000fc000000L) | ((num << 12) & 0xfc000000fc0000L)
         | ((num >> 2) & 0xfc000000fc00L) | ((num >> 16) & 0xfc000000fcL);
   }
