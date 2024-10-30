@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -57,11 +57,10 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   /**
    * The characters that represent each value.  These are all URL-safe without encoding.  These are selected to
    * minimize ambiguity, favoring numeric digits where ambiguous.
-   * <p>
-   * If we were to do this again, we would choose to reassemble these characters into ascending ASCII order.  That way
+   *
+   * <p>If we were to do this again, we would choose to reassemble these characters into ascending ASCII order.  That way
    * a simple lexical ordering would be the same as the decoded numeric value ordering.  This is not important, so we
-   * will not change it, but this should be a minor consideration to others implementing similar systems.
-   * </p>
+   * will not change it, but this should be a minor consideration to others implementing similar systems.</p>
    */
   private static final char[] CHARACTERS = {
       'A', /*'B',*/ 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

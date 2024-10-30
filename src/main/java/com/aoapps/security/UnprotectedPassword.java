@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -82,13 +82,12 @@ public final class UnprotectedPassword extends Password {
 
   /**
    * Generates a new password using the provided password generator.
-   * <p>
-   * The password will never be all-zeroes, since this would conflict with the representation
+   *
+   * <p>The password will never be all-zeroes, since this would conflict with the representation
    * of already destroyed.  In the unlikely event the generator creates an all-zero
    * password, the password will be discarded and another will be generated.  We do recognize that
    * disallowing certain values from the password space may provide an advantage to attackers
-   * (i.e. Enigma), losing the all-zero password is probably a good choice anyway.
-   * </p>
+   * (i.e. Enigma), losing the all-zero password is probably a good choice anyway.</p>
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    */

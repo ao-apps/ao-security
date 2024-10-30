@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -342,19 +342,17 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
 
   /**
    * Private dummy key array, used to keep constant time when no key available.
-   * <p>
-   * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which hashes do
-   * not have any key set?  Would it matter if it did?
-   * </p>
+   *
+   * <p>TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which hashes do
+   * not have any key set?  Would it matter if it did?</p>
    */
   private static final byte[] DUMMY_KEY = new byte[RECOMMENDED_ALGORITHM.getKeyBytes()];
 
   /**
    * Private dummy hash array, used to keep constant time when no hash available.
-   * <p>
-   * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
-   * not have any password set?  Would it matter if it did?
-   * </p>
+   *
+   * <p>TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
+   * not have any password set?  Would it matter if it did?</p>
    */
   private static final byte[] DUMMY_HASH = new byte[RECOMMENDED_ALGORITHM.getHashBytes()];
 
@@ -541,9 +539,8 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   /**
    * Gets the string representation of the hashed key  The format is subject to change
    * over time, but will maintain backward compatibility.
-   * <p>
-   * Please see {@link #valueOf(java.lang.String)} for the inverse operation.
-   * </p>
+   *
+   * <p>Please see {@link #valueOf(java.lang.String)} for the inverse operation.</p>
    */
   // Matches src/main/sql/com/aoapps/security/HashedKey.toString-function.sql
   @Override
@@ -576,10 +573,9 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
 
   /**
    * Checks if equal to another hashed key, always {@code false} when either is {@link #NO_KEY}.
-   * <p>
-   * Performs comparisons in length-constant time.
-   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
-   * </p>
+   *
+   * <p>Performs comparisons in length-constant time.
+   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
    */
   @Override
   public boolean equals(Object obj) {
@@ -657,16 +653,14 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
 
   /**
    * Checks if this matches the provided key, always {@code false} when is {@link #NO_KEY}.
-   * <p>
-   * This is most direct when the specific hash to verify against is already known.
+   *
+   * <p>This is most direct when the specific hash to verify against is already known.
    * However, when searching for a hashed value by original key, such as in a mapping or database table, one would
    * {@linkplain #valueOf(com.aoapps.security.HashedKey.Algorithm, byte[]) create a new instance} to act as the
-   * look-up value.
-   * </p>
-   * <p>
-   * Performs comparisons in length-constant time.
-   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
-   * </p>
+   * look-up value.</p>
+   *
+   * <p>Performs comparisons in length-constant time.
+   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
    *
    * @param  key  Is destroyed before this method returns.  If the original key is
    *              needed, pass a clone to this method.

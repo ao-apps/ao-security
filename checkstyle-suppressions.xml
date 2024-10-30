@@ -30,6 +30,12 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
   <!-- TODO: Complete Javadocs -->
   <suppress checks="(MissingJavadocMethod|SummaryJavadoc)" />
 
+  <!-- Cannot find how to allow <p> inside @deprecated -->
+  <suppress
+    checks="JavadocParagraph"
+    files="[/\\]com[/\\]aoapps[/\\]security[/\\]HashedPassword\.java$"
+  />
+
   <!-- Using "Ex" for generic exceptions, since "E" is often "Element" -->
   <suppress
     checks="MethodTypeParameterName"

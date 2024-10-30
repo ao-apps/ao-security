@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -82,13 +82,12 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Generates a new key using the provided key generator.
-   * <p>
-   * The key will never be all-zeroes, since this would conflict with the representation
+   *
+   * <p>The key will never be all-zeroes, since this would conflict with the representation
    * of already destroyed.  In the unlikely event the generator creates an all-zero
    * key, the key will be discarded and another will be generated.  We do recognize that
    * disallowing certain values from the key space may provide an advantage to attackers
-   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.
-   * </p>
+   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.</p>
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    */
@@ -98,13 +97,12 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Generates a new key of the given number of bytes using the provided {@link Random} source.
-   * <p>
-   * The key will never be all-zeroes, since this would conflict with the representation
+   *
+   * <p>The key will never be all-zeroes, since this would conflict with the representation
    * of already destroyed.  In the unlikely event the random source generates an all-zero
    * key, the key will be discarded and another will be generated.  We do recognize that
    * disallowing certain values from the key space may provide an advantage to attackers
-   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.
-   * </p>
+   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.</p>
    *
    * @throws IllegalArgumentException when {@code keyBytes == 0}
    *
@@ -122,13 +120,12 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Generates a new key of the given number of bytes using the provided {@link SecureRandom} source.
-   * <p>
-   * The key will never be all-zeroes, since this would conflict with the representation
+   *
+   * <p>The key will never be all-zeroes, since this would conflict with the representation
    * of already destroyed.  In the unlikely event the random source generates an all-zero
    * key, the key will be discarded and another will be generated.  We do recognize that
    * disallowing certain values from the key space may provide an advantage to attackers
-   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.
-   * </p>
+   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.</p>
    *
    * @throws IllegalArgumentException when {@code keyBytes == 0}
    */
@@ -138,13 +135,12 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Generates a new key of the given number of bytes.
-   * <p>
-   * The key will never be all-zeroes, since this would conflict with the representation
+   *
+   * <p>The key will never be all-zeroes, since this would conflict with the representation
    * of already destroyed.  In the unlikely event the random source generates an all-zero
    * key, the key will be discarded and another will be generated.  We do recognize that
    * disallowing certain values from the key space may provide an advantage to attackers
-   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.
-   * </p>
+   * (i.e. Enigma), losing the all-zero key is probably a good choice anyway.</p>
    *
    * @throws IllegalArgumentException when {@code keyBytes == 0}
    */

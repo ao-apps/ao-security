@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -78,14 +78,12 @@ public final class HashedPassword implements Serializable {
 
   /**
    * Indicates that no password is set.
-   * <p>
-   * This matches a value often used in <code>/etc/shadow</code> when the user has no password set
-   * (although <code>!</code> is also commonly used for this purpose).
-   * </p>
-   * <p>
-   * This is also used as the value used for
-   * <a href="https://aoindustries.com/aoserv/client/apidocs/com.aoindustries.aoserv.client/com/aoindustries/aoserv/client/schema/AoservProtocol.html#FILTERED">filtered data in the AOServ Protocol</a>.
-   * </p>
+   *
+   * <p>This matches a value often used in <code>/etc/shadow</code> when the user has no password set
+   * (although <code>!</code> is also commonly used for this purpose).</p>
+   *
+   * <p>This is also used as the value used for
+   * <a href="https://aoindustries.com/aoserv/client/apidocs/com.aoindustries.aoserv.client/com/aoindustries/aoserv/client/schema/AoservProtocol.html#FILTERED">filtered data in the AOServ Protocol</a>.</p>
    */
   public static final String NO_PASSWORD_VALUE = "*";
 
@@ -129,9 +127,8 @@ public final class HashedPassword implements Serializable {
 
       /**
        * {@inheritDoc}
-       * <p>
-       * Clears the high-order four bits since the salt is only twelve bits.
-       * </p>
+       *
+       * <p>Clears the high-order four bits since the salt is only twelve bits.</p>
        */
       @Override
       byte[] generateSalt(int saltBytes, Random random) {
@@ -548,20 +545,17 @@ public final class HashedPassword implements Serializable {
 
     /**
      * Gets the recommended number of iterations for typical usage or {@code 0} when algorithm is not iterated.
-     * <p>
-     * We may change this value between releases without notice.
+     *
+     * <p>We may change this value between releases without notice.
      * Only use this value for new password hashes.
      * Always store the iterations with the salt and hash, and use the stored
-     * iterations when checking password matches.
-     * </p>
-     * <p>
-     * It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
-     * iterations has changed.
-     * </p>
-     * <p>
-     * This value is selected to complete the hashing in around {@value #SUGGEST_INCREASE_ITERATIONS_MILLIS} ms
-     * on commodity PC hardware from around the year 2012.
-     * </p>
+     * iterations when checking password matches.</p>
+     *
+     * <p>It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
+     * iterations has changed.</p>
+     *
+     * <p>This value is selected to complete the hashing in around {@value #SUGGEST_INCREASE_ITERATIONS_MILLIS} ms
+     * on commodity PC hardware from around the year 2012.</p>
      *
      * @see  #hash(java.lang.String, byte[], int)
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password)
@@ -707,19 +701,17 @@ public final class HashedPassword implements Serializable {
   /**
    * The algorithm recommended for use with new passwords.  This may change at any time, but previous algorithms will
    * remain supported.
-   * <p>
-   * It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
-   * algorithm has changed.
-   * </p>
+   *
+   * <p>It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
+   * algorithm has changed.</p>
    */
   public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.PBKDF2WITHHMACSHA512;
 
   /**
    * Private dummy salt array, used to keep constant time when no salt available.
-   * <p>
-   * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
-   * not have any password set?  Would it matter if it did?
-   * </p>
+   *
+   * <p>TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
+   * not have any password set?  Would it matter if it did?</p>
    */
   private static final byte[] DUMMY_SALT = new byte[RECOMMENDED_ALGORITHM.getSaltBytes()];
 
@@ -734,10 +726,9 @@ public final class HashedPassword implements Serializable {
 
   /**
    * Private dummy hash array, used to keep constant time when no hash available.
-   * <p>
-   * TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
-   * not have any password set?  Would it matter if it did?
-   * </p>
+   *
+   * <p>TODO: In theory, does sharing this array make it likely to be in cache, and thus make it clear which passwords do
+   * not have any password set?  Would it matter if it did?</p>
    */
   private static final byte[] DUMMY_HASH = new byte[RECOMMENDED_ALGORITHM.getHashBytes()];
 
@@ -1111,9 +1102,8 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int, java.util.Random)} so the password may be destroyed.
-   *              <p>
-   *              Please use {@link SecureRandom}.  This method should only be used after careful consideration.
-   *              </p>
+   *
+   *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
   @Deprecated // Java 9: (forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
@@ -1220,9 +1210,8 @@ public final class HashedPassword implements Serializable {
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.util.Random)} so the password may be destroyed.
-   *              <p>
-   *              Please use {@link SecureRandom}.  This method should only be used after careful consideration.
-   *              </p>
+   *
+   *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
   @Deprecated // Java 9: (forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, Random random) throws IllegalArgumentException {
@@ -1319,9 +1308,8 @@ public final class HashedPassword implements Serializable {
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, java.util.Random)} so the password may be destroyed.
-   *              <p>
-   *              Please use {@link SecureRandom}.  This method should only be used after careful consideration.
-   *              </p>
+   *
+   *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
   @Deprecated // Java 9: (forRemoval = true)
   public HashedPassword(String password, Random random) throws IllegalArgumentException {
@@ -1392,9 +1380,8 @@ public final class HashedPassword implements Serializable {
   /**
    * Gets the string representation of the hashed password.  The format is subject to change
    * over time, but will maintain backward compatibility.
-   * <p>
-   * Please see {@link #valueOf(java.lang.String)} for the inverse operation.
-   * </p>
+   *
+   * <p>Please see {@link #valueOf(java.lang.String)} for the inverse operation.</p>
    */
   // Matches src/main/sql/com/aoapps/security/HashedPassword.toString-function.sql
   @Override
@@ -1412,10 +1399,9 @@ public final class HashedPassword implements Serializable {
 
   /**
    * Checks if equal to another hashed password, always {@code false} when either is {@link #NO_PASSWORD}.
-   * <p>
-   * Performs comparisons in length-constant time.
-   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
-   * </p>
+   *
+   * <p>Performs comparisons in length-constant time.
+   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
    */
   @Override
   public boolean equals(Object obj) {
@@ -1476,16 +1462,14 @@ public final class HashedPassword implements Serializable {
 
   /**
    * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
-   * <p>
-   * When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
+   *
+   * <p>When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
    * {@link #isRehashRecommended()} then either set the same
    * password again or, ideally, generate a new password or prompt the user to reset their password.  This will allow
-   * the stored passwords to keep up with encryption improvements.
-   * </p>
-   * <p>
-   * Performs comparisons in length-constant time.
-   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
-   * </p>
+   * the stored passwords to keep up with encryption improvements.</p>
+   *
+   * <p>Performs comparisons in length-constant time.
+   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
    *
    * @param password    Is destroyed before this method returns.  If the original password is
    *                    needed, pass a clone to this method.
@@ -1524,16 +1508,14 @@ public final class HashedPassword implements Serializable {
 
   /**
    * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
-   * <p>
-   * When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
+   *
+   * <p>When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
    * {@link #isRehashRecommended()} then either set the same
    * password again or, ideally, generate a new password or prompt the user to reset their password.  This will allow
-   * the stored passwords to keep up with encryption improvements.
-   * </p>
-   * <p>
-   * Performs comparisons in length-constant time.
-   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a>
-   * </p>
+   * the stored passwords to keep up with encryption improvements.</p>
+   *
+   * <p>Performs comparisons in length-constant time.
+   * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
    *
    * @see  #isRehashRecommended()
    *

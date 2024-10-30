@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -33,23 +33,19 @@ import javax.security.auth.Destroyable;
 /**
  * Represents plaintext password characters, with support for wiping the contents.
  * This is used in preference to <code>char[]</code> as a matter of both convenience and protection.
- * <p>
- * This does not provide any access to the given password.  It is a password black hole:
- * gone forever from outside observers.
- * </p>
- * <p>
- * Instances of this class are thread-safe.
- * </p>
- * <p>
- * This class intentionally does not implement {@link #equals(java.lang.Object)} and {@link #hashCode()}, as it is not
+ *
+ * <p>This does not provide any access to the given password.  It is a password black hole:
+ * gone forever from outside observers.</p>
+ *
+ * <p>Instances of this class are thread-safe.</p>
+ *
+ * <p>This class intentionally does not implement {@link #equals(java.lang.Object)} and {@link #hashCode()}, as it is not
  * intended to be used in data structures or any complex manipulation.  It is solely meant to safely carry a
- * password.
- * </p>
- * <p>
- * This class also does not implement {@link Serializable} or {@link Externalizable}.  Applications that need to send
+ * password.</p>
+ *
+ * <p>This class also does not implement {@link Serializable} or {@link Externalizable}.  Applications that need to send
  * passwords across the wire must use another mechanism.  Applications that need to store passwords should be using
- * {@link HashedPassword}.
- * </p>
+ * {@link HashedPassword}.</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -81,9 +77,8 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
 
   /**
    * Contains the password or all zeroes once destroyed.
-   * <p>
-   * All uses must be synchronized on this <code>char[]</code> itself.
-   * </p>
+   *
+   * <p>All uses must be synchronized on this <code>char[]</code> itself.</p>
    */
   final char[] password;
 

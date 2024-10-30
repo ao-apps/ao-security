@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -33,24 +33,20 @@ import javax.security.auth.Destroyable;
 /**
  * Represents plaintext random keys, with support for wiping the contents.
  * This is used in preference to <code>byte[]</code> as a matter of both convenience and protection.
- * <p>
- * This does not provide any access to the given key.  It is a key black hole:
+ *
+ * <p>This does not provide any access to the given key.  It is a key black hole:
  * gone forever from outside observers.  The only way a key is available is through
- * {@linkplain UnprotectedKey a newly generated key}.
- * </p>
- * <p>
- * Instances of this class are thread-safe.
- * </p>
- * <p>
- * This class intentionally does not implement {@link #equals(java.lang.Object)} and {@link #hashCode()}, as it is not
+ * {@linkplain UnprotectedKey a newly generated key}.</p>
+ *
+ * <p>Instances of this class are thread-safe.</p>
+ *
+ * <p>This class intentionally does not implement {@link #equals(java.lang.Object)} and {@link #hashCode()}, as it is not
  * intended to be used in data structures or any complex manipulation.  It is solely meant to safely carry a
- * key.
- * </p>
- * <p>
- * This class also does not implement {@link Serializable} or {@link Externalizable}.  Applications that need to send
+ * key.</p>
+ *
+ * <p>This class also does not implement {@link Serializable} or {@link Externalizable}.  Applications that need to send
  * keys across the wire must use another mechanism.  Applications that need to store keys should be using
- * {@link HashedKey}.
- * </p>
+ * {@link HashedKey}.</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -77,9 +73,8 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
 
   /**
    * Contains the key or all zeroes once destroyed.
-   * <p>
-   * All uses must be synchronized on this <code>byte[]</code> itself.
-   * </p>
+   *
+   * <p>All uses must be synchronized on this <code>byte[]</code> itself.</p>
    */
   final byte[] key;
 
