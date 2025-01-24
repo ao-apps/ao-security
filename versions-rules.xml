@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2024  AO Industries, Inc.
+Copyright (C) 2024, 2025  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -32,6 +32,10 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
       <ignoreVersions>
         <ignoreVersion type="regex">.*-rc[0-9]+</ignoreVersion>
       </ignoreVersions>
+    </rule>
+    <!-- Java 1.8: Stay on spotbugs-annotations-4.8.6 since spotbugs-annotations-4.9.0 requires JDK >= 11 -->
+    <rule groupId="com.github.spotbugs" comparisonMethod="spotbugs-annotations">
+      <ignoreVersions><ignoreVersion type="regex">.*</ignoreVersion></ignoreVersions>
     </rule>
   </rules>
 </ruleset>
