@@ -276,7 +276,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <dependencies>
       <!-- Direct -->
       <dependency>
-        <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId><version>5.6.0${POST-SNAPSHOT}</version>
+        <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId><version>5.7.0-SNAPSHOT<!-- ${POST-SNAPSHOT} --></version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.17.2</version>
