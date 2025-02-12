@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -108,7 +108,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  {@link UnixCrypt} should not be used for any cryptographic purpose, plus this is barely salted
      *              and not iterated so is subject to both dictionary and brute-force attacks.
      */
-    @Deprecated // Java 9: (forRemoval = false)
+    @Deprecated(forRemoval = false)
     CRYPT("crypt", 2, 0, 0, 0, 64 / Byte.SIZE) {
       /**
        * {@inheritDoc}
@@ -203,7 +203,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  MD5 should not be used for any cryptographic purpose, plus this is neither salted nor
      *              iterated so is subject to both dictionary and brute-force attacks.
      */
-    @Deprecated // Java 9: (forRemoval = false)
+    @Deprecated(forRemoval = false)
     MD5("MD5", 0, 0, 0, 0, 128 / Byte.SIZE) {
       /**
        * {@inheritDoc}
@@ -264,7 +264,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  SHA-1 should no longer be used for any cryptographic purpose, plus this is neither salted nor
      *              iterated so is subject to both dictionary and brute-force attacks.
      */
-    @Deprecated // Java 9: (forRemoval = false)
+    @Deprecated(forRemoval = false)
     SHA_1("SHA-1", 0, 0, 0, 0, 160 / Byte.SIZE) {
       /**
        * {@inheritDoc}
@@ -327,7 +327,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  This was the previous algorithm used.  Please use {@link #PBKDF2WITHHMACSHA512}, which is the
      *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
      */
-    @Deprecated // Java 9: (forRemoval = false)
+    @Deprecated(forRemoval = false)
     PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
       /**
        * Also allows the 256-bit salt for compatibility with previous versions.
@@ -379,7 +379,7 @@ public final class HashedPassword implements Serializable {
     /**
      * @deprecated  Collision resistance of at least 128 bits is required
      */
-    @Deprecated // Java 9: (forRemoval = false)
+    @Deprecated(forRemoval = false)
     PBKDF2WITHHMACSHA224("PBKDF2WithHmacSHA224", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 224 / Byte.SIZE),
     PBKDF2WITHHMACSHA256("PBKDF2WithHmacSHA256", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 50000, 256 / Byte.SIZE),
     PBKDF2WITHHMACSHA384("PBKDF2WithHmacSHA384", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 37000, 384 / Byte.SIZE),
@@ -489,7 +489,7 @@ public final class HashedPassword implements Serializable {
      * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
      *              only be used after careful consideration.
      */
-    @Deprecated // Java 9: (forRemoval = false)
+    @Deprecated(forRemoval = false)
     public byte[] generateSalt(Random random) {
       return generateSalt(getSaltBytes(), random);
     }
@@ -681,7 +681,7 @@ public final class HashedPassword implements Serializable {
      *
      * @deprecated  Please use {@link #hash(com.aoapps.security.Password, byte[], int)} so the password may be destroyed.
      */
-    @Deprecated // Java 9: (forRemoval = true)
+    @Deprecated(forRemoval = true)
     public byte[] hash(String password, byte[] salt, int iterations) {
       return hash(new Password(password == null ? null : password.toCharArray()), salt, iterations);
     }
@@ -721,7 +721,7 @@ public final class HashedPassword implements Serializable {
    * @deprecated  This is the value matching {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
    *              please use {@link Algorithm#getSaltBytes()} instead.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static final int SALT_BYTES = 256 / Byte.SIZE;
 
   /**
@@ -738,14 +738,14 @@ public final class HashedPassword implements Serializable {
    * @deprecated  This is the value matching {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
    *              please use {@link Algorithm#getHashBytes()} instead.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static final int HASH_BYTES = 256 / Byte.SIZE;
 
   /**
    * @deprecated  This is the value matching {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
    *              please use {@link Algorithm#getRecommendedIterations()} instead.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static final int RECOMMENDED_ITERATIONS = Algorithm.PBKDF2WITHHMACSHA1.getRecommendedIterations()
       // Half the iterations of the new settings because it performs at half the speed due to the additional hash length (256 bits > 160 bits)
       / 2;
@@ -768,7 +768,7 @@ public final class HashedPassword implements Serializable {
    *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
    *              instead.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static byte[] generateSalt() {
     return Algorithm.PBKDF2WITHHMACSHA1.generateSalt(SALT_BYTES, Identifier.secureRandom);
   }
@@ -786,7 +786,7 @@ public final class HashedPassword implements Serializable {
    *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
    *              instead.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static byte[] hash(String password, byte[] salt, int iterations) {
     return Algorithm.PBKDF2WITHHMACSHA1.hash(
         new Password(password == null ? null : password.toCharArray()),
@@ -960,7 +960,7 @@ public final class HashedPassword implements Serializable {
    * @deprecated  Please use {@link #valueOf(com.aoapps.security.HashedPassword.Algorithm, byte[], int, byte[])},
    *              which is able to automatically return the {@link #NO_PASSWORD} singleton.
    */
-  @Deprecated // Java 9: (forRemoval = false)
+  @Deprecated(forRemoval = false)
   public HashedPassword(Algorithm algorithm, byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
     this.algorithm = Objects.requireNonNull(algorithm);
     this.salt = Arrays.copyOf(salt, salt.length);
@@ -983,7 +983,7 @@ public final class HashedPassword implements Serializable {
    *              or {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
    *              instead.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
     this(Algorithm.PBKDF2WITHHMACSHA1, salt, iterations, hash);
     if (salt.length != SALT_BYTES) {
@@ -1025,7 +1025,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, byte[], int)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, byte[] salt, int iterations) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm, salt, iterations);
   }
@@ -1067,7 +1067,7 @@ public final class HashedPassword implements Serializable {
    * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
    *              only be used after careful consideration.
    */
-  @Deprecated // Java 9: (forRemoval = false)
+  @Deprecated(forRemoval = false)
   public HashedPassword(Password password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
     this(password, algorithm, algorithm.generateSalt(random), iterations);
   }
@@ -1105,7 +1105,7 @@ public final class HashedPassword implements Serializable {
    *
    *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, int iterations, Random random) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm, iterations, random);
   }
@@ -1124,7 +1124,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int, java.security.SecureRandom)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, int iterations, SecureRandom secureRandom) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm, iterations, secureRandom);
   }
@@ -1164,7 +1164,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, int iterations) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm, iterations);
   }
@@ -1182,7 +1182,7 @@ public final class HashedPassword implements Serializable {
    * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
    *              only be used after careful consideration.
    */
-  @Deprecated // Java 9: (forRemoval = false)
+  @Deprecated(forRemoval = false)
   public HashedPassword(Password password, Algorithm algorithm, Random random) throws IllegalArgumentException {
     this(password, algorithm, algorithm.getRecommendedIterations(), random);
   }
@@ -1213,7 +1213,7 @@ public final class HashedPassword implements Serializable {
    *
    *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, Random random) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm, random);
   }
@@ -1228,7 +1228,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.security.SecureRandom)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, SecureRandom secureRandom) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm, secureRandom);
   }
@@ -1259,7 +1259,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), algorithm);
   }
@@ -1278,7 +1278,7 @@ public final class HashedPassword implements Serializable {
    * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
    *              only be used after careful consideration.
    */
-  @Deprecated // Java 9: (forRemoval = false)
+  @Deprecated(forRemoval = false)
   public HashedPassword(Password password, Random random) throws IllegalArgumentException {
     this(password, RECOMMENDED_ALGORITHM, random);
   }
@@ -1311,7 +1311,7 @@ public final class HashedPassword implements Serializable {
    *
    *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, Random random) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), random);
   }
@@ -1327,7 +1327,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, java.security.SecureRandom)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password, SecureRandom secureRandom) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()), secureRandom);
   }
@@ -1360,7 +1360,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public HashedPassword(String password) throws IllegalArgumentException {
     this(new Password(password == null ? null : password.toCharArray()));
   }
@@ -1521,7 +1521,7 @@ public final class HashedPassword implements Serializable {
    *
    * @deprecated  Please use {@link #matches(com.aoapps.security.Password)} so the password may be destroyed.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public boolean matches(String password) {
     return matches(password == null || password.isEmpty() ? null : new Password(password.toCharArray()));
   }

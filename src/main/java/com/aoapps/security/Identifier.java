@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
+ * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -184,7 +184,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
    * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
    *              only be used after careful consideration.
    */
-  @Deprecated // Java 9: (forRemoval = false)
+  @Deprecated(forRemoval = false)
   public Identifier(Random random) {
     byte[] bytes = new byte[Long.BYTES * 2];
     random.nextBytes(bytes);

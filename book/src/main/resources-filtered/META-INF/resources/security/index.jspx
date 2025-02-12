@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-security - Best-practices security made usable.
-Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
+Copyright (C) 2020, 2021, 2022, 2023, 2025  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -34,7 +34,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     title="@{documented.name}"
     description="@{documented.description}"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2023-04-14T16:43:04Z"
+    dateModified="2025-02-12T02:29:49Z"
   >
     <core:child page="changelog.jspx" />
     <core:child page="apidocs/index.jspx" />
@@ -144,7 +144,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
             </li>
           </ul>
         </li>
-        <li>Java 1.8 implementation:
+        <li>Java 11 implementation:
           <ul>
             <li><code>Password</code> and <code>Key</code> are <code>AutoCloseable</code>, to destroy the plaintext via try-with-resources.</li>
             <li><code>Optional</code> used where a <code>Password</code> or <code>Key</code> may not be returned.</li>

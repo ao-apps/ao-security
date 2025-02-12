@@ -33,9 +33,5 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         <ignoreVersion type="regex">.*-rc[0-9]+</ignoreVersion>
       </ignoreVersions>
     </rule>
-    <!-- Java 1.8: Stay on spotbugs-annotations-4.8.6 since spotbugs-annotations-4.9.0 requires JDK >= 11 -->
-    <rule groupId="com.github.spotbugs" comparisonMethod="spotbugs-annotations">
-      <ignoreVersions><ignoreVersion type="regex">.*</ignoreVersion></ignoreVersions>
-    </rule>
   </rules>
 </ruleset>

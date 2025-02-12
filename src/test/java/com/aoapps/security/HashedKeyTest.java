@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
+ * Copyright (C) 2020, 2021, 2022, 2023, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,12 +32,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import com.aoapps.lang.exception.WrappedException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.NoSuchAlgorithmException;
 import org.junit.Test;
 
 /**
@@ -149,57 +147,25 @@ public class HashedKeyTest {
   @Test
   // Junit 5: @DisabledOnJre
   public void testSHA3_224() throws Exception {
-    try {
-      testAlgorithm(HashedKey.Algorithm.SHA3_224);
-    } catch (WrappedException e) {
-      // Java 9: Algorithm will be required
-      Throwable cause = e.getCause();
-      if (!(cause instanceof NoSuchAlgorithmException)) {
-        throw e;
-      }
-    }
+    testAlgorithm(HashedKey.Algorithm.SHA3_224);
   }
 
   @Test
   // Junit 5: @DisabledOnJre
   public void testSHA3_256() throws Exception {
-    try {
-      testAlgorithm(HashedKey.Algorithm.SHA3_256);
-    } catch (WrappedException e) {
-      // Java 9: Algorithm will be required
-      Throwable cause = e.getCause();
-      if (!(cause instanceof NoSuchAlgorithmException)) {
-        throw e;
-      }
-    }
+    testAlgorithm(HashedKey.Algorithm.SHA3_256);
   }
 
   @Test
   // Junit 5: @DisabledOnJre
   public void testSHA3_384() throws Exception {
-    try {
-      testAlgorithm(HashedKey.Algorithm.SHA3_384);
-    } catch (WrappedException e) {
-      // Java 9: Algorithm will be required
-      Throwable cause = e.getCause();
-      if (!(cause instanceof NoSuchAlgorithmException)) {
-        throw e;
-      }
-    }
+    testAlgorithm(HashedKey.Algorithm.SHA3_384);
   }
 
   @Test
   // Junit 5: @DisabledOnJre
   public void testSHA3_512() throws Exception {
-    try {
-      testAlgorithm(HashedKey.Algorithm.SHA3_512);
-    } catch (WrappedException e) {
-      // Java 9: Algorithm will be required
-      Throwable cause = e.getCause();
-      if (!(cause instanceof NoSuchAlgorithmException)) {
-        throw e;
-      }
-    }
+    testAlgorithm(HashedKey.Algorithm.SHA3_512);
   }
 
   @Test

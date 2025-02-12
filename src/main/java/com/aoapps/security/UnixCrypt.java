@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @deprecated  This is not secure anymore.  We will be removing in a future major version update.  If you still require
  *              this type of encryption, please use {@link org.apache.commons.codec.digest.UnixCrypt}.
  */
-@Deprecated // Java 9: (forRemoval = true)
+@Deprecated(forRemoval = true)
 public abstract class UnixCrypt {
 
   // (mostly) Standard DES Tables from Tom Truscott
@@ -365,7 +365,7 @@ public abstract class UnixCrypt {
    * @deprecated  This is not secure anymore.
    *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String)}
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static String crypt(String plaintext) {
     return crypt(
         plaintext,
@@ -387,7 +387,7 @@ public abstract class UnixCrypt {
    * @deprecated  This is not secure anymore.
    *              Please use {@link org.apache.commons.codec.digest.UnixCrypt#crypt(java.lang.String, java.lang.String)}
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   public static String crypt(String key, String setting) {
     long constdatablock = 0L; // encryption constant
     char[] cryptresult = new char[13]; // encrypted result
@@ -422,7 +422,7 @@ public abstract class UnixCrypt {
   /**
    * Performs the crypt, returning the long representation.
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   static long cryptImpl(String key, int salt) {
     long constdatablock = 0L; // encryption constant
     long keyword = 0L;
@@ -581,7 +581,7 @@ public abstract class UnixCrypt {
    * @deprecated  This is not secure anymore.
    *              Please use {@link org.apache.commons.codec.digest.UnixCrypt}
    */
-  @Deprecated // Java 9: (forRemoval = true)
+  @Deprecated(forRemoval = true)
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
   public static void main(String[] args) {
     if (args.length == 1) {

@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023, 2024  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -109,7 +109,7 @@ public final class UnprotectedKey extends Key {
    * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
    *              only be used after careful consideration.
    */
-  @Deprecated // Java 9: (forRemoval = false)
+  @Deprecated(forRemoval = false)
   public UnprotectedKey(int keyBytes, Random random) throws IllegalArgumentException {
     this(() -> {
       byte[] newKey = new byte[keyBytes];
