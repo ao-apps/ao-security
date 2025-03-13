@@ -49,7 +49,7 @@ public final class UnprotectedPassword extends Password {
    *
    * @see  #UnprotectedPassword(java.util.function.Supplier)
    */
-  private static <Ex extends Throwable> char[] generatePassword(SupplierE<? extends char[], Ex> generator) throws Ex {
+  private static <Ex extends Throwable> char[] generatePassword(SupplierE<char[], Ex> generator) throws Ex {
     // Discard any passwords that are generated as all-zero (in the small chance)
     final int tries = 100;
     for (int i = 0; i < tries; i++) {
@@ -91,7 +91,7 @@ public final class UnprotectedPassword extends Password {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    */
-  public <Ex extends Throwable> UnprotectedPassword(SupplierE<? extends char[], Ex> generator) throws Ex {
+  public <Ex extends Throwable> UnprotectedPassword(SupplierE<char[], Ex> generator) throws Ex {
     this(generatePassword(generator));
   }
 

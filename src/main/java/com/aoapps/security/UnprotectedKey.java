@@ -49,7 +49,7 @@ public final class UnprotectedKey extends Key {
    *
    * @see  #UnprotectedKey(java.util.function.Supplier)
    */
-  private static <Ex extends Throwable> byte[] generateKey(SupplierE<? extends byte[], Ex> generator) throws Ex {
+  private static <Ex extends Throwable> byte[] generateKey(SupplierE<byte[], Ex> generator) throws Ex {
     // Discard any keys that are generated as all-zero (in the small chance)
     final int tries = 100;
     for (int i = 0; i < tries; i++) {
@@ -91,7 +91,7 @@ public final class UnprotectedKey extends Key {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    */
-  public <Ex extends Throwable> UnprotectedKey(SupplierE<? extends byte[], Ex> generator) throws Ex {
+  public <Ex extends Throwable> UnprotectedKey(SupplierE<byte[], Ex> generator) throws Ex {
     this(generateKey(generator));
   }
 
