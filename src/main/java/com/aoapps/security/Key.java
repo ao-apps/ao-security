@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023, 2024  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -52,7 +52,6 @@ import javax.security.auth.Destroyable;
  */
 // TODO: Should the key contain the algorithm, too?
 // Java 17: sealed to be extended by UnprotectedKey only
-@SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
 public class Key implements Destroyable, AutoCloseable, Cloneable {
 
   /**

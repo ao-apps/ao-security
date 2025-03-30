@@ -68,7 +68,6 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
    * @see MessageDigest
    */
   // Matches src/main/sql/com/aoapps/security/HashedKey.Algorithm-create.sql
-  @SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
   public enum Algorithm {
     /**
      * @deprecated  MD5 should not be used for any cryptographic purpose.

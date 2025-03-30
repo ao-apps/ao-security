@@ -39,7 +39,6 @@ import java.util.Random;
  * @author  AO Industries, Inc.
  */
 // Matches src/main/sql/com/aoapps/security/Identifier-type.sql
-@SuppressFBWarnings("PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES")
 public final class Identifier implements Serializable, Comparable<Identifier> {
 
   private static final long serialVersionUID = 1L;
