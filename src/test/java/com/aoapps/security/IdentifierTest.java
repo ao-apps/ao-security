@@ -38,12 +38,12 @@ public class IdentifierTest {
   @Test
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
   public void testToStringValueOfEquals() {
-    //long divider = (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE);
-    //System.out.println("DEBUG: " + divider+" : " + (-1L / divider));
-    //System.out.println("DEBUG: "+(Long.MAX_VALUE / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
-    //System.out.println("DEBUG: "+(Long.MIN_VALUE / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
-    //System.out.println("DEBUG: "+((-1) / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
-    //System.out.println("DEBUG: " + new Identifier(-1L, 0xffffffffffffffffl));
+    // long divider = (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE);
+    // System.out.println("DEBUG: " + divider+" : " + (-1L / divider));
+    // System.out.println("DEBUG: "+(Long.MAX_VALUE / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
+    // System.out.println("DEBUG: "+(Long.MIN_VALUE / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
+    // System.out.println("DEBUG: "+((-1) / (BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE * BASE)));
+    // System.out.println("DEBUG: " + new Identifier(-1L, 0xffffffffffffffffl));
     for (int i = 0; i < 100000; i++) {
       Identifier i1 = new Identifier();
       String s1 = i1.toString();
