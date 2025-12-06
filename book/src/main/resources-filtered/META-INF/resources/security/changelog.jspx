@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="Changelog"
     tocLevels="1"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2025-07-02T23:05:45Z"
+    dateModified="2025-12-06T01:18:04Z"
   >
     <c:set var="latestRelease" value="3.2.0" />
     <c:if test="${
@@ -537,7 +537,7 @@ COMMIT;]]></pre>
             <li>
               <p>
                 <code>toString()</code> and a new <code>valueOf(String)</code> now represent the hashed
-                password in an unambiguous string format.  "*" represents "No key".
+                password in an unambiguous string format.  "*" represents "No password".
               </p>
               <p>
                 This may be used to insert the password into a database, and it is compatible with
