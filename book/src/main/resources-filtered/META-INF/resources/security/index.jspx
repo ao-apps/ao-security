@@ -34,7 +34,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     title="@{documented.name}"
     description="@{documented.description}"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2025-07-02T23:05:45Z"
+    dateModified="2025-12-28T20:36:14Z"
   >
     <core:child page="changelog.jspx" />
     <core:child page="apidocs/index.jspx" />
@@ -145,7 +145,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
             </li>
           </ul>
         </li>
-        <li>Java 11 implementation:
+        <li>Modern Java implementation:
           <ul>
             <li><code>Password</code> and <code>Key</code> are <code>AutoCloseable</code>, to destroy the plaintext via try-with-resources.</li>
             <li><code>Optional</code> used where a <code>Password</code> or <code>Key</code> may not be returned.</li>

@@ -59,7 +59,7 @@ Best-practices security made usable.
     * API recommends to re-hash passwords on login when default settings are stronger than those used
       to originally hash the password.  This allows to keep the stored values up-to-date (or
       to prompt the user to change password, depending on needs).
-* Java 11 implementation:
+* Modern Java implementation:
     * `Password` and `Key` are `AutoCloseable`, to destroy the plaintext via try-with-resources.
     * `Optional` used where a `Password` or `Key` may not be returned.
     * Very lambda-friendly: `Function`, `Consumer`, and `Predicate` all leveraged in the automatic destruction of passwords and keys.
