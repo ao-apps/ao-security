@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2012, 2013, 2014, 2016, 2017, 2020, 2021, 2022, 2023, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -134,7 +134,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * Decodes one set of {@literal #NUM_CHARACTERS} characters to a long.
+   * Decodes one set of {@value #NUM_CHARACTERS} characters to a long.
    *
    * @throws IllegalArgumentException when any character is not valid or resulting number would be out of range
    */
@@ -244,8 +244,8 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * The external representation is a string of characters encoded in base {@literal #BASE}, with
-   * the first {@literal #NUM_CHARACTERS} characters for "hi" and the last {@literal #NUM_CHARACTERS} characters for "lo".
+   * The external representation is a string of characters encoded in base {@value #BASE}, with
+   * the first {@value #NUM_CHARACTERS} characters for "hi" and the last {@value #NUM_CHARACTERS} characters for "lo".
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.toString-function.sql
   public char[] toCharArray() {
@@ -256,8 +256,8 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * The external representation is a string of characters encoded in base {@literal #BASE}, with
-   * the first {@literal #NUM_CHARACTERS} characters for "hi" and the last {@literal #NUM_CHARACTERS} characters for "lo".
+   * The external representation is a string of characters encoded in base {@value #BASE}, with
+   * the first {@value #NUM_CHARACTERS} characters for "hi" and the last {@value #NUM_CHARACTERS} characters for "lo".
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.toString-function.sql
   @Override
