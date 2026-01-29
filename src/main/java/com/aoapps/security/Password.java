@@ -39,7 +39,7 @@ import javax.security.auth.Destroyable;
  *
  * <p>Instances of this class are thread-safe.</p>
  *
- * <p>This class intentionally does not implement {@link #equals(java.lang.Object)} and {@link #hashCode()}, as it is not
+ * <p>This class intentionally does not implement {@link Password#equals(java.lang.Object)} and {@link Password#hashCode()}, as it is not
  * intended to be used in data structures or any complex manipulation.  It is solely meant to safely carry a
  * password.</p>
  *
@@ -54,7 +54,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
 
   /**
    * A constant used to mask passwords.  This is always returned by
-   * {@link #toString()}.
+   * {@link Password#toString()}.
    */
   public static final String MASKED_PASSWORD = "************";
 
@@ -66,7 +66,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
    *
    * @throws IllegalArgumentException when {@code password} is already destroyed (contains all zeroes).
    *
-   * @see #Password(char[])
+   * @see Password#Password(char[])
    */
   public static Optional<Password> valueOf(char[] password) throws IllegalArgumentException {
     return (password == null || password.length == 0)
@@ -88,7 +88,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
    * @throws IllegalArgumentException when {@code password == null || password.length == 0} or when {@code password}
    *                                  is already destroyed (contains all zeroes).
    *
-   * @see #valueOf(char[])
+   * @see Password#valueOf(char[])
    */
   @SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
   public Password(char[] password) throws IllegalArgumentException {
@@ -117,7 +117,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
   /**
    * Copy constructor.
    *
-   * @see  #clone()
+   * @see  Password#clone()
    */
   Password(Password other) {
     synchronized (other.password) {
@@ -128,7 +128,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
   /**
    * {@inheritDoc}
    *
-   * @return Returns {@link #MASKED_PASSWORD} always.
+   * @return Returns {@link Password#MASKED_PASSWORD} always.
    */
   @Override
   public String toString() {
@@ -193,7 +193,7 @@ public class Password implements Destroyable, AutoCloseable, Cloneable {
   }
 
   /**
-   * {@linkplain #destroy() Destroys the password} on auto-close.
+   * {@linkplain Password#destroy() Destroys the password} on auto-close.
    * This use for support of try-with-resources.
    */
   @Override

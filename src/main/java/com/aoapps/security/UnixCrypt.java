@@ -320,7 +320,7 @@ public abstract class UnixCrypt {
   /**
    * Gets the character representation of the low-order six bits of the given int.
    *
-   * @see  #a64toi(char)
+   * @see  UnixCrypt#a64toi(char)
    */
   // Matches src/main/sql/com/aoapps/security/UnixCrypt.itoa64-function.sql
   static char itoa64(int i) {
@@ -331,7 +331,7 @@ public abstract class UnixCrypt {
   /**
    * Gets the character representation of the low-order six bits of the given long.
    *
-   * @see  #a64toi(char)
+   * @see  UnixCrypt#a64toi(char)
    */
   // Matches src/main/sql/com/aoapps/security/UnixCrypt.itoa64-function.sql
   static char itoa64(long i) {
@@ -343,8 +343,8 @@ public abstract class UnixCrypt {
    *
    * @throws  IllegalArgumentException  when the given character is not used to represent any value
    *
-   * @see  #itoa64(int)
-   * @see  #itoa64(long)
+   * @see  UnixCrypt#itoa64(int)
+   * @see  UnixCrypt#itoa64(long)
    */
   // Matches src/main/sql/com/aoapps/security/UnixCrypt.a64toi-function.sql
   static int a64toi(char c) {

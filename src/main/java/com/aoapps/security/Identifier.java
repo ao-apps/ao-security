@@ -44,7 +44,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   private static final long serialVersionUID = 1L;
 
   /**
-   * @see  #toString()
+   * @see  Identifier#toString()
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.valueOf-function.sql
   public static Identifier valueOf(String encoded) throws IllegalArgumentException {
@@ -74,7 +74,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * The number of characters required to represent a 64-bit number in base {@link #BASE}.
+   * The number of characters required to represent a 64-bit number in base {@link Identifier#BASE}.
    */
   static final int NUM_CHARACTERS = 11;
 
@@ -204,7 +204,7 @@ public final class Identifier implements Serializable, Comparable<Identifier> {
   }
 
   /**
-   * @see  #toString()
+   * @see  Identifier#toString()
    */
   // Matches src/main/sql/com/aoapps/security/Identifier.valueOf-function.sql
   public Identifier(String encoded) throws IllegalArgumentException {

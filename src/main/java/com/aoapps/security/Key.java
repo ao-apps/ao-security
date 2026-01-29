@@ -40,7 +40,7 @@ import javax.security.auth.Destroyable;
  *
  * <p>Instances of this class are thread-safe.</p>
  *
- * <p>This class intentionally does not implement {@link #equals(java.lang.Object)} and {@link #hashCode()}, as it is not
+ * <p>This class intentionally does not implement {@link Key#equals(java.lang.Object)} and {@link Key#hashCode()}, as it is not
  * intended to be used in data structures or any complex manipulation.  It is solely meant to safely carry a
  * key.</p>
  *
@@ -62,7 +62,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
    *
    * @throws IllegalArgumentException when {@code key} is already destroyed (contains all zeroes).
    *
-   * @see #Key(byte[])
+   * @see Key#Key(byte[])
    */
   public static Optional<Key> valueOf(byte[] key) throws IllegalArgumentException {
     return (key == null || key.length == 0)
@@ -84,7 +84,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
    * @throws IllegalArgumentException when {@code key == null || key.length == 0} or when {@code key}
    *                                  is already destroyed (contains all zeroes).
    *
-   * @see #valueOf(byte[])
+   * @see Key#valueOf(byte[])
    */
   @SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
   public Key(byte[] key) throws IllegalArgumentException {
@@ -113,7 +113,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
   /**
    * Copy constructor.
    *
-   * @see  #clone()
+   * @see  Key#clone()
    */
   Key(Key other) {
     synchronized (other.key) {
@@ -186,7 +186,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
   }
 
   /**
-   * {@linkplain #destroy() Destroys the key} on auto-close.
+   * {@linkplain Key#destroy() Destroys the key} on auto-close.
    * This use for support of try-with-resources.
    */
   @Override

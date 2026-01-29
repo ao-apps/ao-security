@@ -39,7 +39,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
   private static final long serialVersionUID = 1L;
 
   /**
-   * @see  #toString()
+   * @see  SmallIdentifier#toString()
    */
   // Matches src/main/sql/com/aoapps/security/SmallIdentifier.valueOf-function.sql
   public static SmallIdentifier valueOf(String encoded) throws IllegalArgumentException {
@@ -81,7 +81,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
   }
 
   /**
-   * @see  #toString()
+   * @see  SmallIdentifier#toString()
    */
   // Matches src/main/sql/com/aoapps/security/SmallIdentifier.valueOf-function.sql
   public SmallIdentifier(String encoded) throws IllegalArgumentException {
@@ -115,7 +115,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    * The external representation is a string of characters encoded in base {@literal #BASE}, with
    * {@literal Identifier#NUM_CHARACTERS} characters for "value".
    *
-   * @see  #toString()
+   * @see  SmallIdentifier#toString()
    */
   public char[] toCharArray() {
     char[] chars = new char[Identifier.NUM_CHARACTERS];
@@ -127,7 +127,7 @@ public final class SmallIdentifier implements Serializable, Comparable<SmallIden
    * The external representation is a string of characters encoded in base {@literal #BASE}, with
    * {@literal Identifier#NUM_CHARACTERS} characters for "value".
    *
-   * @see  #toCharArray()
+   * @see  SmallIdentifier#toCharArray()
    */
   // Matches src/main/sql/com/aoapps/security/SmallIdentifier.toString-function.sql
   @Override

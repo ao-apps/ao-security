@@ -47,7 +47,7 @@ public final class UnprotectedKey extends Key {
   /**
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @see  #UnprotectedKey(java.util.function.Supplier)
+   * @see  UnprotectedKey#UnprotectedKey(java.util.function.Supplier)
    */
   private static <Ex extends Throwable> byte[] generateKey(SupplierE<byte[], Ex> generator) throws Ex {
     // Discard any keys that are generated as all-zero (in the small chance)
@@ -151,7 +151,7 @@ public final class UnprotectedKey extends Key {
   /**
    * Copy constructor.
    *
-   * @see  #clone()
+   * @see  UnprotectedKey#clone()
    */
   private UnprotectedKey(UnprotectedKey other) {
     super(other);
@@ -159,7 +159,7 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Implements hash code via {@link Arrays#hashCode(byte[])} on the key.
-   * Please note that the hash code may change when {@linkplain #destroy() destroyed}.
+   * Please note that the hash code may change when {@linkplain UnprotectedKey#destroy() destroyed}.
    */
   @Override
   public int hashCode() {
@@ -175,11 +175,11 @@ public final class UnprotectedKey extends Key {
   /**
    * @return  The caller must zero this array once no longer needed.
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedKey#isDestroyed()}
    *
-   * @see  #invoke(com.aoapps.lang.function.FunctionE)
-   * @see  #accept(com.aoapps.lang.function.ConsumerE)
-   * @see  #test(com.aoapps.lang.function.PredicateE)
+   * @see  UnprotectedKey#invoke(com.aoapps.lang.function.FunctionE)
+   * @see  UnprotectedKey#accept(com.aoapps.lang.function.ConsumerE)
+   * @see  UnprotectedKey#test(com.aoapps.lang.function.PredicateE)
    */
   byte[] getKey() throws IllegalStateException {
     synchronized (key) {
@@ -196,7 +196,7 @@ public final class UnprotectedKey extends Key {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedKey#isDestroyed()}
    */
   public <R, Ex extends Throwable> R invoke(FunctionE<? super byte[], R, Ex> function) throws IllegalStateException, Ex {
     byte[] copy = getKey();
@@ -213,7 +213,7 @@ public final class UnprotectedKey extends Key {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedKey#isDestroyed()}
    */
   public <Ex extends Throwable> void accept(ConsumerE<? super byte[], Ex> consumer) throws IllegalStateException, Ex {
     byte[] copy = getKey();
@@ -230,7 +230,7 @@ public final class UnprotectedKey extends Key {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedKey#isDestroyed()}
    */
   public <Ex extends Throwable> boolean test(PredicateE<? super byte[], Ex> predicate) throws IllegalStateException, Ex {
     byte[] copy = getKey();

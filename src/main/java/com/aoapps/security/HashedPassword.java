@@ -323,8 +323,8 @@ public final class HashedPassword implements Serializable {
     /**
      * From https://crackstation.net/hashing-security.htm
      *
-     * @deprecated  This was the previous algorithm used.  Please use {@link #PBKDF2WITHHMACSHA512}, which is the
-     *              current {@link #RECOMMENDED_ALGORITHM}, for new passwords.
+     * @deprecated  This was the previous algorithm used.  Please use {@link Algorithm#PBKDF2WITHHMACSHA512}, which is the
+     *              current {@link Algorithm#RECOMMENDED_ALGORITHM}, for new passwords.
      */
     @Deprecated(forRemoval = false)
     PBKDF2WITHHMACSHA1("PBKDF2WithHmacSHA1", 128 / Byte.SIZE, 1, Integer.MAX_VALUE, 85000, 160 / Byte.SIZE) {
@@ -478,7 +478,7 @@ public final class HashedPassword implements Serializable {
     }
 
     /**
-     * Generates a random salt of {@link #getSaltBytes()} bytes in length using the provided {@link Random} source.
+     * Generates a random salt of {@link Algorithm#getSaltBytes()} bytes in length using the provided {@link Random} source.
      *
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password, java.util.Random)
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.util.Random)
@@ -493,7 +493,7 @@ public final class HashedPassword implements Serializable {
     }
 
     /**
-     * Generates a random salt of {@link #getSaltBytes()} bytes in length using the provided {@link SecureRandom} source.
+     * Generates a random salt of {@link Algorithm#getSaltBytes()} bytes in length using the provided {@link SecureRandom} source.
      *
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password, java.security.SecureRandom)
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.security.SecureRandom)
@@ -504,7 +504,7 @@ public final class HashedPassword implements Serializable {
     }
 
     /**
-     * Generates a random salt of {@link #getSaltBytes()} bytes in length
+     * Generates a random salt of {@link Algorithm#getSaltBytes()} bytes in length
      * using a default {@link SecureRandom} instance, which is not a
      * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
      *
@@ -549,13 +549,13 @@ public final class HashedPassword implements Serializable {
      * Always store the iterations with the salt and hash, and use the stored
      * iterations when checking password matches.</p>
      *
-     * <p>It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
+     * <p>It is {@linkplain Algorithm#isRehashRecommended() recommended to re-hash} a password during login when the recommended
      * iterations has changed.</p>
      *
      * <p>This value is selected to complete the hashing in around {@value #SUGGEST_INCREASE_ITERATIONS_MILLIS} ms
      * on commodity PC hardware from around the year 2012.</p>
      *
-     * @see  #hash(java.lang.String, byte[], int)
+     * @see  Algorithm#hash(java.lang.String, byte[], int)
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password)
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password, java.security.SecureRandom)
      * @see  HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)
@@ -659,25 +659,25 @@ public final class HashedPassword implements Serializable {
     }
 
     /**
-     * Hash the given password to {@link #getHashBytes()} bytes.
+     * Hash the given password to {@link Algorithm#getHashBytes()} bytes.
      *
      * @param  password  Is destroyed before this method returns.  If the original password is
      *                   needed, pass a clone to this method.
      *
-     * @see  #generateSalt()
-     * @see  #getRecommendedIterations()
+     * @see  Algorithm#generateSalt()
+     * @see  Algorithm#getRecommendedIterations()
      */
     public byte[] hash(Password password, byte[] salt, int iterations) {
       return hash(password, salt, iterations, getHashBytes());
     }
 
     /**
-     * Hash the given password to {@link #getHashBytes()} bytes.
+     * Hash the given password to {@link Algorithm#getHashBytes()} bytes.
      *
-     * @see  #generateSalt()
-     * @see  #getRecommendedIterations()
+     * @see  Algorithm#generateSalt()
+     * @see  Algorithm#getRecommendedIterations()
      *
-     * @deprecated  Please use {@link #hash(com.aoapps.security.Password, byte[], int)} so the password may be destroyed.
+     * @deprecated  Please use {@link Algorithm#hash(com.aoapps.security.Password, byte[], int)} so the password may be destroyed.
      */
     @Deprecated(forRemoval = true)
     public byte[] hash(String password, byte[] salt, int iterations) {
@@ -700,7 +700,7 @@ public final class HashedPassword implements Serializable {
    * The algorithm recommended for use with new passwords.  This may change at any time, but previous algorithms will
    * remain supported.
    *
-   * <p>It is {@linkplain #isRehashRecommended() recommended to re-hash} a password during login when the recommended
+   * <p>It is {@linkplain HashedPassword#isRehashRecommended() recommended to re-hash} a password during login when the recommended
    * algorithm has changed.</p>
    */
   public static final Algorithm RECOMMENDED_ALGORITHM = Algorithm.PBKDF2WITHHMACSHA512;
@@ -754,16 +754,16 @@ public final class HashedPassword implements Serializable {
   public static final HashedPassword NO_PASSWORD = new HashedPassword();
 
   /**
-   * Generates a random salt of {@link #SALT_BYTES} bytes in length
+   * Generates a random salt of {@link HashedPassword#SALT_BYTES} bytes in length
    * using a default {@link SecureRandom} instance, which is not a
    * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
    *
-   * @see  #hash(java.lang.String, byte[], int)
+   * @see  HashedPassword#hash(java.lang.String, byte[], int)
    *
    * @deprecated  This generates a salt for {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
-   *              please use {@link Algorithm#generateSalt()}, {@link #HashedPassword(com.aoapps.security.Password)},
-   *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)},
-   *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
+   *              please use {@link Algorithm#generateSalt()}, {@link HashedPassword#HashedPassword(com.aoapps.security.Password)},
+   *              {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)},
+   *              {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
    *              instead.
    */
   @Deprecated(forRemoval = true)
@@ -774,14 +774,14 @@ public final class HashedPassword implements Serializable {
   /**
    * Hash the given password.
    *
-   * @see  #generateSalt()
-   * @see  #RECOMMENDED_ITERATIONS
+   * @see  HashedPassword#generateSalt()
+   * @see  HashedPassword#RECOMMENDED_ITERATIONS
    *
    * @deprecated  This generates a hash for {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm}
    *              and does not allow the password to be destroyed, please use {@link Algorithm#hash(com.aoapps.security.Password, byte[], int)},
-   *              {@link #HashedPassword(com.aoapps.security.Password)},
-   *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)},
-   *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
+   *              {@link HashedPassword#HashedPassword(com.aoapps.security.Password)},
+   *              {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)},
+   *              {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
    *              instead.
    */
   @Deprecated(forRemoval = true)
@@ -795,7 +795,7 @@ public final class HashedPassword implements Serializable {
   private static final byte[] EMPTY_BYTE_ARRAY = {};
 
   /**
-   * Parses the result of {@link #toString()}.
+   * Parses the result of {@link HashedPassword#toString()}.
    *
    * @param hashedPassword  when {@code null}, returns {@code null}
    */
@@ -936,7 +936,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Special singleton for {@link #NO_PASSWORD}.
+   * Special singleton for {@link HashedPassword#NO_PASSWORD}.
    */
   private HashedPassword() {
     algorithm = null;
@@ -955,8 +955,8 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations < algorithm.getMinimumIterations()}
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
-   * @deprecated  Please use {@link #valueOf(com.aoapps.security.HashedPassword.Algorithm, byte[], int, byte[])},
-   *              which is able to automatically return the {@link #NO_PASSWORD} singleton.
+   * @deprecated  Please use {@link HashedPassword#valueOf(com.aoapps.security.HashedPassword.Algorithm, byte[], int, byte[])},
+   *              which is able to automatically return the {@link HashedPassword#NO_PASSWORD} singleton.
    */
   @Deprecated(forRemoval = false)
   public HashedPassword(Algorithm algorithm, byte[] salt, int iterations, byte[] hash) throws IllegalArgumentException {
@@ -976,9 +976,9 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
    * @deprecated  This represents a hash using {@linkplain Algorithm#PBKDF2WITHHMACSHA1 the previous default algorithm},
-   *              please use {@link #HashedPassword(com.aoapps.security.Password)},
-   *              {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)},
-   *              or {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
+   *              please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password)},
+   *              {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)},
+   *              or {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)}
    *              instead.
    */
   @Deprecated(forRemoval = true)
@@ -1021,7 +1021,7 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations < algorithm.getMinimumIterations()}
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, byte[], int)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, byte[], int)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, byte[] salt, int iterations) throws IllegalArgumentException {
@@ -1099,7 +1099,7 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations < algorithm.getMinimumIterations()}
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int, java.util.Random)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int, java.util.Random)} so the password may be destroyed.
    *
    *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
@@ -1120,7 +1120,7 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations < algorithm.getMinimumIterations()}
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int, java.security.SecureRandom)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int, java.security.SecureRandom)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, int iterations, SecureRandom secureRandom) throws IllegalArgumentException {
@@ -1160,7 +1160,7 @@ public final class HashedPassword implements Serializable {
    *                                    or {@code iterations < algorithm.getMinimumIterations()}
    *                                    or {@code iterations > algorithm.getMaximumIterations()}
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, int)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, int iterations) throws IllegalArgumentException {
@@ -1207,7 +1207,7 @@ public final class HashedPassword implements Serializable {
    * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.util.Random)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.util.Random)} so the password may be destroyed.
    *
    *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
@@ -1224,7 +1224,7 @@ public final class HashedPassword implements Serializable {
    * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.security.SecureRandom)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm, java.security.SecureRandom)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm, SecureRandom secureRandom) throws IllegalArgumentException {
@@ -1255,7 +1255,7 @@ public final class HashedPassword implements Serializable {
    * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, com.aoapps.security.HashedPassword.Algorithm)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password, Algorithm algorithm) throws IllegalArgumentException {
@@ -1263,7 +1263,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+   * Creates a new hashed password using {@linkplain HashedPassword#RECOMMENDED_ALGORITHM the recommended algorithm},
    * {@linkplain Algorithm#generateSalt() a random salt}, and
    * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations} using the provided {@link Random}
    * source.
@@ -1282,7 +1282,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+   * Creates a new hashed password using {@linkplain HashedPassword#RECOMMENDED_ALGORITHM the recommended algorithm},
    * {@linkplain Algorithm#generateSalt() a random salt}, and
    * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations} using the provided
    * {@link SecureRandom} source.
@@ -1297,7 +1297,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+   * Creates a new hashed password using {@linkplain HashedPassword#RECOMMENDED_ALGORITHM the recommended algorithm},
    * {@linkplain Algorithm#generateSalt() a random salt}, and
    * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations} using the provided {@link Random}
    * source.
@@ -1305,7 +1305,7 @@ public final class HashedPassword implements Serializable {
    * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, java.util.Random)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, java.util.Random)} so the password may be destroyed.
    *
    *              <p>Please use {@link SecureRandom}.  This method should only be used after careful consideration.</p>
    */
@@ -1315,7 +1315,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+   * Creates a new hashed password using {@linkplain HashedPassword#RECOMMENDED_ALGORITHM the recommended algorithm},
    * {@linkplain Algorithm#generateSalt() a random salt}, and
    * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations} using the provided
    * {@link SecureRandom} source.
@@ -1323,7 +1323,7 @@ public final class HashedPassword implements Serializable {
    * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password, java.security.SecureRandom)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password, java.security.SecureRandom)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password, SecureRandom secureRandom) throws IllegalArgumentException {
@@ -1331,7 +1331,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+   * Creates a new hashed password using {@linkplain HashedPassword#RECOMMENDED_ALGORITHM the recommended algorithm},
    * {@linkplain Algorithm#generateSalt() a random salt}, and
    * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
    * using a default {@link SecureRandom} instance, which is not a
@@ -1347,7 +1347,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Creates a new hashed password using {@linkplain #RECOMMENDED_ALGORITHM the recommended algorithm},
+   * Creates a new hashed password using {@linkplain HashedPassword#RECOMMENDED_ALGORITHM the recommended algorithm},
    * {@linkplain Algorithm#generateSalt() a random salt}, and
    * {@linkplain Algorithm#getRecommendedIterations() the recommended iterations}
    * using a default {@link SecureRandom} instance, which is not a
@@ -1356,7 +1356,7 @@ public final class HashedPassword implements Serializable {
    * @throws  IllegalArgumentException  when {@code password == null || password.isEmpty()}
    *                                    or password only contains {@code (char)0} (conflicts with destroyed passwords)
    *
-   * @deprecated  Please use {@link #HashedPassword(com.aoapps.security.Password)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#HashedPassword(com.aoapps.security.Password)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public HashedPassword(String password) throws IllegalArgumentException {
@@ -1379,7 +1379,7 @@ public final class HashedPassword implements Serializable {
    * Gets the string representation of the hashed password.  The format is subject to change
    * over time, but will maintain backward compatibility.
    *
-   * <p>Please see {@link #valueOf(java.lang.String)} for the inverse operation.</p>
+   * <p>Please see {@link HashedPassword#valueOf(java.lang.String)} for the inverse operation.</p>
    */
   // Matches src/main/sql/com/aoapps/security/HashedPassword.toString-function.sql
   @Override
@@ -1396,7 +1396,7 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Checks if equal to another hashed password, always {@code false} when either is {@link #NO_PASSWORD}.
+   * Checks if equal to another hashed password, always {@code false} when either is {@link HashedPassword#NO_PASSWORD}.
    *
    * <p>Performs comparisons in length-constant time.
    * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
@@ -1459,10 +1459,10 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
+   * Checks if this matches the provided password, always {@code false} when is {@link HashedPassword#NO_PASSWORD}.
    *
-   * <p>When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
-   * {@link #isRehashRecommended()} then either set the same
+   * <p>When {@linkplain HashedPassword#matches(java.lang.String) verifying a user's password}, please check
+   * {@link HashedPassword#isRehashRecommended()} then either set the same
    * password again or, ideally, generate a new password or prompt the user to reset their password.  This will allow
    * the stored passwords to keep up with encryption improvements.</p>
    *
@@ -1472,7 +1472,7 @@ public final class HashedPassword implements Serializable {
    * @param password    Is destroyed before this method returns.  If the original password is
    *                    needed, pass a clone to this method.
    *
-   * @see  #isRehashRecommended()
+   * @see  HashedPassword#isRehashRecommended()
    */
   public boolean matches(Password password) {
     try {
@@ -1505,19 +1505,19 @@ public final class HashedPassword implements Serializable {
   }
 
   /**
-   * Checks if this matches the provided password, always {@code false} when is {@link #NO_PASSWORD}.
+   * Checks if this matches the provided password, always {@code false} when is {@link HashedPassword#NO_PASSWORD}.
    *
-   * <p>When {@linkplain #matches(java.lang.String) verifying a user's password}, please check
-   * {@link #isRehashRecommended()} then either set the same
+   * <p>When {@linkplain HashedPassword#matches(java.lang.String) verifying a user's password}, please check
+   * {@link HashedPassword#isRehashRecommended()} then either set the same
    * password again or, ideally, generate a new password or prompt the user to reset their password.  This will allow
    * the stored passwords to keep up with encryption improvements.</p>
    *
    * <p>Performs comparisons in length-constant time.
    * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
    *
-   * @see  #isRehashRecommended()
+   * @see  HashedPassword#isRehashRecommended()
    *
-   * @deprecated  Please use {@link #matches(com.aoapps.security.Password)} so the password may be destroyed.
+   * @deprecated  Please use {@link HashedPassword#matches(com.aoapps.security.Password)} so the password may be destroyed.
    */
   @Deprecated(forRemoval = true)
   public boolean matches(String password) {

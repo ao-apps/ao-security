@@ -198,7 +198,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      * @param  <Ex>  An arbitrary exception type that may be thrown
      * @param  key  Is not zeroed
      *
-     * @deprecated  Please use {@link #validateKey(java.util.function.Function, com.aoapps.security.Key)} instead.
+     * @deprecated  Please use {@link Algorithm#validateKey(java.util.function.Function, com.aoapps.security.Key)} instead.
      */
     @Deprecated(forRemoval = true)
     public <Ex extends Throwable> byte[] validateKey(Function<? super String, Ex> newThrowable, byte[] key) throws Ex {
@@ -222,10 +222,10 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
     }
 
     /**
-     * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length using the provided
+     * Generates a random plaintext key of {@link Algorithm#getKeyBytes()} bytes in length using the provided
      * {@link Random} source.
      *
-     * @see  #hash(com.aoapps.security.Key)
+     * @see  Algorithm#hash(com.aoapps.security.Key)
      *
      * @deprecated  Please use {@link SecureRandom}.  This method will stay, but will remain deprecated since it should
      *              only be used after careful consideration.
@@ -236,21 +236,21 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
     }
 
     /**
-     * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length using the provided
+     * Generates a random plaintext key of {@link Algorithm#getKeyBytes()} bytes in length using the provided
      * {@link SecureRandom} source.
      *
-     * @see  #hash(com.aoapps.security.Key)
+     * @see  Algorithm#hash(com.aoapps.security.Key)
      */
     public UnprotectedKey generateKey(SecureRandom secureRandom) {
       return generateKey(getKeyBytes(), secureRandom);
     }
 
     /**
-     * Generates a random plaintext key of {@link #getKeyBytes()} bytes in length
+     * Generates a random plaintext key of {@link Algorithm#getKeyBytes()} bytes in length
      * using a default {@link SecureRandom} instance, which is not a
      * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
      *
-     * @see  #hash(com.aoapps.security.Key)
+     * @see  Algorithm#hash(com.aoapps.security.Key)
      */
     public UnprotectedKey generateKey() {
       return generateKey(getKeyBytes(), Identifier.secureRandom);
@@ -281,7 +281,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      * @param  key  Is destroyed before this method returns.  If the original key is
      *              needed, pass a clone to this method.
      *
-     * @see  #generateKey()
+     * @see  Algorithm#generateKey()
      */
     public byte[] hash(Key key) {
       try {
@@ -308,9 +308,9 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      *
      * @param  key  Is not zeroed
      *
-     * @see  #generateKey()
+     * @see  Algorithm#generateKey()
      *
-     * @deprecated  Please use {@link #hash(com.aoapps.security.Key)} instead.
+     * @deprecated  Please use {@link Algorithm#hash(com.aoapps.security.Key)} instead.
      */
     @Deprecated(forRemoval = true)
     public byte[] hash(byte[] key) {
@@ -370,13 +370,13 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   public static final HashedKey NO_KEY = new HashedKey();
 
   /**
-   * Generates a random plaintext key of {@link #HASH_BYTES} bytes in length
+   * Generates a random plaintext key of {@link HashedKey#HASH_BYTES} bytes in length
    * using a default {@link SecureRandom} instance, which is not a
    * {@linkplain SecureRandom#getInstanceStrong() strong instance} to avoid blocking.
    *
    * @return  The caller must zero this array once no longer needed.
    *
-   * @see  #hash(byte[])
+   * @see  HashedKey#hash(byte[])
    *
    * @deprecated  This generates a key for {@linkplain Algorithm#SHA_256 the previous default algorithm},
    *              using the previous default of 256-bit length, please use {@link Algorithm#generateKey()} instead.
@@ -395,7 +395,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
    *
    * @param  key  Is not zeroed
    *
-   * @see  #generateKey()
+   * @see  HashedKey#generateKey()
    *
    * @deprecated  This generates a hash for {@linkplain Algorithm#SHA_256 the previous default algorithm} and does
    *              not zero the key, please use {@link Algorithm#hash(byte[])} instead.
@@ -406,7 +406,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   }
 
   /**
-   * Parses the result of {@link #toString()}.
+   * Parses the result of {@link HashedKey#toString()}.
    *
    * @param hashedKey  when {@code null}, returns {@code null}
    */
@@ -490,7 +490,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   }
 
   /**
-   * Special singleton for {@link #NO_KEY}.
+   * Special singleton for {@link HashedKey#NO_KEY}.
    */
   private HashedKey() {
     algorithm = null;
@@ -502,8 +502,8 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
    *
    * @throws  IllegalArgumentException  when {@code hash.length != algorithm.getHashBytes()}
    *
-   * @deprecated  Please use {@link #valueOf(com.aoapps.security.HashedKey.Algorithm, byte[])},
-   *              which is able to automatically return the {@link #NO_KEY} singleton.
+   * @deprecated  Please use {@link HashedKey#valueOf(com.aoapps.security.HashedKey.Algorithm, byte[])},
+   *              which is able to automatically return the {@link HashedKey#NO_KEY} singleton.
    */
   @Deprecated(forRemoval = false)
   public HashedKey(Algorithm algorithm, byte[] hash) throws IllegalArgumentException {
@@ -516,7 +516,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
    * @throws  IllegalArgumentException  when {@code hash.length != HASH_BYTES}
    *
    * @deprecated  This represents a hash using {@linkplain Algorithm#SHA_256 the previous default algorithm},
-   *              please use {@link #HashedKey(com.aoapps.security.HashedKey.Algorithm, byte[])} instead.
+   *              please use {@link HashedKey#HashedKey(com.aoapps.security.HashedKey.Algorithm, byte[])} instead.
    */
   @Deprecated(forRemoval = true)
   public HashedKey(byte[] hash) throws IllegalArgumentException {
@@ -539,7 +539,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
    * Gets the string representation of the hashed key  The format is subject to change
    * over time, but will maintain backward compatibility.
    *
-   * <p>Please see {@link #valueOf(java.lang.String)} for the inverse operation.</p>
+   * <p>Please see {@link HashedKey#valueOf(java.lang.String)} for the inverse operation.</p>
    */
   // Matches src/main/sql/com/aoapps/security/HashedKey.toString-function.sql
   @Override
@@ -571,7 +571,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   }
 
   /**
-   * Checks if equal to another hashed key, always {@code false} when either is {@link #NO_KEY}.
+   * Checks if equal to another hashed key, always {@code false} when either is {@link HashedKey#NO_KEY}.
    *
    * <p>Performs comparisons in length-constant time.
    * <a href="https://crackstation.net/hashing-security.htm">https://crackstation.net/hashing-security.htm</a></p>
@@ -647,11 +647,11 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   }
 
   /**
-   * Checks if this matches the provided key, always {@code false} when is {@link #NO_KEY}.
+   * Checks if this matches the provided key, always {@code false} when is {@link HashedKey#NO_KEY}.
    *
    * <p>This is most direct when the specific hash to verify against is already known.
    * However, when searching for a hashed value by original key, such as in a mapping or database table, one would
-   * {@linkplain #valueOf(com.aoapps.security.HashedKey.Algorithm, byte[]) create a new instance} to act as the
+   * {@linkplain HashedKey#valueOf(com.aoapps.security.HashedKey.Algorithm, byte[]) create a new instance} to act as the
    * look-up value.</p>
    *
    * <p>Performs comparisons in length-constant time.

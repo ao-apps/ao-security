@@ -47,7 +47,7 @@ public final class UnprotectedPassword extends Password {
   /**
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @see  #UnprotectedPassword(java.util.function.Supplier)
+   * @see  UnprotectedPassword#UnprotectedPassword(java.util.function.Supplier)
    */
   private static <Ex extends Throwable> char[] generatePassword(SupplierE<char[], Ex> generator) throws Ex {
     // Discard any passwords that are generated as all-zero (in the small chance)
@@ -124,7 +124,7 @@ public final class UnprotectedPassword extends Password {
   /**
    * Copy constructor.
    *
-   * @see  #clone()
+   * @see  UnprotectedPassword#clone()
    */
   private UnprotectedPassword(UnprotectedPassword other) {
     super(other);
@@ -132,7 +132,7 @@ public final class UnprotectedPassword extends Password {
 
   /**
    * Implements hash code via {@link Arrays#hashCode(char[])} on the password.
-   * Please note that the hash code may change when {@linkplain #destroy() destroyed}.
+   * Please note that the hash code may change when {@linkplain UnprotectedPassword#destroy() destroyed}.
    */
   @Override
   public int hashCode() {
@@ -148,11 +148,11 @@ public final class UnprotectedPassword extends Password {
   /**
    * @return  The caller must zero this array once no longer needed.
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedPassword#isDestroyed()}
    *
-   * @see  #invoke(com.aoapps.lang.function.FunctionE)
-   * @see  #accept(com.aoapps.lang.function.ConsumerE)
-   * @see  #test(com.aoapps.lang.function.PredicateE)
+   * @see  UnprotectedPassword#invoke(com.aoapps.lang.function.FunctionE)
+   * @see  UnprotectedPassword#accept(com.aoapps.lang.function.ConsumerE)
+   * @see  UnprotectedPassword#test(com.aoapps.lang.function.PredicateE)
    */
   char[] getPassword() throws IllegalStateException {
     synchronized (password) {
@@ -169,7 +169,7 @@ public final class UnprotectedPassword extends Password {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedPassword#isDestroyed()}
    */
   public <R, Ex extends Throwable> R invoke(FunctionE<? super char[], R, Ex> function) throws IllegalStateException, Ex {
     char[] copy = getPassword();
@@ -186,7 +186,7 @@ public final class UnprotectedPassword extends Password {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedPassword#isDestroyed()}
    */
   public <Ex extends Throwable> void accept(ConsumerE<? super char[], Ex> consumer) throws IllegalStateException, Ex {
     char[] copy = getPassword();
@@ -203,7 +203,7 @@ public final class UnprotectedPassword extends Password {
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
-   * @throws IllegalStateException when {@link #isDestroyed()}
+   * @throws IllegalStateException when {@link UnprotectedPassword#isDestroyed()}
    */
   public <Ex extends Throwable> boolean test(PredicateE<? super char[], Ex> predicate) throws IllegalStateException, Ex {
     char[] copy = getPassword();
