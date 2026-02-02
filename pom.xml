@@ -29,12 +29,12 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.3.0</version>
+  <groupId>com.aoapps</groupId><artifactId>ao-security</artifactId><version>3.3.0-POST-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
     <!-- Must be set to ${git.commit.time} for snapshots or ISO 8601 timestamp for releases. -->
-    <project.build.outputTimestamp>2026-02-02T16:29:35Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>${git.commit.time}</project.build.outputTimestamp>
     <module.name>com.aoapps.security</module.name>
 
     <javadoc.breadcrumbs><![CDATA[<a target="${javadoc.target}" href="https://oss.aoapps.com/">AO OSS</a>
@@ -73,7 +73,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     <connection>scm:git:git://github.com/ao-apps/ao-security.git</connection>
     <developerConnection>scm:git:git@github.com:ao-apps/ao-security.git</developerConnection>
     <url>https://github.com/ao-apps/ao-security</url>
-    <tag>ao-security-3.3.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
