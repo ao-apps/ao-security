@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="Changelog"
     tocLevels="1"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2026-02-02T16:30:18Z"
+    dateModified="2026-02-05T18:09:30Z"
   >
     <c:set var="latestRelease" value="3.3.0" />
     <c:if test="${
@@ -219,7 +219,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
           <p>
             Created a new pair of classes <code>Password</code> and <code>UnprotectedPassword</code> that should be
             used to encapsulate plaintext passwords instead of using <code>char[]</code> or <code>String</code>.
-            Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
+            Instances are <ao:a rel="nofollow" href="@{documented.javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
           </p>
           <p>
             All uses are aggressively destroyed, thus requiring the caller to actively clone when the
@@ -235,7 +235,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
           <p>
             Created a new pair of classes <code>Key</code> and <code>UnprotectedKey</code> that should be
             used to encapsulate keys instead of working directly with <code>byte[]</code>.
-            Instances are <ao:a rel="nofollow" href="@{javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
+            Instances are <ao:a rel="nofollow" href="@{documented.javadoc.link.javase}javax/security/auth/Destroyable.html">Destroyable</ao:a>.
           </p>
           <p>
             All uses are aggressively destroyed, thus requiring the caller to actively clone when the
@@ -352,13 +352,13 @@ COMMIT;]]></pre>
     >
       <ul>
         <li>
-          Documented that the default <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>
-          instance is not a <ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>.
+          Documented that the default <code><ao:a rel="nofollow" href="@{documented.javadoc.link.javase}java.base/java/security/SecureRandom.html">SecureRandom</ao:a></code>
+          instance is not a <ao:a rel="nofollow" href="@{documented.javadoc.link.javase}java.base/java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>.
         </li>
         <li>
-          Added overloads to all places that use <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html">SecureRandom</ao:a></code>,
+          Added overloads to all places that use <code><ao:a rel="nofollow" href="@{documented.javadoc.link.javase}java.base/java/security/SecureRandom.html">SecureRandom</ao:a></code>,
           allowing the caller to provide their own random instance, which may be a
-          <ao:a rel="nofollow" href="@{javadoc.link.javase}java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>
+          <ao:a rel="nofollow" href="@{documented.javadoc.link.javase}java.base/java/security/SecureRandom.html#getInstanceStrong()">strong instance</ao:a>
           where appropriate to the application.
         </li>
         <li>
@@ -523,7 +523,7 @@ COMMIT;]]></pre>
                 value in as a string.
               </p>
             </li>
-            <li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
+            <li>Is now <code><ao:a rel="nofollow" href="@{documented.javadoc.link.javase}java.base/java/io/Serializable.html">Serializable</ao:a></code>.</li>
             <li>
               New main method that can be used to generate a key and hash pair.  Includes a <code>-b</code>
               option for benchmark mode, which runs all algorithms and gives timings.
@@ -556,7 +556,7 @@ COMMIT;]]></pre>
                 value in as a string.
               </p>
             </li>
-            <li>Is now <code><ao:a rel="nofollow" href="@{javadoc.link.javase}java/io/Serializable.html">Serializable</ao:a></code>.</li>
+            <li>Is now <code><ao:a rel="nofollow" href="@{documented.javadoc.link.javase}java.base/java/io/Serializable.html">Serializable</ao:a></code>.</li>
             <li>
               New main method that can be used to hash passwords.  Includes a <code>-b</code> option
               for benchmark mode, which runs all algorithms, gives timings, and will recommend increasing
