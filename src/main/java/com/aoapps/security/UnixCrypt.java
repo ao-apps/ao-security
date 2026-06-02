@@ -183,8 +183,6 @@ public abstract class UnixCrypt {
    */
   private static final long[][] CF6464 = new long[16][16];
 
-  // ====================================
-
   static {
     final byte[] perm = new byte[64];
     final byte[] temp = new byte[64];
