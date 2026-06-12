@@ -37,9 +37,9 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="Changelog"
     tocLevels="1"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2026-06-12T12:59:20Z"
+    dateModified="2026-06-12T16:12:09Z"
   >
-    <c:set var="latestRelease" value="3.3.0" />
+    <c:set var="latestRelease" value="3.3.1" />
     <c:if test="${
       fn:endsWith('@{project.version}', '-SNAPSHOT')
       and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')
@@ -51,16 +51,25 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         groupId="@{project.groupId}"
         artifactId="@{documented.artifactId}"
         scmUrl="@{project.scm.url}"
-      >
-        <ul>
-          <li>
-            Fixed typo in <code>com.aoapps.security.HashedKey</code> arguments.
-            Was <code>--benchamrk</code> and is now <code>--benchmark</code>.  Our procedures
-            use the short form <code>-b</code> so were unaffected.
-          </li>
-        </ul>
-      </changelog:release>
+      />
     </c:if>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="3.3.1"
+      datePublished="2026-06-12T16:12:09Z"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Fixed typo in <code>com.aoapps.security.HashedKey</code> arguments.
+          Was <code>--benchamrk</code> and is now <code>--benchmark</code>.  Our procedures
+          use the short form <code>-b</code> so were unaffected.
+        </li>
+      </ul>
+    </changelog:release>
 
     <changelog:release
       projectName="@{documented.name}"
