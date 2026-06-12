@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -146,6 +146,10 @@ public final class HashedPassword implements Serializable {
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
        */
+      @SuppressFBWarnings(
+          value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+          justification = "Synchronization on Password.password is intended for all accesses within this package."
+      )
       @Override
       byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
         synchronized (password.password) {
@@ -210,6 +214,10 @@ public final class HashedPassword implements Serializable {
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
        */
+      @SuppressFBWarnings(
+          value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+          justification = "Synchronization on Password.password is intended for all accesses within this package."
+      )
       @Override
       byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
         synchronized (password.password) {
@@ -271,6 +279,10 @@ public final class HashedPassword implements Serializable {
        * @param  password  Is destroyed before this method returns.  If the original password is
        *                   needed, pass a clone to this method.
        */
+      @SuppressFBWarnings(
+          value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+          justification = "Synchronization on Password.password is intended for all accesses within this package."
+      )
       @Override
       byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
         synchronized (password.password) {
@@ -628,6 +640,10 @@ public final class HashedPassword implements Serializable {
      * @param  password  Is destroyed before this method returns.  If the original password is
      *                   needed, pass a clone to this method.
      */
+    @SuppressFBWarnings(
+        value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+        justification = "Synchronization on Password.password is intended for all accesses within this package."
+    )
     byte[] hash(Password password, byte[] salt, int iterations, int hashBytes) {
       synchronized (password.password) {
         try {

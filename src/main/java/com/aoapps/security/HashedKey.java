@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -181,6 +181,10 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      * @param  <Ex>  An arbitrary exception type that may be thrown
      * @param  key  Is destroyed when invalid
      */
+    @SuppressFBWarnings(
+        value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+        justification = "Synchronization on Key.key is intended for all accesses within this package."
+    )
     public <Ex extends Throwable> Key validateKey(Function<? super String, Ex> newThrowable, Key key) throws Ex {
       int expected = getKeyBytes();
       synchronized (key.key) {
@@ -283,6 +287,10 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
      *
      * @see  Algorithm#generateKey()
      */
+    @SuppressFBWarnings(
+        value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+        justification = "Synchronization on Key.key is intended for all accesses within this package."
+    )
     public byte[] hash(Key key) {
       try {
         byte[] hash;
@@ -711,6 +719,10 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
   }
 
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
+  @SuppressFBWarnings(
+      value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+      justification = "Synchronization on Key.key is intended for all accesses within this package."
+  )
   public static void main(String... args) {
     boolean benchmark = false;
     boolean help = false;

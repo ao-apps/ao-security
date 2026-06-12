@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -27,6 +27,7 @@ import com.aoapps.lang.function.ConsumerE;
 import com.aoapps.lang.function.FunctionE;
 import com.aoapps.lang.function.PredicateE;
 import com.aoapps.lang.function.SupplierE;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
@@ -181,6 +182,10 @@ public final class UnprotectedKey extends Key {
    * @see  UnprotectedKey#accept(com.aoapps.lang.function.ConsumerE)
    * @see  UnprotectedKey#test(com.aoapps.lang.function.PredicateE)
    */
+  @SuppressFBWarnings(
+      value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+      justification = "Synchronization on Key.key is intended for all accesses within this package."
+  )
   byte[] getKey() throws IllegalStateException {
     synchronized (key) {
       if (isDestroyed()) {
