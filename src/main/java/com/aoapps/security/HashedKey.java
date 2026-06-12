@@ -727,7 +727,7 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
     boolean benchmark = false;
     boolean help = false;
     for (String arg : args) {
-      if ("-b".equals(arg) || "--benchamrk".equals(arg)) {
+      if ("-b".equals(arg) || "--benchmark".equals(arg)) {
         benchmark = true;
       } else if ("-h".equals(arg) || "--help".equals(arg)) {
         help = true;
