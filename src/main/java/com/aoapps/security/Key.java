@@ -1,6 +1,6 @@
 /*
  * ao-security - Best-practices security made usable.
- * Copyright (C) 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2021, 2022, 2023, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -145,7 +145,7 @@ public class Key implements Destroyable, AutoCloseable, Cloneable {
         return
             !SecurityUtil.slowAllZero(key)
                 & !SecurityUtil.slowAllZero(copy2)
-                &  SecurityUtil.slowEquals(key, copy2);
+                & SecurityUtil.slowEquals(key, copy2);
       }
     } finally {
       Arrays.fill(copy2, (byte) 0);

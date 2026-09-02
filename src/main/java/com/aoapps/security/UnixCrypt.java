@@ -366,7 +366,7 @@ public abstract class UnixCrypt {
   public static String crypt(String plaintext) {
     return crypt(
         plaintext,
-        new String(new char[]{
+        new String(new char[] {
             itoa64(Identifier.secureRandom.nextInt(64)),
             itoa64(Identifier.secureRandom.nextInt(64))
         })
@@ -526,7 +526,7 @@ public abstract class UnixCrypt {
    * Returns the permutation of the given 32-bit code with
    * the specified permutataion table.
    */
-  private static long perm3264(int c, long[][]p) {
+  private static long perm3264(int c, long[][] p) {
     long out = 0L;
     for (int i = 4; --i >= 0; ) {
       int t = 0x00ff & c;
@@ -543,7 +543,7 @@ public abstract class UnixCrypt {
    * Returns the permutation of the given 64-bit code with
    * the specified permutataion table.
    */
-  private static long perm6464(long c, long[][]p) {
+  private static long perm6464(long c, long[][] p) {
     long out = 0L;
     for (int i = 8; --i >= 0; ) {
       int t = (int) (0x00ff & c);

@@ -183,7 +183,7 @@ public final class HashedPassword implements Serializable {
       // Matches src/main/sql/com/aoapps/security/HashedPassword.Algorithm.toString-function.sql
       @Override
       String toString(byte[] salt, int iterations, byte[] hash) {
-        return new String(new char[]{
+        return new String(new char[] {
           // Salt
           UnixCrypt.itoa64(salt[1]),
           UnixCrypt.itoa64((salt[0] << 2) | ((salt[1] >> 6) & 0x03)),
@@ -847,7 +847,7 @@ public final class HashedPassword implements Serializable {
       @SuppressWarnings("deprecation")
       int salt =
           (UnixCrypt.a64toi(hashedPassword.charAt(1)) << 6)
-              |  UnixCrypt.a64toi(hashedPassword.charAt(0));
+              | UnixCrypt.a64toi(hashedPassword.charAt(0));
       @SuppressWarnings("deprecation")
       long rsltblock =
           ((long) UnixCrypt.a64toi(hashedPassword.charAt(2)) << 58)
@@ -859,15 +859,15 @@ public final class HashedPassword implements Serializable {
               | ((long) UnixCrypt.a64toi(hashedPassword.charAt(8)) << 22)
               | ((long) UnixCrypt.a64toi(hashedPassword.charAt(9)) << 16)
               | ((long) UnixCrypt.a64toi(hashedPassword.charAt(10)) << 10)
-              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(11)) <<  4)
-              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(12)) >>  2);
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(11)) << 4)
+              | ((long) UnixCrypt.a64toi(hashedPassword.charAt(12)) >> 2);
       byte[] hash = new byte[Long.BYTES];
       IoUtils.longToBuffer(rsltblock, hash);
       HashedPassword result = new HashedPassword(
           Algorithm.CRYPT,
-          new byte[]{
+          new byte[] {
               (byte) ((salt >>> Byte.SIZE) & 0x0f),
-              (byte)  salt
+              (byte) salt
           },
           0,
           hash
