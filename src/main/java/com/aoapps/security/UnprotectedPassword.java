@@ -137,7 +137,9 @@ public final class UnprotectedPassword extends Password {
    */
   @Override
   public int hashCode() {
-    return Arrays.hashCode(password);
+    synchronized (password) {
+      return Arrays.hashCode(password);
+    }
   }
 
   @Override

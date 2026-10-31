@@ -164,7 +164,9 @@ public final class UnprotectedKey extends Key {
    */
   @Override
   public int hashCode() {
-    return Arrays.hashCode(key);
+    synchronized (key) {
+      return Arrays.hashCode(key);
+    }
   }
 
   @Override
