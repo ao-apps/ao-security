@@ -162,6 +162,10 @@ public final class UnprotectedKey extends Key {
    * Implements hash code via {@link Arrays#hashCode(byte[])} on the key.
    * Please note that the hash code may change when {@linkplain UnprotectedKey#destroy() destroyed}.
    */
+  @SuppressFBWarnings(
+      value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+      justification = "Synchronization on Key.key is intended for all accesses within this package."
+  )
   @Override
   public int hashCode() {
     synchronized (key) {

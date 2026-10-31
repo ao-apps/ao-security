@@ -135,6 +135,10 @@ public final class UnprotectedPassword extends Password {
    * Implements hash code via {@link Arrays#hashCode(char[])} on the password.
    * Please note that the hash code may change when {@linkplain UnprotectedPassword#destroy() destroyed}.
    */
+  @SuppressFBWarnings(
+      value = "USO_UNSAFE_OBJECT_SYNCHRONIZATION",
+      justification = "Synchronization on Password.password is intended for all accesses within this package."
+  )
   @Override
   public int hashCode() {
     synchronized (password) {
