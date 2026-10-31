@@ -652,14 +652,18 @@ public final class HashedPassword implements Serializable {
           }
           try {
             // See https://crackstation.net/hashing-security.htm
-            byte[] hash = SecretKeyFactory.getInstance(getAlgorithmName()).generateSecret(
-                new PBEKeySpec(
-                    password.password,
-                    validateSalt(IllegalArgumentException::new, salt),
-                    validateIterations(IllegalArgumentException::new, iterations),
-                    hashBytes * Byte.SIZE
-                )
-            ).getEncoded();
+            PBEKeySpec keySpec = new PBEKeySpec(
+                password.password,
+                validateSalt(IllegalArgumentException::new, salt),
+                validateIterations(IllegalArgumentException::new, iterations),
+                hashBytes * Byte.SIZE
+            );
+            byte[] hash;
+            try {
+              hash = SecretKeyFactory.getInstance(getAlgorithmName()).generateSecret(keySpec).getEncoded();
+            } finally {
+              keySpec.clearPassword();
+            }
             password.destroy();
             password = null;
             return validateHash(AssertionError::new, hash);
