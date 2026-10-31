@@ -170,7 +170,7 @@ public final class UnprotectedPassword extends Password {
 
   /**
    * Calls a function, providing a copy of the password.
-   * The copy of the password is zeroed once the function returns.
+   * The copy of the password is zeroed when the function completes, whether normally or exceptionally.
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
@@ -187,7 +187,7 @@ public final class UnprotectedPassword extends Password {
 
   /**
    * Calls a consumer, providing a copy of the password.
-   * The copy of the password is zeroed once the consumer returns.
+   * The copy of the password is zeroed when the consumer completes, whether normally or exceptionally.
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
@@ -204,7 +204,7 @@ public final class UnprotectedPassword extends Password {
 
   /**
    * Calls a predicate, providing a copy of the password.
-   * The copy of the password is zeroed once the predicate returns.
+   * The copy of the password is zeroed when the predicate completes, whether normally or exceptionally.
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *

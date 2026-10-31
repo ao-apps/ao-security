@@ -197,7 +197,7 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Calls a function, providing a copy of the key.
-   * The copy of the key is zeroed once the function returns.
+   * The copy of the key is zeroed when the function completes, whether normally or exceptionally.
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
@@ -214,7 +214,7 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Calls a consumer, providing a copy of the key.
-   * The copy of the key is zeroed once the consumer returns.
+   * The copy of the key is zeroed when the consumer completes, whether normally or exceptionally.
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
@@ -231,7 +231,7 @@ public final class UnprotectedKey extends Key {
 
   /**
    * Calls a predicate, providing a copy of the key.
-   * The copy of the key is zeroed once the predicate returns.
+   * The copy of the key is zeroed when the predicate completes, whether normally or exceptionally.
    *
    * @param  <Ex>  An arbitrary exception type that may be thrown
    *
