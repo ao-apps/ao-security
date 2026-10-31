@@ -680,36 +680,22 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
         // Perform a hash with default settings, just to occupy the same amount of time as if had an algorithm
         byte[] dummyKey = new byte[RECOMMENDED_ALGORITHM.getKeyBytes()];
         dummyKey[0] = -1;
-        byte[] dummyHash = RECOMMENDED_ALGORITHM.hash(dummyKey);
-        try {
-          boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
-          assert !dummiesEqual;
-          return false;
-        } finally {
-          Arrays.fill(dummyHash, (byte) 0);
-        }
+        boolean dummiesEqual = slowEquals(DUMMY_HASH, RECOMMENDED_ALGORITHM.hash(dummyKey));
+        assert !dummiesEqual;
+        return false;
       } else if (key == null) {
         // Perform a hash with current settings, just to occupy the same amount of time as if had a key
         byte[] dummyKey = new byte[RECOMMENDED_ALGORITHM.getKeyBytes()];
         dummyKey[0] = -1;
-        byte[] dummyHash = algorithm.hash(dummyKey);
-        try {
-          boolean dummiesEqual = slowEquals(DUMMY_HASH, dummyHash);
-          assert !dummiesEqual;
-          return false;
-        } finally {
-          Arrays.fill(dummyHash, (byte) 0);
-        }
+        boolean dummiesEqual = slowEquals(DUMMY_HASH, algorithm.hash(dummyKey));
+        assert !dummiesEqual;
+        return false;
       } else {
         // Hash again
         byte[] newHash = algorithm.hash(key);
-        try {
-          assert key.isDestroyed() : "Already destroyed by algorithm.hash";
-          key = null;
-          return slowEquals(hash, newHash);
-        } finally {
-          Arrays.fill(newHash, (byte) 0);
-        }
+        assert key.isDestroyed() : "Already destroyed by algorithm.hash";
+        key = null;
+        return slowEquals(hash, newHash);
       }
     } finally {
       if (key != null) {
@@ -750,22 +736,18 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
               try (UnprotectedKey key = algorithm.generateKey()) {
                 long startNanos = output ? System.nanoTime() : 0;
                 HashedKey hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
-                try {
-                  long endNanos = output ? System.nanoTime() : 0;
-                  if (output) {
-                    String encodedKey;
-                    synchronized (key.key) {
-                      encodedKey = ENCODER.encodeToString(key.key);
-                      key.destroy();
-                    }
-                    System.out.println(encodedKey);
-                    System.out.println(hashedKey);
-                    long nanos = endNanos - startNanos;
-                    System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
-                    System.out.println();
+                long endNanos = output ? System.nanoTime() : 0;
+                if (output) {
+                  String encodedKey;
+                  synchronized (key.key) {
+                    encodedKey = ENCODER.encodeToString(key.key);
+                    key.destroy();
                   }
-                } finally {
-                  Arrays.fill(hashedKey.getHash(), (byte) 0);
+                  System.out.println(encodedKey);
+                  System.out.println(hashedKey);
+                  long nanos = endNanos - startNanos;
+                  System.out.println(algorithm.getAlgorithmName() + ": Completed in " + BigDecimal.valueOf(nanos, 3).toPlainString() + " µs");
+                  System.out.println();
                 }
               }
             } catch (Error | RuntimeException e) {
@@ -781,22 +763,16 @@ public final class HashedKey implements Comparable<HashedKey>, Serializable {
       } else {
         Algorithm algorithm = RECOMMENDED_ALGORITHM;
         try {
-          HashedKey hashedKey = null;
+          HashedKey hashedKey;
           String encodedKey;
-          try {
-            try (UnprotectedKey key = algorithm.generateKey()) {
-              hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
-              synchronized (key.key) {
-                encodedKey = ENCODER.encodeToString(key.key);
-              }
-            }
-            System.out.println(encodedKey);
-            System.out.println(hashedKey);
-          } finally {
-            if (hashedKey != null) {
-              Arrays.fill(hashedKey.getHash(), (byte) 0);
+          try (UnprotectedKey key = algorithm.generateKey()) {
+            hashedKey = new HashedKey(algorithm, algorithm.hash(key.clone()));
+            synchronized (key.key) {
+              encodedKey = ENCODER.encodeToString(key.key);
             }
           }
+          System.out.println(encodedKey);
+          System.out.println(hashedKey);
         } catch (Error | RuntimeException e) {
           hasFailed = true;
           System.out.flush();
