@@ -37,7 +37,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="Changelog"
     tocLevels="1"
     datePublished="2020-12-19T21:29:44-06:00"
-    dateModified="2026-10-31T05:35:50Z"
+    dateModified="2026-10-31T06:40:12Z"
   >
     <c:set var="latestRelease" value="3.3.1" />
     <c:if test="${
@@ -54,6 +54,7 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
       >
         <ul>
           <li>Clear password from <code>PBEKeySpec</code> after use.</li>
+          <li>Synchronize on <code>hashCode()</code> to avoid possible intermediate states on concurrent <code>destroy()</code>.</li>
         </ul>
       </changelog:release>
     </c:if>
