@@ -55,6 +55,11 @@ along with ao-security.  If not, see <https://www.gnu.org/licenses/>.
         <ul>
           <li>Clear password from <code>PBEKeySpec</code> after use.</li>
           <li>Synchronize on <code>hashCode()</code> to avoid possible intermediate states on concurrent <code>destroy()</code>.</li>
+          <li>
+            Fixed typo in <code>com.aoapps.security.HashedPassword</code> arguments.
+            Was <code>--benchamrk</code> and is now <code>--benchmark</code>.  Our procedures
+            use the short form <code>-b</code> so were unaffected.
+          </li>
         </ul>
       </changelog:release>
     </c:if>
